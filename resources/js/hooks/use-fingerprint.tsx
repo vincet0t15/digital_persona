@@ -136,6 +136,7 @@ export function useFingerprint() {
                 sdkInstance.onQualityReported = (e: { quality: number }) => {
                     const qualityName = window.Fingerprint.QualityCode[e.quality] || 'Unknown';
                     const qualityPercent = e.quality === 0 ? 100 : Math.max(0, 100 - e.quality * 10);
+
                     callbacksRef.current.onStatus?.({
                         type: 'quality',
                         quality: qualityPercent,
