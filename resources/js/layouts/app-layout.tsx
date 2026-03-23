@@ -1,6 +1,6 @@
+import { TooltipProvider } from '@/components/ui/tooltip';
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
 import { type BreadcrumbItem } from '@/types';
-
 interface AppLayoutProps {
     children: React.ReactNode;
     breadcrumbs?: BreadcrumbItem[];
@@ -8,6 +8,7 @@ interface AppLayoutProps {
 
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
     <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
+        {/* {children} */}
     </AppLayoutTemplate>
 );
