@@ -1,0 +1,26 @@
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head } from '@inertiajs/react';
+import { FingerprintScanner } from './fingerprint-scanner';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Dashboard',
+        href: '/dashboard',
+    },
+    {
+        title: 'Biometric',
+        href: '/biometric/register',
+    },
+];
+
+export default function RegisterBiometric() {
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Register Biometric" />
+            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+                <FingerprintScanner mode="enroll" onCapture={() => {}} />
+            </div>
+        </AppLayout>
+    );
+}

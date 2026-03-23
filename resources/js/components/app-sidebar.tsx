@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { NavGroup } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, LayoutGrid } from 'lucide-react';
+import { BookOpen, FingerprintIcon, LayoutGrid } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavGroup[] = [
@@ -19,16 +19,16 @@ const mainNavItems: NavGroup[] = [
     },
 
     {
-        title: 'Academic Setup',
+        title: 'Biometric',
         children: [
             {
-                title: 'Courses',
-                href: '/courses',
-                icon: BookOpen,
+                title: 'Register',
+                href: '/biometric/register',
+                icon: FingerprintIcon,
             },
             {
                 title: 'Year Levels',
-                href: '/year-levels',
+                href: '#',
                 icon: BookOpen,
             },
         ],
