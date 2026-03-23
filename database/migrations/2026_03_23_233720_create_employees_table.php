@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->foreignId('office_id')->constrained('offices')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->string('image')->nullable();
             $table->softDeletes();
             $table->index('office_id');
             $table->index('name');

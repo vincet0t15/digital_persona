@@ -1,6 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { EmployeeCreate } from '@/types/employee';
+import { Head, useForm } from '@inertiajs/react';
 import { FingerprintScanner } from './fingerprint-scanner';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -15,6 +16,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function RegisterBiometric() {
+    const { data, setData } = useForm<EmployeeCreate>({
+        name: '',
+        username: '',
+        office_id: '',
+        password: '',
+        photo: null,
+    });
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Register Biometric" />
