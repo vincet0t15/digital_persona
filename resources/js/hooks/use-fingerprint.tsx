@@ -144,6 +144,10 @@ export function useFingerprint() {
                 };
 
                 sdkInstance.onSamplesAcquired = (s: { samples: string }) => {
+                    if (!acquisitionStarted) {
+                        console.log('[FP] Sample acquired but acquisition not started — ignoring');
+                        return;
+                    }
                     console.log('[FP] Sample acquired');
                     processCapturedSample(s);
                 };
@@ -334,6 +338,9 @@ export function useFingerprint() {
         setStatus('Place your finger on the reader...');
         callbacksRef.current.onStatus?.({ type: 'scanning', message: 'Waiting for finger...' });
 
+        // Reset acquisition flag to ensure clean state
+        acquisitionStarted = false;
+
         sdkInstance
             ?.startAcquisition(window.Fingerprint.SampleFormat.PngImage, selectedReader)
             .then(() => {
@@ -349,11 +356,13 @@ export function useFingerprint() {
     };
 
     const stopCapture = useCallback(() => {
-        if (sdkMode === 'real' && sdkInstance && acquisitionStarted) {
+        // Always reset the flag first to prevent race conditions
+        acquisitionStarted = false;
+
+        if (sdkMode === 'real' && sdkInstance) {
             sdkInstance
                 .stopAcquisition(selectedReader)
                 .then(() => {
-                    acquisitionStarted = false;
                     console.log('[FP] Acquisition stopped');
                 })
                 .catch((err: Error) => {
