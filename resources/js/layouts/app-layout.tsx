@@ -7,8 +7,9 @@ interface AppLayoutProps {
 }
 
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
-    <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-        <TooltipProvider>{children}</TooltipProvider>
-        {/* {children} */}
-    </AppLayoutTemplate>
+    <TooltipProvider>
+        <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
+            {children}
+        </AppLayoutTemplate>
+    </TooltipProvider>
 );
