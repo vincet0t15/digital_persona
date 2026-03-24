@@ -135,177 +135,173 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Main Content Grid */}
-                    <div className="bg-background rounded-xl p-6 shadow">
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                            <div className="flex flex-col items-center space-y-4">
-                                <input
-                                    id="photo"
-                                    type="file"
-                                    accept="image/jpeg,image/png,image/webp"
-                                    className="hidden"
-                                    onChange={handlePhotoChange}
-                                />
 
-                                <button
-                                    type="button"
-                                    className="bg-background relative flex aspect-square w-full max-w-xs cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed"
-                                    onClick={() => document.getElementById('photo')?.click()}
-                                >
-                                    {photoPreviewUrl ? (
-                                        <img src={photoPreviewUrl} alt="Preview" className="h-full w-full object-cover" />
-                                    ) : (
-                                        <div className="flex flex-col items-center justify-center gap-2 text-center">
-                                            <div className="bg-muted flex size-12 items-center justify-center rounded-full">
-                                                <UploadCloud className="text-muted-foreground size-5" />
-                                            </div>
-                                            <div className="text-sm font-semibold">Upload Photo</div>
-                                            <div className="text-muted-foreground text-xs">Click to browse</div>
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                        {/* PICTURE */}
+                        <div className="flex flex-col items-center space-y-4">
+                            <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handlePhotoChange} />
+
+                            <button
+                                type="button"
+                                className="bg-background relative flex aspect-square w-full max-w-xs cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed"
+                                onClick={() => document.getElementById('photo')?.click()}
+                            >
+                                {photoPreviewUrl ? (
+                                    <img src={photoPreviewUrl} alt="Preview" className="h-full w-full object-cover" />
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center gap-2 text-center">
+                                        <div className="bg-muted flex size-12 items-center justify-center rounded-full">
+                                            <UploadCloud className="text-muted-foreground size-5" />
                                         </div>
-                                    )}
-                                </button>
+                                        <div className="text-sm font-semibold">Upload Photo</div>
+                                        <div className="text-muted-foreground text-xs">Click to browse</div>
+                                    </div>
+                                )}
+                            </button>
 
-                                <div className="flex flex-wrap justify-center gap-2">
-                                    <Button type="button" variant="outline" onClick={() => document.getElementById('photo')?.click()}>
-                                        <UploadCloud className="mr-1 size-4" />
-                                        {photoPreviewUrl ? 'Change' : 'Choose'}
+                            <div className="flex flex-wrap justify-center gap-2">
+                                <Button type="button" variant="outline" onClick={() => document.getElementById('photo')?.click()}>
+                                    <UploadCloud className="mr-1 size-4" />
+                                    {photoPreviewUrl ? 'Change' : 'Choose'}
+                                </Button>
+
+                                {photoPreviewUrl && (
+                                    <Button
+                                        type="button"
+                                        variant="destructive"
+                                        onClick={() => {
+                                            if (photoPreviewUrlRef.current) {
+                                                URL.revokeObjectURL(photoPreviewUrlRef.current);
+                                                photoPreviewUrlRef.current = null;
+                                            }
+                                            setPhotoPreviewUrl(null);
+                                            setData('photo', null);
+                                        }}
+                                    >
+                                        <XIcon className="mr-1 size-4" />
+                                        Remove
                                     </Button>
-
-                                    {photoPreviewUrl && (
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            onClick={() => {
-                                                if (photoPreviewUrlRef.current) {
-                                                    URL.revokeObjectURL(photoPreviewUrlRef.current);
-                                                    photoPreviewUrlRef.current = null;
-                                                }
-                                                setPhotoPreviewUrl(null);
-                                                setData('photo', null);
-                                            }}
-                                        >
-                                            <XIcon className="mr-1 size-4" />
-                                            Remove
-                                        </Button>
-                                    )}
-                                </div>
-
-                                <p className="text-muted-foreground text-center text-xs">jpeg, jpg, png, webp (max 2MB)</p>
+                                )}
                             </div>
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2">
-                                    <div className="flex w-full flex-col gap-1">
-                                        <Label>First Name</Label>
-                                        <Input name="first_name" placeholder="First Name" />
-                                    </div>
-                                    <div className="flex w-full flex-col gap-1">
-                                        <Label>Middle Name</Label>
-                                        <Input name="middle_name" placeholder="Middle Name" />
-                                    </div>
-                                </div>
 
-                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2">
-                                    <div className="flex w-full flex-col gap-1">
-                                        <Label>Last Name</Label>
-                                        <Input name="last_name" placeholder="Last Name" />
-                                    </div>
-                                    <div className="flex w-full flex-col gap-1">
-                                        <Label>Suffix</Label>
-                                        <CustomComboBox
-                                            items={[
-                                                { value: 'Jr.', label: 'Jr.' },
-                                                { value: 'Sr.', label: 'Sr.' },
-                                                { value: 'II', label: 'II' },
-                                                { value: 'III', label: 'III' },
-                                            ]}
-                                            placeholder="Suffix"
-                                        />
-                                    </div>
+                            <p className="text-muted-foreground text-center text-xs">jpeg, jpg, png, webp (max 2MB)</p>
+                        </div>
+                        {/* FORM */}
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2">
+                                <div className="flex w-full flex-col gap-1">
+                                    <Label>First Name</Label>
+                                    <Input name="first_name" placeholder="First Name" />
                                 </div>
+                                <div className="flex w-full flex-col gap-1">
+                                    <Label>Middle Name</Label>
+                                    <Input name="middle_name" placeholder="Middle Name" />
+                                </div>
+                            </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="office">
-                                        Office <span className="text-destructive">*</span>
-                                    </Label>
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2">
+                                <div className="flex w-full flex-col gap-1">
+                                    <Label>Last Name</Label>
+                                    <Input name="last_name" placeholder="Last Name" />
+                                </div>
+                                <div className="flex w-full flex-col gap-1">
+                                    <Label>Suffix</Label>
                                     <CustomComboBox
-                                        items={officeOptions}
-                                        placeholder="Select an office"
-                                        value={data.office_id || null}
-                                        onSelect={(value) => setData('office_id', value ?? '')}
+                                        items={[
+                                            { value: 'Jr.', label: 'Jr.' },
+                                            { value: 'Sr.', label: 'Sr.' },
+                                            { value: 'II', label: 'II' },
+                                            { value: 'III', label: 'III' },
+                                        ]}
+                                        placeholder="Suffix"
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="finger-select">Select Finger</Label>
-                                    <Select value={selectedFinger} onValueChange={setSelectedFinger}>
-                                        <SelectTrigger id="finger-select">
-                                            <SelectValue placeholder="Select a finger" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {FINGER_OPTIONS.map((finger) => (
-                                                <SelectItem key={finger.value} value={finger.value}>
-                                                    {finger.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
 
-                                {/* Scanner */}
-                                <FingerprintScanner mode="enroll" onCapture={handleFingerprintCapture} />
+                            <div className="space-y-2">
+                                <Label htmlFor="office">
+                                    Office <span className="text-destructive">*</span>
+                                </Label>
+                                <CustomComboBox
+                                    items={officeOptions}
+                                    placeholder="Select an office"
+                                    value={data.office_id || null}
+                                    onSelect={(value) => setData('office_id', value ?? '')}
+                                />
+                            </div>
+                        </div>
+                        {/* BIOMETRIC */}
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="finger-select">Select Finger</Label>
+                                <Select value={selectedFinger} onValueChange={setSelectedFinger}>
+                                    <SelectTrigger id="finger-select">
+                                        <SelectValue placeholder="Select a finger" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {FINGER_OPTIONS.map((finger) => (
+                                            <SelectItem key={finger.value} value={finger.value}>
+                                                {finger.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
 
-                                {/* Current Captured Fingerprint */}
-                                {currentFingerprint && (
-                                    <div className="rounded-lg border border-green-200 bg-green-50/50 p-4">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
-                                                    <Fingerprint className="h-5 w-5 text-green-600" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-medium text-green-900">{currentFingerprint.finger_name}</p>
-                                                    <p className="text-sm text-green-700">Quality: {currentFingerprint.quality}%</p>
-                                                </div>
+                            {/* Scanner */}
+                            <FingerprintScanner mode="enroll" onCapture={handleFingerprintCapture} />
+
+                            {/* Current Captured Fingerprint */}
+                            {currentFingerprint && (
+                                <div className="rounded-lg border border-green-200 bg-green-50/50 p-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+                                                <Fingerprint className="h-5 w-5 text-green-600" />
                                             </div>
-                                            <Button type="button" size="sm" onClick={handleAddFingerprint}>
-                                                Add Fingerprint
-                                            </Button>
+                                            <div>
+                                                <p className="font-medium text-green-900">{currentFingerprint.finger_name}</p>
+                                                <p className="text-sm text-green-700">Quality: {currentFingerprint.quality}%</p>
+                                            </div>
+                                        </div>
+                                        <Button type="button" size="sm" onClick={handleAddFingerprint}>
+                                            Add Fingerprint
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* List of Added Fingerprints */}
+                            {fingerprints.length > 0 && (
+                                <>
+                                    <Separator />
+                                    <div className="space-y-3">
+                                        <h4 className="text-sm font-medium">Enrolled Fingerprints ({fingerprints.length})</h4>
+                                        <div className="space-y-2">
+                                            {fingerprints.map((fp: FingerprintData, index: number) => (
+                                                <div key={index} className="bg-muted/30 flex items-center justify-between rounded-lg border p-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <Fingerprint className="text-muted-foreground h-4 w-4" />
+                                                        <div>
+                                                            <p className="text-sm font-medium">{fp.finger_name}</p>
+                                                            <p className="text-muted-foreground text-xs">Quality: {fp.quality}%</p>
+                                                        </div>
+                                                    </div>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => handleRemoveFingerprint(index)}
+                                                        className="text-muted-foreground hover:text-destructive h-8 w-8"
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
-                                )}
-
-                                {/* List of Added Fingerprints */}
-                                {fingerprints.length > 0 && (
-                                    <>
-                                        <Separator />
-                                        <div className="space-y-3">
-                                            <h4 className="text-sm font-medium">Enrolled Fingerprints ({fingerprints.length})</h4>
-                                            <div className="space-y-2">
-                                                {fingerprints.map((fp: FingerprintData, index: number) => (
-                                                    <div key={index} className="bg-muted/30 flex items-center justify-between rounded-lg border p-3">
-                                                        <div className="flex items-center gap-3">
-                                                            <Fingerprint className="text-muted-foreground h-4 w-4" />
-                                                            <div>
-                                                                <p className="text-sm font-medium">{fp.finger_name}</p>
-                                                                <p className="text-muted-foreground text-xs">Quality: {fp.quality}%</p>
-                                                            </div>
-                                                        </div>
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() => handleRemoveFingerprint(index)}
-                                                            className="text-muted-foreground hover:text-destructive h-8 w-8"
-                                                        >
-                                                            <X className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </form>
