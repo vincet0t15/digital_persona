@@ -166,7 +166,7 @@ class BiometricController extends Controller
             ->get();
 
         if (count($fingerprints) === 0) {
-            return response()->json([
+            return redirect()->back()->with('result', [
                 'success' => true,
                 'duplicate' => false,
                 'message' => 'No fingerprints in database.',

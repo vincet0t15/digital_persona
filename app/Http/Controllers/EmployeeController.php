@@ -133,4 +133,21 @@ class EmployeeController extends Controller
 
         return false;
     }
+
+    public function index(Request $request)
+    {
+        $search = $request->query('search');
+        $employees = Employee::query()
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('username', 'like', '%' . $search . '%');
+            })
+            ->paginate(10)
+            ->withQueryString();
+
+        return Inertia::render('Employee/index', [
+            'employees' => $employees,
+            'search' => $search,
+        ]);
+    }
 }
