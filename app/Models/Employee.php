@@ -16,4 +16,14 @@ class Employee extends Model
         'office_id',
         'image',
     ];
+
+    public function fingerprints()
+    {
+        return $this->hasMany(Fingeprint::class);
+    }
+
+    public function office()
+    {
+        return $this->belongsTo(Office::class);
+    }
 }

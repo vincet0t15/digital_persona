@@ -137,17 +137,28 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
+        $officeId = $request->query('office_id');
+        $offices = Office::all();
         $employees = Employee::query()
+            ->with('office')
+            ->with('fingerprints')
             ->when($search, function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('username', 'like', '%' . $search . '%');
+            })
+            ->when($officeId, function ($query) use ($officeId) {
+                $query->where('office_id', $officeId);
             })
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Employee/index', [
             'employees' => $employees,
-            'search' => $search,
+            'filters' => [
+                'search' => $search,
+                'office_id' => $request->query('office_id') ?? null,
+            ],
+            'offices' => $offices,
         ]);
     }
 }
