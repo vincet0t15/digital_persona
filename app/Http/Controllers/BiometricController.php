@@ -4,23 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Fingeprint;
-use App\Models\Office;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Inertia\Inertia;
 
 class BiometricController extends Controller
 {
-    public function register(Request $request)
+    private function getMatcherPath(): string|false
     {
-        $offices = Office::all();
-        return Inertia::render('Bio/index', [
-            'offices' => $offices,
-        ]);
+        $paths = [
+            public_path('matcher/FingerprintMatcher.exe'),
+            'c:\\laragon\\www\\BIOMETRICPHP\\matcher\\FingerprintMatcher.exe',
+        ];
+
+        foreach ($paths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return false;
     }
-
-
 
     private function convertPngToFmd(string $pngBase64): string|false
     {
@@ -29,16 +32,10 @@ class BiometricController extends Controller
 
         file_put_contents($pngFile, $pngBase64);
 
-        // Check public/matcher/ folder first
-        $matcherPath = public_path('matcher/FingerprintMatcher.exe');
+        $matcherPath = $this->getMatcherPath();
 
-        // Fallback to BIOMETRICPHP matcher if not found in public
-        if (!file_exists($matcherPath)) {
-            $matcherPath = public_path('matcher/FingerprintMatcher.exe');
-        }
-
-        if (!file_exists($matcherPath)) {
-            Log::error('FingerprintMatcher.exe not found at: ' . $matcherPath);
+        if ($matcherPath === false) {
+            Log::error('FingerprintMatcher.exe not found');
             @unlink($pngFile);
             return false;
         }
@@ -72,26 +69,20 @@ class BiometricController extends Controller
         file_put_contents($capturedFile, $capturedFmd);
 
         $galleryLines = [];
-        $indexToUserId = [];
+        $indexToEmployeeId = [];
         foreach ($galleryEntries as $idx => $entry) {
             $galleryLines[] = $idx . '|' . $entry['template'];
-            $indexToUserId[$idx] = $entry['user_id'];
+            $indexToEmployeeId[$idx] = $entry['employee_id'];
         }
 
         file_put_contents($galleryFile, implode("\n", $galleryLines));
 
+        $matcherPath = $this->getMatcherPath();
 
-        $matcherPath = public_path('matcher/FingerprintMatcher.exe');
-
-
-        if (!file_exists($matcherPath)) {
-            $matcherPath = public_path('matcher/FingerprintMatcher.exe');
-        }
-
-        if (!file_exists($matcherPath)) {
+        if ($matcherPath === false) {
             @unlink($capturedFile);
             @unlink($galleryFile);
-            Log::error('FingerprintMatcher.exe not found at: ' . $matcherPath);
+            Log::error('FingerprintMatcher.exe not found');
             return ['match' => false, 'message' => 'Matcher not found'];
         }
 
@@ -113,12 +104,12 @@ class BiometricController extends Controller
 
         if (isset($result['match']) && $result['match'] === true && isset($result['person_id'])) {
             $matchedIndex = intval($result['person_id']);
-            $matchedUserId = $indexToUserId[$matchedIndex] ?? null;
+            $matchedEmployeeId = $indexToEmployeeId[$matchedIndex] ?? null;
 
-            if ($matchedUserId) {
+            if ($matchedEmployeeId) {
                 return [
                     'match' => true,
-                    'user_id' => $matchedUserId,
+                    'employee_id' => $matchedEmployeeId,
                     'score' => $result['score'] ?? 0,
                 ];
             }
@@ -165,7 +156,7 @@ class BiometricController extends Controller
             $employeeMap[$fingerprint->employee_id] = $fingerprint->employee;
             if (!empty($fingerprint->fingerprint_template)) {
                 $galleryEntries[] = [
-                    'user_id' => $fingerprint->employee_id,
+                    'employee_id' => $fingerprint->employee_id,
                     'template' => $fingerprint->fingerprint_template,
                 ];
             }
@@ -182,8 +173,8 @@ class BiometricController extends Controller
         // Run matcher
         $result = $this->matchFingerprint($capturedFmd, $galleryEntries);
 
-        if ($result['match'] && isset($result['user_id'])) {
-            $matchedEmployee = $employeeMap[$result['user_id']] ?? null;
+        if ($result['match'] && isset($result['employee_id'])) {
+            $matchedEmployee = $employeeMap[$result['employee_id']] ?? null;
 
             if ($matchedEmployee) {
                 Log::info('Fingerprint identified', [
