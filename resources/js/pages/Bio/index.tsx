@@ -351,6 +351,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                 showStatus={false}
                                 requiredSamples={REQUIRED_SAMPLES}
                                 currentSample={currentSampleIndex}
+                                collectedSamples={currentFingerprint?.samples?.length || pendingSamples.length}
                                 autoScan={true}
                             />
 

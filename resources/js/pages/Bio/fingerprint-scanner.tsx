@@ -17,6 +17,7 @@ interface FingerprintScannerProps {
     showStatus?: boolean;
     requiredSamples?: number;
     currentSample?: number;
+    collectedSamples?: number; // Total samples already collected
     autoScan?: boolean;
 }
 
@@ -29,6 +30,7 @@ export function FingerprintScanner({
     showStatus = true,
     requiredSamples = 1,
     currentSample = 0,
+    collectedSamples = 0,
     autoScan = false,
 }: FingerprintScannerProps) {
     const { initialized, readerConnected, mode: sdkMode, scanning, status, startCapture, stopCapture } = useFingerprint();
@@ -277,13 +279,17 @@ export function FingerprintScanner({
                             <div
                                 key={idx}
                                 className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                                    idx < currentSample ? 'bg-green-500' : idx === currentSample ? 'animate-pulse bg-blue-500' : 'bg-gray-300'
+                                    idx < collectedSamples
+                                        ? 'bg-green-500'
+                                        : idx === currentSample && collectedSamples < requiredSamples
+                                          ? 'animate-pulse bg-blue-500'
+                                          : 'bg-gray-300'
                                 }`}
                             />
                         ))}
                     </div>
                     <span className="text-sm text-gray-500">
-                        {currentSample + 1} of {requiredSamples}
+                        {collectedSamples >= requiredSamples ? requiredSamples : currentSample + 1} of {requiredSamples}
                     </span>
                 </div>
             )}
