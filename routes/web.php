@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BiometricController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\TimeClockController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -9,10 +10,17 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
+// Time Clock (Outside Dashboard - for employee login/logout)
+Route::get('/time-clock', [TimeClockController::class, 'index'])->name('timeclock.index');
+Route::post('/time-clock', [TimeClockController::class, 'clock'])->name('timeclock.clock');
+Route::get('/time-clock/recent-logs', [TimeClockController::class, 'recentLogs'])->name('timeclock.recent');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
+
+
 
     // Employee Registration with Biometric
     Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
