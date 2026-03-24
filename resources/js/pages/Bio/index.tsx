@@ -1,4 +1,5 @@
 import { CustomComboBox } from '@/components/CustomComboBox';
+import { FingerprintDeviceStatus } from '@/components/device-status-indicator';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -131,7 +132,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
 
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <Heading title="Register Employee" description="Register a new employee with biometric data" />
-
+                <FingerprintDeviceStatus />
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Main Content Grid - 3 columns on desktop */}
                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -279,7 +280,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                             </div>
 
                             {/* Scanner */}
-                            <FingerprintScanner mode="enroll" onCapture={handleFingerprintCapture} />
+                            <FingerprintScanner mode="enroll" onCapture={handleFingerprintCapture} showStatus={false} />
 
                             {/* Current Captured Fingerprint */}
                             {currentFingerprint && (

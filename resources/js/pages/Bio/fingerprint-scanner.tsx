@@ -13,9 +13,10 @@ interface FingerprintScannerProps {
     onCapture: (template: string, quality: number) => void;
     onError?: (error: string) => void;
     className?: string;
+    showStatus?: boolean;
 }
 
-export function FingerprintScanner({ mode, onCapture, onError, className }: FingerprintScannerProps) {
+export function FingerprintScanner({ mode, onCapture, onError, className, showStatus = true }: FingerprintScannerProps) {
     const { initialized, readerConnected, mode: sdkMode, scanning, status, startCapture, stopCapture } = useFingerprint();
     const [scanStatus, setScanStatus] = useState<'idle' | 'scanning' | 'processing' | 'success' | 'error'>('idle');
     const [quality, setQuality] = useState<number>(0);
@@ -99,32 +100,34 @@ export function FingerprintScanner({ mode, onCapture, onError, className }: Fing
     return (
         <div className={cn('flex flex-col items-center gap-4', className)}>
             {/* SDK Status Badge */}
-            <div
-                className={cn(
-                    'flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs font-medium',
-                    sdkMode === 'real' && readerConnected
-                        ? 'bg-green-100 text-green-700'
-                        : sdkMode === 'real' && !readerConnected
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-gray-100 text-gray-600',
-                )}
-            >
-                <span
+            {showStatus && (
+                <div
                     className={cn(
-                        'h-2 w-2 rounded-full',
+                        'flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs font-medium',
                         sdkMode === 'real' && readerConnected
-                            ? 'bg-green-500'
+                            ? 'bg-green-100 text-green-700'
                             : sdkMode === 'real' && !readerConnected
-                              ? 'bg-yellow-500'
-                              : 'bg-gray-400',
+                              ? 'bg-yellow-100 text-yellow-700'
+                              : 'bg-gray-100 text-gray-600',
                     )}
-                />
-                {sdkMode === 'real' && readerConnected
-                    ? 'U.are.U Reader Connected'
-                    : sdkMode === 'real' && !readerConnected
-                      ? 'DP Agent Running — No Reader'
-                      : 'Simulation Mode'}
-            </div>
+                >
+                    <span
+                        className={cn(
+                            'h-2 w-2 rounded-full',
+                            sdkMode === 'real' && readerConnected
+                                ? 'bg-green-500'
+                                : sdkMode === 'real' && !readerConnected
+                                  ? 'bg-yellow-500'
+                                  : 'bg-gray-400',
+                        )}
+                    />
+                    {sdkMode === 'real' && readerConnected
+                        ? 'U.are.U Reader Connected'
+                        : sdkMode === 'real' && !readerConnected
+                          ? 'DP Agent Running — No Reader'
+                          : 'Simulation Mode'}
+                </div>
+            )}
 
             {/* Fingerprint Area */}
             <div
