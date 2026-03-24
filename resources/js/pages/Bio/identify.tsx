@@ -44,6 +44,7 @@ export default function IdentifyEmployee({ result }: PageProps) {
     const { props } = usePage<PageProps>();
     const [isIdentifying, setIsIdentifying] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [scanKey, setScanKey] = useState(0);
 
     const { data, setData, post, processing, reset, transform } = useForm({
         fingerprint_template: '',
@@ -80,6 +81,8 @@ export default function IdentifyEmployee({ result }: PageProps) {
 
     const handleReset = () => {
         setError(null);
+        // Increment scan key to force scanner remount and auto-start
+        setScanKey(prev => prev + 1);
         // Reload the page to clear the flash message
         router.reload();
     };
@@ -105,10 +108,12 @@ export default function IdentifyEmployee({ result }: PageProps) {
                             </CardHeader>
                             <CardContent>
                                 <FingerprintScanner
+                                    key={scanKey}
                                     mode="identify"
                                     onCapture={handleFingerprintCapture}
                                     onError={handleError}
                                     showStatus={false}
+                                    autoScan={true}
                                     className="mx-auto"
                                 />
                             </CardContent>
