@@ -1,5 +1,5 @@
-import { Head, useForm } from '@inertiajs/react';
-import { Fingerprint, LoaderCircle } from 'lucide-react';
+import { Head, useForm, usePage } from '@inertiajs/react';
+import { AlertCircle, Fingerprint, LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
 import InputError from '@/components/input-error';
@@ -14,7 +14,13 @@ interface LoginForm {
     remember: boolean;
 }
 
+interface PageProps {
+    [key: string]: any;
+    error?: string;
+}
+
 export default function EmployeeLogin() {
+    const { error } = usePage<PageProps>().props;
     const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
         username: '',
         password: '',
@@ -44,6 +50,14 @@ export default function EmployeeLogin() {
                 </div>
 
                 <div className="rounded-2xl bg-white p-8 shadow-lg dark:bg-slate-800">
+                    {/* Error Message */}
+                    {error && (
+                        <div className="mb-6 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                            <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400" />
+                            <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+                        </div>
+                    )}
+
                     <form className="flex flex-col gap-6" onSubmit={submit}>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
