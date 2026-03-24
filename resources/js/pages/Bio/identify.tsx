@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { Fingerprint, Scan, User, UserCheck, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { FingerprintScanner } from './fingerprint-scanner';
@@ -36,46 +36,41 @@ export default function IdentifyEmployee() {
     const [isIdentifying, setIsIdentifying] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const { data, setData, post, processing, errors, reset } = useForm({
+        fingerprint_template: '',
+    });
+
     const getCsrfToken = (): string => {
         const meta = document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement | null;
         return meta?.content || '';
     };
 
-    const handleFingerprintCapture = async (template: string, quality: number) => {
-        setIsIdentifying(true);
-        setError(null);
-        setScanResult(null);
+    const handleFingerprintCapture = (template: string, quality: number) => {
+        setData('fingerprint_template', template);
 
-        try {
-            const response = await fetch(route('biometric.identify'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': getCsrfToken(),
-                    Accept: 'application/json',
-                },
-                body: JSON.stringify({
-                    fingerprint_template: template,
-                }),
-            });
+        post(route('biometric.identify'), {
+            preserveScroll: true,
+            onStart: () => {
+                setIsIdentifying(true);
+                setError(null);
+                setScanResult(null);
+            },
+            onSuccess: (page: any) => {
+                const result = page.props?.result;
 
-            if (response.status === 419) {
-                setError('Session expired. Please refresh the page and try again.');
-                return;
-            }
+                setScanResult(result);
 
-            const result: IdentificationResult = await response.json();
-            setScanResult(result);
-
-            if (!result.success) {
-                setError(result.message || 'Identification failed');
-            }
-        } catch (err) {
-            setError('Network error. Please try again.');
-            console.error('Identification error:', err);
-        } finally {
-            setIsIdentifying(false);
-        }
+                if (!result?.success) {
+                    setError(result?.message || 'Identification failed');
+                }
+            },
+            onError: () => {
+                setError('Something went wrong.');
+            },
+            onFinish: () => {
+                setIsIdentifying(false);
+            },
+        });
     };
 
     const handleError = (errorMessage: string) => {
