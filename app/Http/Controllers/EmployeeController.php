@@ -7,6 +7,7 @@ use App\Models\Fingeprint;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -22,6 +23,13 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
+        // Debug: Log all request data
+        Log::info('Employee store request', [
+            'all_data' => $request->all(),
+            'has_fingerprint' => $request->has('fingerprint_template'),
+            'fingerprint_template_length' => $request->has('fingerprint_template') ? strlen($request->input('fingerprint_template')) : 0,
+        ]);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:employees,username',
@@ -50,6 +58,11 @@ class EmployeeController extends Controller
 
         // Create fingerprint if template provided
         if (!empty($validated['fingerprint_template'])) {
+            Log::info('Creating fingerprint for employee', [
+                'employee_id' => $employee->id,
+                'template_length' => strlen($validated['fingerprint_template']),
+            ]);
+
             Fingeprint::create([
                 'employee_id' => $employee->id,
                 'finger_name' => $validated['finger_name'] ?? 'Right Thumb',
@@ -58,6 +71,8 @@ class EmployeeController extends Controller
                 'reader_label' => 'Primary',
                 'enrolled_from_ip' => $request->ip(),
             ]);
+        } else {
+            Log::warning('No fingerprint template provided for employee', ['employee_id' => $employee->id]);
         }
 
         return redirect()->route('dashboard')->with('success', 'Employee registered successfully.');

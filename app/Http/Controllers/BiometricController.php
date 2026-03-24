@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Fingeprint;
 use App\Models\Office;
 use Illuminate\Http\Request;
@@ -71,6 +72,11 @@ class BiometricController extends Controller
         // Check public/matcher/ folder first
         $matcherPath = public_path('matcher/FingerprintMatcher.exe');
 
+        // Fallback to BIOMETRICPHP matcher if not found in public
+        if (!file_exists($matcherPath)) {
+            $matcherPath = 'c:\\laragon\\www\\BIOMETRICPHP\\matcher\\FingerprintMatcher.exe';
+        }
+
         if (!file_exists($matcherPath)) {
             Log::error('FingerprintMatcher.exe not found at: ' . $matcherPath);
             @unlink($pngFile);
@@ -118,6 +124,11 @@ class BiometricController extends Controller
         // Check public/matcher/ folder
         $matcherPath = public_path('matcher/FingerprintMatcher.exe');
 
+        // Fallback to BIOMETRICPHP matcher if not found in public
+        if (!file_exists($matcherPath)) {
+            $matcherPath = 'c:\\laragon\\www\\BIOMETRICPHP\\matcher\\FingerprintMatcher.exe';
+        }
+
         if (!file_exists($matcherPath)) {
             @unlink($capturedFile);
             @unlink($galleryFile);
@@ -158,5 +169,89 @@ class BiometricController extends Controller
             'match' => false,
             'message' => $result['message'] ?? 'No match found',
         ];
+    }
+
+    /**
+     * Identify an employee by fingerprint
+     */
+    public function identify(Request $request)
+    {
+        $request->validate([
+            'fingerprint_template' => 'required|string',
+        ]);
+
+        $capturedPng = $request->input('fingerprint_template');
+
+        // Convert captured PNG to ANSI FMD
+        $capturedFmd = $this->convertPngToFmd($capturedPng);
+
+        if ($capturedFmd === false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process captured fingerprint. Please try again.',
+            ], 400);
+        }
+
+        // Get all fingerprints from database
+        $fingerprints = Fingeprint::with('employee')
+            ->whereNotNull('fingerprint_template')
+            ->where('fingerprint_template', '!=', '')
+            ->get();
+
+        // Build gallery entries
+        $galleryEntries = [];
+        $employeeMap = [];
+
+        foreach ($fingerprints as $fingerprint) {
+            $employeeMap[$fingerprint->employee_id] = $fingerprint->employee;
+            if (!empty($fingerprint->fingerprint_template)) {
+                $galleryEntries[] = [
+                    'user_id' => $fingerprint->employee_id,
+                    'template' => $fingerprint->fingerprint_template,
+                ];
+            }
+        }
+
+        if (count($galleryEntries) === 0) {
+            return response()->json([
+                'success' => true,
+                'match' => false,
+                'message' => 'No enrolled fingerprints found',
+            ]);
+        }
+
+        // Run matcher
+        $result = $this->matchFingerprint($capturedFmd, $galleryEntries);
+
+        if ($result['match'] && isset($result['user_id'])) {
+            $matchedEmployee = $employeeMap[$result['user_id']] ?? null;
+
+            if ($matchedEmployee) {
+                Log::info('Fingerprint identified', [
+                    'employee_id' => $matchedEmployee->id,
+                    'score' => $result['score'] ?? 0,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'match' => true,
+                    'score' => $result['score'] ?? 0,
+                    'data' => [
+                        'id' => $matchedEmployee->id,
+                        'name' => $matchedEmployee->name,
+                    ],
+                ]);
+            }
+        }
+
+        Log::warning('Fingerprint identification failed', [
+            'ip' => $request->ip(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'match' => false,
+            'message' => $result['message'] ?? 'No matching fingerprint found',
+        ]);
     }
 }

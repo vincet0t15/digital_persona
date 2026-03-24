@@ -76,8 +76,20 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Ensure fingerprint_quality is a number before sending
+        if (data.fingerprint_template) {
+            setData('fingerprint_quality', Number(data.fingerprint_quality) || 0);
+        }
+
         post(route('employees.store'), {
             forceFormData: true,
+            onSuccess: () => {
+                console.log('Employee created successfully');
+            },
+            onError: (errors) => {
+                console.error('Form errors:', errors);
+            },
         });
     };
 

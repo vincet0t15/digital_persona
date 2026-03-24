@@ -11,8 +11,8 @@ export interface EmployeeCreate {
     username: string;
     office_id: string;
     password: string;
-    photo: File | null;
-    fingerprint_template: string ;
-    fingerprint_quality: number ;
-    finger_name: string ;
+    photo: File | string | null;
+    fingerprint_template: string;
+    fingerprint_quality: number | string;
+    finger_name: string;
 }

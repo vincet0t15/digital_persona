@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BiometricController;
 use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,6 +17,9 @@ Route::middleware(['auth'])->group(function () {
     // Employee Registration with Biometric
     Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
+
+    // Biometric API endpoints
+    Route::post('/biometric/identify', [BiometricController::class, 'identify'])->name('biometric.identify');
 });
 
 require __DIR__ . '/settings.php';
