@@ -51,10 +51,8 @@ export default function IdentifyEmployee({ result }: PageProps) {
     });
 
     const handleFingerprintCapture = (template: string, quality: number) => {
-        // Set the data synchronously then post
         setData('fingerprint_template', template);
 
-        // Use transform to ensure the data is included in the request
         transform((formData) => ({
             ...formData,
             fingerprint_template: template,
@@ -81,9 +79,7 @@ export default function IdentifyEmployee({ result }: PageProps) {
 
     const handleReset = () => {
         setError(null);
-        // Increment scan key to force scanner remount and auto-start
-        setScanKey(prev => prev + 1);
-        // Reload the page to clear the flash message
+        setScanKey((prev) => prev + 1);
         router.reload();
     };
 
