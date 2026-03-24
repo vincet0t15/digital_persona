@@ -4,7 +4,7 @@ import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -335,19 +335,13 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                             <h3 className="text-lg font-semibold">Biometric Enrollment</h3>
 
                             <div className="space-y-2">
-                                <Label htmlFor="finger-select">Select Finger</Label>
-                                <Select value={selectedFinger} onValueChange={setSelectedFinger}>
-                                    <SelectTrigger id="finger-select">
-                                        <SelectValue placeholder="Select a finger" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {FINGER_OPTIONS.map((finger) => (
-                                            <SelectItem key={finger.value} value={finger.value}>
-                                                {finger.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <Label>Select Finger</Label>
+                                <CustomComboBox
+                                    items={FINGER_OPTIONS}
+                                    placeholder="Search or select a finger..."
+                                    value={selectedFinger}
+                                    onSelect={(value) => setSelectedFinger(value || 'Right Thumb')}
+                                />
                             </div>
 
                             {/* Scanner */}
@@ -383,7 +377,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                 </div>
                             )}
 
-                            {/* Sample Progress - Complete */}
+                            {/* Sample Progress - Complete (Ready to Add) */}
                             {currentFingerprint && currentFingerprint.samples && currentFingerprint.samples.length >= REQUIRED_SAMPLES && (
                                 <div className="rounded-lg border border-green-200 bg-green-50 p-4">
                                     <div className="flex items-center gap-3">
@@ -401,14 +395,38 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                     </div>
                                     <div className="mt-3 flex gap-1">
                                         {Array.from({ length: REQUIRED_SAMPLES }).map((_, idx) => (
-                                            <div
-                                                key={idx}
-                                                className="h-2 flex-1 rounded-full bg-green-500"
-                                            />
+                                            <div key={idx} className="h-2 flex-1 rounded-full bg-green-500" />
                                         ))}
                                     </div>
                                 </div>
                             )}
+
+                            {/* Sample Progress - Added to List */}
+                            {fingerprints.length > 0 &&
+                                fingerprints[fingerprints.length - 1]?.samples &&
+                                fingerprints[fingerprints.length - 1].samples!.length >= REQUIRED_SAMPLES &&
+                                !currentFingerprint && (
+                                    <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500">
+                                                <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium text-green-700">Fingerprint Added!</p>
+                                                <p className="text-xs text-green-600">
+                                                    {REQUIRED_SAMPLES} of {REQUIRED_SAMPLES} samples saved. Ready to enroll another finger.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-3 flex gap-1">
+                                            {Array.from({ length: REQUIRED_SAMPLES }).map((_, idx) => (
+                                                <div key={idx} className="h-2 flex-1 rounded-full bg-green-500" />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
                             {/* Checking Duplicate Loader */}
                             {isCheckingDuplicate && pendingSamples.length === 0 && (
