@@ -99,7 +99,6 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
         setDuplicateWarning(null);
         setIsCheckingDuplicate(true);
 
-        // Check for duplicate fingerprint
         try {
             const response = await fetch(route('biometric.check-duplicate'), {
                 method: 'POST',
@@ -127,7 +126,6 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
             }
         } catch (error) {
             console.error('Error checking duplicate fingerprint:', error);
-            // If check fails, still allow the fingerprint to be captured
             setCurrentFingerprint({
                 template,
                 quality,
