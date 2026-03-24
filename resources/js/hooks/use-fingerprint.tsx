@@ -72,9 +72,11 @@ export function useFingerprint() {
             // Check if DigitalPersona SDK is loaded
             if (typeof window.Fingerprint !== 'undefined' && typeof window.Fingerprint.WebApi !== 'undefined') {
                 try {
-                    // If already initialized, re-check device status to ensure connection is still valid
+                    // If already initialized, re-attach event handlers and check device status
                     if (sdkInitialized && sdkInstance) {
-                        console.log('[FP] SDK already initialized, checking device status...');
+                        console.log('[FP] SDK already initialized, re-attaching handlers and checking device status...');
+                        // Re-attach event handlers to ensure they reference current callbacksRef
+                        attachEventHandlers();
                         try {
                             const devices = await sdkInstance.enumerateDevices();
                             if (devices && devices.length > 0) {
@@ -132,70 +134,115 @@ export function useFingerprint() {
         };
     }, []);
 
+    const attachEventHandlers = () => {
+        if (!sdkInstance) return;
+
+        sdkInstance.onDeviceConnected = (e: { deviceUid: string }) => {
+            readerConnected = true;
+            console.log('[FP] Device connected:', e.deviceUid);
+            setStatus('U.are.U reader connected');
+            if (!selectedReader) {
+                selectedReader = e.deviceUid;
+            }
+            setState((prev) => ({ ...prev, readerConnected: true, selectedReader }));
+        };
+
+        sdkInstance.onDeviceDisconnected = (e: { deviceUid: string }) => {
+            console.log('[FP] Device disconnected:', e.deviceUid);
+            if (selectedReader === e.deviceUid) {
+                readerConnected = false;
+                selectedReader = '';
+                setStatus('Fingerprint reader disconnected');
+                setState((prev) => ({ ...prev, readerConnected: false, selectedReader: '' }));
+            }
+        };
+
+        sdkInstance.onCommunicationFailed = () => {
+            console.error('[FP] Communication failed with DP Agent');
+            setStatus('Communication with DP Agent failed');
+        };
+
+        sdkInstance.onQualityReported = (e: { quality: number }) => {
+            const qualityName = window.Fingerprint.QualityCode[e.quality] || 'Unknown';
+            const qualityPercent = e.quality === 0 ? 100 : Math.max(0, 100 - e.quality * 10);
+
+            // Use setTimeout to ensure we access the latest callbacksRef
+            setTimeout(() => {
+                callbacksRef.current.onStatus?.({
+                    type: 'quality',
+                    quality: qualityPercent,
+                    qualityCode: qualityName,
+                });
+            }, 0);
+        };
+
+        sdkInstance.onSamplesAcquired = (s: { samples: string }) => {
+            if (!acquisitionStarted) {
+                console.log('[FP] Sample acquired but acquisition not started — ignoring');
+                return;
+            }
+            console.log('[FP] Sample acquired');
+            // Process sample directly to avoid stale closure issues
+            setTimeout(() => {
+                try {
+                    if (sdkInstance && acquisitionStarted) {
+                        sdkInstance
+                            .stopAcquisition(selectedReader)
+                            .then(() => {
+                                acquisitionStarted = false;
+                                console.log('[FP] Acquisition stopped');
+                            })
+                            .catch((err: Error) => {
+                                console.warn('[FP] stopAcquisition error:', err);
+                            });
+                    }
+
+                    callbacksRef.current.onStatus?.({ type: 'processing', message: 'Processing fingerprint data...' });
+
+                    const samples = JSON.parse(s.samples);
+                    let sampleData = '';
+
+                    if (samples && samples.length > 0) {
+                        sampleData = window.Fingerprint.b64UrlTo64(samples[0]);
+                    }
+
+                    if (!sampleData) {
+                        setState((prev) => ({ ...prev, scanning: false }));
+                        callbacksRef.current.onError?.('No fingerprint data captured. Please try again.');
+                        return;
+                    }
+
+                    setState((prev) => ({ ...prev, scanning: false, hasTemplate: true }));
+
+                    callbacksRef.current.onCapture?.({
+                        success: true,
+                        template: sampleData,
+                        quality: 90,
+                        mode: sdkMode === 'real' ? 'real' : 'simulated',
+                    });
+                } catch (err) {
+                    setState((prev) => ({ ...prev, scanning: false }));
+                    console.error('[FP] processCapturedSample error:', err);
+                    callbacksRef.current.onError?.('Failed to process fingerprint: ' + (err as Error).message);
+                }
+            }, 0);
+        };
+
+        sdkInstance.onErrorOccurred = (e: { error: string }) => {
+            console.error('[FP] Error occurred:', e.error);
+            // Use setTimeout to ensure we access the latest callbacksRef
+            setTimeout(() => {
+                callbacksRef.current.onError?.('Device error: ' + (e.error || 'Unknown error'));
+            }, 0);
+        };
+    };
+
     const initRealSDK = (): Promise<void> => {
         return new Promise((resolve, reject) => {
             try {
-                const format = window.Fingerprint.SampleFormat.PngImage;
                 sdkInstance = new window.Fingerprint.WebApi();
 
-                sdkInstance.onDeviceConnected = (e: { deviceUid: string }) => {
-                    readerConnected = true;
-                    console.log('[FP] Device connected:', e.deviceUid);
-                    setStatus('U.are.U reader connected');
-                    if (!selectedReader) {
-                        selectedReader = e.deviceUid;
-                    }
-                    setState((prev) => ({ ...prev, readerConnected: true, selectedReader }));
-                };
-
-                sdkInstance.onDeviceDisconnected = (e: { deviceUid: string }) => {
-                    console.log('[FP] Device disconnected:', e.deviceUid);
-                    if (selectedReader === e.deviceUid) {
-                        readerConnected = false;
-                        selectedReader = '';
-                        setStatus('Fingerprint reader disconnected');
-                        setState((prev) => ({ ...prev, readerConnected: false, selectedReader: '' }));
-                    }
-                };
-
-                sdkInstance.onCommunicationFailed = () => {
-                    console.error('[FP] Communication failed with DP Agent');
-                    setStatus('Communication with DP Agent failed');
-                };
-
-                sdkInstance.onQualityReported = (e: { quality: number }) => {
-                    const qualityName = window.Fingerprint.QualityCode[e.quality] || 'Unknown';
-                    const qualityPercent = e.quality === 0 ? 100 : Math.max(0, 100 - e.quality * 10);
-
-                    // Use setTimeout to ensure we access the latest callbacksRef
-                    setTimeout(() => {
-                        callbacksRef.current.onStatus?.({
-                            type: 'quality',
-                            quality: qualityPercent,
-                            qualityCode: qualityName,
-                        });
-                    }, 0);
-                };
-
-                sdkInstance.onSamplesAcquired = (s: { samples: string }) => {
-                    if (!acquisitionStarted) {
-                        console.log('[FP] Sample acquired but acquisition not started — ignoring');
-                        return;
-                    }
-                    console.log('[FP] Sample acquired');
-                    // Use setTimeout to ensure we access the latest callbacksRef
-                    setTimeout(() => {
-                        processCapturedSample(s);
-                    }, 0);
-                };
-
-                sdkInstance.onErrorOccurred = (e: { error: string }) => {
-                    console.error('[FP] Error occurred:', e.error);
-                    // Use setTimeout to ensure we access the latest callbacksRef
-                    setTimeout(() => {
-                        callbacksRef.current.onError?.('Device error: ' + (e.error || 'Unknown error'));
-                    }, 0);
-                };
+                attachEventHandlers();
 
                 sdkInstance
                     .enumerateDevices()
@@ -242,50 +289,6 @@ export function useFingerprint() {
             }
         });
     };
-
-    const processCapturedSample = useCallback((sampleEvent: { samples: string }) => {
-        try {
-            if (sdkInstance && acquisitionStarted) {
-                sdkInstance
-                    .stopAcquisition(selectedReader)
-                    .then(() => {
-                        acquisitionStarted = false;
-                        console.log('[FP] Acquisition stopped');
-                    })
-                    .catch((err: Error) => {
-                        console.warn('[FP] stopAcquisition error:', err);
-                    });
-            }
-
-            callbacksRef.current.onStatus?.({ type: 'processing', message: 'Processing fingerprint data...' });
-
-            const samples = JSON.parse(sampleEvent.samples);
-            let sampleData = '';
-
-            if (samples && samples.length > 0) {
-                sampleData = window.Fingerprint.b64UrlTo64(samples[0]);
-            }
-
-            if (!sampleData) {
-                setState((prev) => ({ ...prev, scanning: false }));
-                callbacksRef.current.onError?.('No fingerprint data captured. Please try again.');
-                return;
-            }
-
-            setState((prev) => ({ ...prev, scanning: false, hasTemplate: true }));
-
-            callbacksRef.current.onCapture?.({
-                success: true,
-                template: sampleData,
-                quality: 90,
-                mode: sdkMode === 'real' ? 'real' : 'simulated',
-            });
-        } catch (err) {
-            setState((prev) => ({ ...prev, scanning: false }));
-            console.error('[FP] processCapturedSample error:', err);
-            callbacksRef.current.onError?.('Failed to process fingerprint: ' + (err as Error).message);
-        }
-    }, []);
 
     const startSimulatedCapture = () => {
         setStatus('Place your finger on the reader...');
