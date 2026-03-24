@@ -2,44 +2,32 @@ import { useEffect, useState } from 'react';
 
 export type Appearance = 'light' | 'dark' | 'system';
 
-const prefersDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-const applyTheme = (appearance: Appearance) => {
-    const isDark = appearance === 'dark' || (appearance === 'system' && prefersDark());
-
-    document.documentElement.classList.toggle('dark', isDark);
-};
-
-const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-const handleSystemThemeChange = () => {
-    const currentAppearance = localStorage.getItem('appearance') as Appearance;
-    applyTheme(currentAppearance || 'system');
+// Always use light mode - dark mode disabled
+const applyTheme = () => {
+    // Always remove dark class to ensure light mode
+    document.documentElement.classList.remove('dark');
 };
 
 export function initializeTheme() {
-    const savedAppearance = (localStorage.getItem('appearance') as Appearance) || 'system';
-
-    applyTheme(savedAppearance);
-
-    // Add the event listener for system theme changes...
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
+    // Force light mode always
+    applyTheme();
 }
 
 export function useAppearance() {
-    const [appearance, setAppearance] = useState<Appearance>('system');
+    // Always return light, ignore dark/system
+    const [appearance, setAppearance] = useState<Appearance>('light');
 
     const updateAppearance = (mode: Appearance) => {
-        setAppearance(mode);
-        localStorage.setItem('appearance', mode);
-        applyTheme(mode);
+        // Always force light mode regardless of selection
+        setAppearance('light');
+        localStorage.setItem('appearance', 'light');
+        applyTheme();
     };
 
     useEffect(() => {
-        const savedAppearance = localStorage.getItem('appearance') as Appearance | null;
-        updateAppearance(savedAppearance || 'system');
-
-        return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
+        // Force light mode on mount
+        setAppearance('light');
+        applyTheme();
     }, []);
 
     return { appearance, updateAppearance };
