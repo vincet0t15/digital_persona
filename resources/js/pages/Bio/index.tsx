@@ -201,17 +201,32 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
         e.preventDefault();
 
         if (fingerprints.length === 0) {
-            alert('Please add at least one fingerprint');
+            toast.error('Please add at least one fingerprint');
             return;
         }
 
         post(route('employees.store'), {
-            onSuccess: (response: { props: FlashProps }) => {
-                toast.success(response.props.flash?.success);
+            onSuccess: () => {
+                // Reset all local state before redirect
+                setFingerprints([]);
+                setPhotoPreviewUrl(null);
+                setCurrentFingerprint(null);
+                setPendingSamples([]);
+                setCurrentSampleIndex(0);
+                setDuplicateWarning(null);
+                if (photoPreviewUrlRef.current) {
+                    URL.revokeObjectURL(photoPreviewUrlRef.current);
+                    photoPreviewUrlRef.current = null;
+                }
                 reset();
             },
             onError: (errors) => {
                 console.error('Form errors:', errors);
+                if (errors.message) {
+                    toast.error(errors.message);
+                } else {
+                    toast.error('Failed to register employee. Please check your input and try again.');
+                }
             },
         });
     };

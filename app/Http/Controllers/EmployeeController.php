@@ -35,10 +35,8 @@ class EmployeeController extends Controller
         $fingerprints = json_decode($request->input('fingerprints_json'), true);
 
         if (empty($fingerprints) || !is_array($fingerprints)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid fingerprints data. Please add at least one fingerprint.',
-            ], 400);
+            return redirect()->back()
+                ->with('error', 'Invalid fingerprints data. Please add at least one fingerprint.');
         }
 
         // Handle photo upload
@@ -82,16 +80,15 @@ class EmployeeController extends Controller
         if ($enrolledCount === 0) {
             // Rollback employee creation if no fingerprints were saved
             $employee->delete();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to process fingerprints. Please try scanning again.',
-            ], 400);
+            return redirect()->back()
+                ->with('error', 'Failed to process fingerprints. Please try scanning again.');
         }
 
         // Clear the fingerprint cache so new enrollments are available immediately
         cache()->forget('enrolled_fingerprints');
 
-        return redirect()->back()->with('success', "Employee registered successfully with {$enrolledCount} fingerprint(s).");
+        return redirect()->route('employees.index')
+            ->with('success', "Employee registered successfully with {$enrolledCount} fingerprint(s).");
     }
 
     private function convertPngToFmd(string $pngBase64): string|false
