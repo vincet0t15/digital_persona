@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('employment_types', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->string('status')->default('active');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

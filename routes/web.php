@@ -3,6 +3,7 @@
 use App\Http\Controllers\BiometricController;
 use App\Http\Controllers\EmployeeAuthController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmploymentTypeController;
 use App\Http\Controllers\TimeClockController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -40,7 +41,6 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
 
-
     // Employee Registration with Biometric
     Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
@@ -59,6 +59,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/employees/{employee}/fingerprints', [EmployeeController::class, 'manageFingerprints'])->name('employees.fingerprints');
     Route::post('/employees/{employee}/fingerprints', [EmployeeController::class, 'storeFingerprints'])->name('employees.fingerprints.store');
     Route::delete('/employees/{employee}/fingerprints/{fingerprint}', [EmployeeController::class, 'deleteFingerprint'])->name('employees.fingerprints.delete');
+
+
+    // EMPLOYMENT TYPES
+    Route::get('/employment-types', [EmploymentTypeController::class, 'index'])->name('employment-types.index');
 });
 
 require __DIR__ . '/settings.php';

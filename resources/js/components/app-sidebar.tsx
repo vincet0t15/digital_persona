@@ -52,9 +52,9 @@ const mainNavItems: NavGroup[] = [
         title: 'Settings',
         children: [
             {
-                title: 'Time Logs',
-                href: '/employees/logs',
-                icon: Clock1,
+                title: 'Employment Types',
+                href: '/employment-types',
+                icon: Users2Icon,
             },
         ],
     },
