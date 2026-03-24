@@ -26,8 +26,6 @@ class EmployeeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:employees,username',
-            'password' => 'required|string|min:6',
             'office_id' => 'required|integer|exists:offices,id',
             'photo' => 'nullable|image|max:2048',
             'fingerprints_json' => 'required|string',
@@ -40,19 +38,23 @@ class EmployeeController extends Controller
                 ->with('error', 'Invalid fingerprints data. Please add at least one fingerprint.');
         }
 
+        // Generate random username and password (same value for initial login)
+        $randomCredentials = $this->generateRandomCredentials();
+
         // Handle photo upload
         $imagePath = null;
         if ($request->hasFile('photo')) {
             $imagePath = $request->file('photo')->store('employees', 'public');
         }
 
-        // Create employee
+        // Create employee with random credentials
         $employee = Employee::create([
             'name' => $validated['name'],
-            'username' => $validated['username'],
-            'password' => Hash::make($validated['password']),
+            'username' => $randomCredentials,
+            'password' => Hash::make($randomCredentials),
             'office_id' => $validated['office_id'],
             'image' => $imagePath,
+            'must_change_password' => true,
         ]);
 
         // Process and save all fingerprints with multiple samples
@@ -108,7 +110,7 @@ class EmployeeController extends Controller
         cache()->forget('enrolled_fingerprints');
 
         return redirect()->route('employees.index')
-            ->with('success', "Employee registered successfully with {$enrolledCount} fingerprint(s).");
+            ->with('success', "Employee registered successfully with {$enrolledCount} fingerprint(s). Username & Password: {$randomCredentials}");
     }
 
     private function convertPngToFmd(string $pngBase64): string|false
@@ -262,5 +264,14 @@ class EmployeeController extends Controller
 
         return redirect()->route('employees.fingerprints', $employee)
             ->with('success', 'Fingerprint deleted successfully.');
+    }
+
+    /**
+     * Generate random credentials for new employee
+     */
+    private function generateRandomCredentials(): string
+    {
+        // Generate 8-character random string (letters and numbers)
+        return substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 8);
     }
 }

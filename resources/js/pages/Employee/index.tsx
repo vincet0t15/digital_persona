@@ -99,7 +99,7 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                             <TableRow>
                                 <TableHead className="text-primary font-bold">Name</TableHead>
                                 <TableHead className="text-primary font-bold">Code</TableHead>
-
+                                <TableHead className="text-primary font-bold">Username</TableHead>
                                 <TableHead className="text-primary text-right font-bold">Action</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -111,7 +111,7 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                                         <TableCell className="text-sm">
                                             {employee.office?.name ?? <span className="text-muted-foreground">—</span>}
                                         </TableCell>
-
+                                        <TableCell className="text-sm">{employee.username}</TableCell>
                                         <TableCell className="flex items-center justify-end gap-2 text-sm">
                                             <Link
                                                 href={route('employees.fingerprints', employee.id)}

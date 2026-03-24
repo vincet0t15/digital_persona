@@ -45,6 +45,12 @@ class EmployeeAuthController extends Controller
 
         $request->session()->regenerate();
 
+        // Check if employee must change password (first login)
+        if ($employee->must_change_password) {
+            return redirect()->route('employee.change-password')
+                ->with('info', 'Please change your username and password before continuing.');
+        }
+
         return redirect()->intended(route('employee.dashboard'));
     }
 
@@ -53,9 +59,55 @@ class EmployeeAuthController extends Controller
      */
     public function dashboard(): Response
     {
-        return Inertia::render('employee/dashboard', [
+        return Inertia::render('Employee/dashboard', [
             'employee' => Auth::guard('employee')->user(),
         ]);
+    }
+
+    /**
+     * Show the change password form (for first login).
+     */
+    public function showChangePassword(): Response|RedirectResponse
+    {
+        /** @var Employee $employee */
+        $employee = Auth::guard('employee')->user();
+
+        // If already changed password, redirect to dashboard
+        if (! $employee->must_change_password) {
+            return redirect()->route('employee.dashboard');
+        }
+
+        return Inertia::render('Employee/change-password', [
+            'employee' => $employee,
+        ]);
+    }
+
+    /**
+     * Update username and password (first login).
+     */
+    public function changePassword(Request $request): RedirectResponse
+    {
+        /** @var Employee $employee */
+        $employee = Auth::guard('employee')->user();
+
+        // If already changed password, redirect to dashboard
+        if (! $employee->must_change_password) {
+            return redirect()->route('employee.dashboard');
+        }
+
+        $validated = $request->validate([
+            'username' => ['required', 'string', 'max:255', 'unique:employees,username,' . $employee->id],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $employee->fill([
+            'username' => $validated['username'],
+            'password' => Hash::make($validated['password']),
+            'must_change_password' => false,
+        ])->save();
+
+        return redirect()->route('employee.dashboard')
+            ->with('success', 'Your username and password have been updated successfully.');
     }
 
     /**

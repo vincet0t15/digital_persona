@@ -58,9 +58,7 @@ const REQUIRED_SAMPLES = 5; // Number of samples per finger
 export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
     const { data, setData, post, processing, reset } = useForm<EmployeeCreate>({
         name: '',
-        username: '',
         office_id: '',
-        password: '',
         photo: '',
         fingerprints_json: '',
     });
@@ -330,38 +328,6 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                     onSelect={(value) => setData('office_id', value ?? '')}
                                 />
                             </div>
-
-                            <Separator className="my-4" />
-
-                            {/* Account Credentials */}
-                            <h3 className="text-lg font-semibold">Account Credentials</h3>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="username">
-                                    Username <span className="text-destructive">*</span>
-                                </Label>
-                                <Input
-                                    id="username"
-                                    name="username"
-                                    placeholder="Enter username"
-                                    value={data.username}
-                                    onChange={(e) => setData('username', e.target.value)}
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="password">
-                                    Password <span className="text-destructive">*</span>
-                                </Label>
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    placeholder="Enter password"
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                />
-                            </div>
                         </div>
 
                         {/* RIGHT COLUMN - Biometric (5 columns) */}
@@ -394,7 +360,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                 autoScan={true}
                             />
 
-                            {/* Sample Progress */}
+                            {/* Sample Progress - Collecting */}
                             {pendingSamples.length > 0 && pendingSamples.length < REQUIRED_SAMPLES && (
                                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
                                     <div className="flex items-center gap-3">
@@ -411,6 +377,33 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                             <div
                                                 key={idx}
                                                 className={`h-2 flex-1 rounded-full ${idx < pendingSamples.length ? 'bg-green-500' : 'bg-blue-200'}`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Sample Progress - Complete */}
+                            {currentFingerprint && currentFingerprint.samples && currentFingerprint.samples.length >= REQUIRED_SAMPLES && (
+                                <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500">
+                                            <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-green-700">All Samples Collected!</p>
+                                            <p className="text-xs text-green-600">
+                                                {REQUIRED_SAMPLES} of {REQUIRED_SAMPLES} samples ready. Click &quot;Add Fingerprint&quot; to save.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex gap-1">
+                                        {Array.from({ length: REQUIRED_SAMPLES }).map((_, idx) => (
+                                            <div
+                                                key={idx}
+                                                className="h-2 flex-1 rounded-full bg-green-500"
                                             />
                                         ))}
                                     </div>

@@ -21,6 +21,10 @@ Route::middleware('guest')->group(function () {
 Route::middleware('employee.auth')->group(function () {
     Route::get('/employee/dashboard', [EmployeeAuthController::class, 'dashboard'])->name('employee.dashboard');
     Route::post('/employee/logout', [EmployeeAuthController::class, 'logout'])->name('employee.logout');
+
+    // First login - change password
+    Route::get('/employee/change-password', [EmployeeAuthController::class, 'showChangePassword'])->name('employee.change-password');
+    Route::post('/employee/change-password', [EmployeeAuthController::class, 'changePassword'])->name('employee.change-password.post');
 });
 
 // Time Clock (Public - for fingerprint clock in/out)

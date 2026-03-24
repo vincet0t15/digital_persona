@@ -21,6 +21,7 @@ class Employee extends Authenticatable
         'image',
         'is_active',
         'is_admin',
+        'must_change_password',
     ];
 
     protected $hidden = [
@@ -34,6 +35,7 @@ class Employee extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'is_admin' => 'boolean',
+            'must_change_password' => 'boolean',
         ];
     }
 

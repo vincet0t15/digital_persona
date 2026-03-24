@@ -20,9 +20,9 @@ export interface FingerprintData {
 export interface EmployeeCreate {
     [key: string]: string | number | File | null;
     name: string;
-    username: string;
+    username?: string;
     office_id: string;
-    password: string;
+    password?: string;
     photo: File | string | null;
     fingerprints_json: string;
 }
