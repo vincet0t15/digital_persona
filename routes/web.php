@@ -29,6 +29,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Employee Management
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
+    Route::get('/employees/{employee}/fingerprints', [EmployeeController::class, 'manageFingerprints'])->name('employees.fingerprints');
+    Route::post('/employees/{employee}/fingerprints', [EmployeeController::class, 'storeFingerprints'])->name('employees.fingerprints.store');
+    Route::delete('/employees/{employee}/fingerprints/{fingerprint}', [EmployeeController::class, 'deleteFingerprint'])->name('employees.fingerprints.delete');
 });
 
 require __DIR__ . '/settings.php';

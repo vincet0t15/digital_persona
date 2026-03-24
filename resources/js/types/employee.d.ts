@@ -6,7 +6,8 @@ export interface Employee {
     username: string;
     office_id: number;
     image: string | null;
-    office: Office
+    office: Office;
+    fingerprints?: FingerprintData[];
 }
 
 export interface FingerprintData {

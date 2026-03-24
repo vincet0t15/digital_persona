@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\Fingeprint;
 use App\Models\Office;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -157,5 +158,90 @@ class EmployeeController extends Controller
             ],
             'offices' => $offices,
         ]);
+    }
+
+    /**
+     * Show fingerprint management page for an employee
+     */
+    public function manageFingerprints(Employee $employee)
+    {
+        $employee->load('fingerprints');
+        $offices = Office::all();
+
+        return Inertia::render('Employee/fingerprints', [
+            'employee' => $employee,
+            'offices' => $offices,
+        ]);
+    }
+
+    /**
+     * Store additional fingerprints for an employee
+     */
+    public function storeFingerprints(Request $request, Employee $employee)
+    {
+        $request->validate([
+            'fingerprints_json' => 'required|string',
+        ]);
+
+        $fingerprints = json_decode($request->input('fingerprints_json'), true);
+
+        if (empty($fingerprints) || !is_array($fingerprints)) {
+            return redirect()->back()
+                ->with('error', 'Invalid fingerprints data. Please add at least one fingerprint.');
+        }
+
+        // Process and save all fingerprints
+        $enrolledCount = 0;
+
+        foreach ($fingerprints as $fingerprintData) {
+            $pngBase64 = $fingerprintData['template'];
+            $quality = $fingerprintData['quality'] ?? 0;
+            $fingerName = $fingerprintData['finger_name'];
+
+            $fmdTemplate = $this->convertPngToFmd($pngBase64);
+
+            if ($fmdTemplate !== false) {
+                Fingeprint::create([
+                    'employee_id' => $employee->id,
+                    'finger_name' => $fingerName,
+                    'fingerprint_template' => $fmdTemplate,
+                    'fingerprint_quality' => $quality,
+                    'reader_label' => 'Primary',
+                    'enrolled_from_ip' => $request->ip(),
+                ]);
+                $enrolledCount++;
+            }
+        }
+
+        if ($enrolledCount === 0) {
+            return redirect()->back()
+                ->with('error', 'Failed to process fingerprints. Please try scanning again.');
+        }
+
+        // Clear the fingerprint cache
+        cache()->forget('enrolled_fingerprints');
+
+        return redirect()->route('employees.fingerprints', $employee)
+            ->with('success', "{$enrolledCount} fingerprint(s) added successfully.");
+    }
+
+    /**
+     * Delete a fingerprint
+     */
+    public function deleteFingerprint(Employee $employee, Fingeprint $fingerprint)
+    {
+        // Ensure the fingerprint belongs to the employee
+        if ($fingerprint->employee_id !== $employee->id) {
+            return redirect()->back()
+                ->with('error', 'Fingerprint does not belong to this employee.');
+        }
+
+        $fingerprint->delete();
+
+        // Clear the fingerprint cache
+        cache()->forget('enrolled_fingerprints');
+
+        return redirect()->route('employees.fingerprints', $employee)
+            ->with('success', 'Fingerprint deleted successfully.');
     }
 }

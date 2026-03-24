@@ -11,8 +11,8 @@ import { Employee } from '@/types/employee';
 import { FilterProps } from '@/types/filter';
 import { Office } from '@/types/office';
 import { PaginatedDataResponse } from '@/types/pagination';
-import { Head, router, useForm } from '@inertiajs/react';
-import { PlusIcon, Search } from 'lucide-react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Fingerprint, PlusIcon, Search } from 'lucide-react';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -113,6 +113,13 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                                         </TableCell>
 
                                         <TableCell className="flex items-center justify-end gap-2 text-sm">
+                                            <Link
+                                                href={route('employees.fingerprints', employee.id)}
+                                                className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+                                            >
+                                                <Fingerprint className="h-3.5 w-3.5" />
+                                                Fingerprints ({employee.fingerprints?.length || 0})
+                                            </Link>
                                             <span className="cursor-pointer text-teal-600 hover:underline">Edit</span>
                                             <span className="cursor-pointer text-orange-600 hover:underline">Delete</span>
                                         </TableCell>
