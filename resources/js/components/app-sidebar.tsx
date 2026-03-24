@@ -48,6 +48,16 @@ const mainNavItems: NavGroup[] = [
             },
         ],
     },
+    {
+        title: 'Settings',
+        children: [
+            {
+                title: 'Time Logs',
+                href: '/employees/logs',
+                icon: Clock1,
+            },
+        ],
+    },
 ];
 export function AppSidebar() {
     return (
