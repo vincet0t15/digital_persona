@@ -6,14 +6,18 @@ export interface Employee {
     image: string | null;
 }
 
+export interface FingerprintData {
+    template: string;
+    quality: number;
+    finger_name: string;
+}
+
 export interface EmployeeCreate {
-    [key: string]: string | number | File | null;
+    [key: string]: string | number | File | null | FingerprintData[];
     name: string;
     username: string;
     office_id: string;
     password: string;
     photo: File | string | null;
-    fingerprint_template: string;
-    fingerprint_quality: number | string;
-    finger_name: string;
+    fingerprints: FingerprintData[];
 }

@@ -2,12 +2,13 @@ import { CustomComboBox } from '@/components/CustomComboBox';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { EmployeeCreate } from '@/types/employee';
+import { EmployeeCreate, FingerprintData } from '@/types/employee';
 import { Office } from '@/types/office';
 import { Head, useForm } from '@inertiajs/react';
-import { UploadIcon, UserPlus, XIcon } from 'lucide-react';
+import { Fingerprint, UploadIcon, UserPlus, XIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { FingerprintScanner } from './fingerprint-scanner';
 
@@ -26,6 +27,19 @@ interface RegisterBiometricProps {
     offices: Office[];
 }
 
+const FINGER_OPTIONS = [
+    { value: 'Right Thumb', label: 'Right Thumb' },
+    { value: 'Right Index', label: 'Right Index' },
+    { value: 'Right Middle', label: 'Right Middle' },
+    { value: 'Right Ring', label: 'Right Ring' },
+    { value: 'Right Pinky', label: 'Right Pinky' },
+    { value: 'Left Thumb', label: 'Left Thumb' },
+    { value: 'Left Index', label: 'Left Index' },
+    { value: 'Left Middle', label: 'Left Middle' },
+    { value: 'Left Ring', label: 'Left Ring' },
+    { value: 'Left Pinky', label: 'Left Pinky' },
+];
+
 export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
     const { data, setData, post, processing } = useForm<EmployeeCreate>({
         name: '',
@@ -33,13 +47,12 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
         office_id: '',
         password: '',
         photo: '',
-        fingerprint_template: '',
-        fingerprint_quality: '',
-        finger_name: '',
+        fingerprints: [],
     });
 
     const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
-    const [fingerprintTemplate, setFingerprintTemplate] = useState<string | null>(null);
+    const [selectedFinger, setSelectedFinger] = useState<string>('Right Thumb');
+    const [currentFingerprint, setCurrentFingerprint] = useState<FingerprintData | null>(null);
     const photoPreviewUrlRef = useRef<string | null>(null);
 
     const officeOptions = offices.map((office) => ({
@@ -67,11 +80,25 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
     };
 
     const handleFingerprintCapture = (template: string, quality: number) => {
-        setFingerprintTemplate(template);
-        setData('fingerprint_template', template);
-        setData('fingerprint_quality', quality);
-        setData('finger_name', 'Right Thumb');
+        setCurrentFingerprint({
+            template,
+            quality,
+            finger_name: selectedFinger,
+        });
         console.log('Fingerprint captured with quality:', quality);
+    };
+
+    const handleAddFingerprint = () => {
+        if (currentFingerprint) {
+            const newFingerprints = [...data.fingerprints, currentFingerprint];
+            setData('fingerprints', newFingerprints);
+            setCurrentFingerprint(null);
+        }
+    };
+
+    const handleRemoveFingerprint = (index: number) => {
+        const newFingerprints = data.fingerprints.filter((_, i) => i !== index);
+        setData('fingerprints', newFingerprints);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
