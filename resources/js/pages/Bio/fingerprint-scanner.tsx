@@ -158,7 +158,7 @@ export function FingerprintScanner({
                 return <XCircle className="h-16 w-16" />;
             case 'scanning':
             case 'processing':
-                return <Loader2 className="h-16 w-16 animate-spin" />;
+                return <Fingerprint className="h-16 w-16 animate-pulse" />;
             default:
                 return <Fingerprint className="h-16 w-16" />;
         }
@@ -212,10 +212,10 @@ export function FingerprintScanner({
                     getStatusColor(),
                 )}
             >
-                {/* Scan Line Animation */}
+                {/* Scan Line Animation - Moves up and down */}
                 {(scanStatus === 'scanning' || scanStatus === 'processing') && (
                     <div className="absolute inset-0 overflow-hidden rounded-xl">
-                        <div className="animate-scan absolute right-0 left-0 h-0.5 bg-blue-400" />
+                        <div className="animate-scan-vertical absolute right-0 left-0 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
                     </div>
                 )}
 
