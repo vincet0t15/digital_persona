@@ -49,13 +49,33 @@ class LoginRequest extends FormRequest
 
         Log::info('Login attempt', ['username' => $username]);
 
-        // Find user by username
-        $user = User::where('username', $username)->where('is_active', true)->first();
+        // First, check if user exists at all
+        $user = User::where('username', $username)->first();
 
-        if (! $user || ! Hash::check($password, $user->password)) {
+        // If user doesn't exist
+        if (! $user) {
             RateLimiter::hit($this->throttleKey());
+            Log::info('Login failed - user not found', ['username' => $username]);
 
-            Log::info('Login failed', ['username' => $username]);
+            throw ValidationException::withMessages([
+                'username' => __('auth.failed'),
+            ]);
+        }
+
+        // Check if user is active
+        if (! $user->is_active) {
+            RateLimiter::hit($this->throttleKey());
+            Log::info('Login failed - account inactive', ['username' => $username, 'user_id' => $user->id]);
+
+            throw ValidationException::withMessages([
+                'username' => 'This account has been deactivated. Please contact your administrator.',
+            ]);
+        }
+
+        // Check password
+        if (! Hash::check($password, $user->password)) {
+            RateLimiter::hit($this->throttleKey());
+            Log::info('Login failed - wrong password', ['username' => $username]);
 
             throw ValidationException::withMessages([
                 'username' => __('auth.failed'),
