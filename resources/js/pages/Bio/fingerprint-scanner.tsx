@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useFingerprint } from '@/hooks/use-fingerprint';
 import { cn } from '@/lib/utils';
 import { CheckCircle, Fingerprint, Loader2, Scan, XCircle } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface FingerprintScannerProps {
     mode: 'enroll' | 'identify';
@@ -76,6 +76,18 @@ export function FingerprintScanner({
         setMessage('');
     }, [stopCapture]);
 
+    // Use refs to avoid stale closures and unnecessary re-renders
+    const onCaptureRef = useRef(onCapture);
+    const onErrorRef = useRef(onError);
+    const onSampleCompleteRef = useRef(onSampleComplete);
+
+    // Update refs when props change
+    useEffect(() => {
+        onCaptureRef.current = onCapture;
+        onErrorRef.current = onError;
+        onSampleCompleteRef.current = onSampleComplete;
+    }, [onCapture, onError, onSampleComplete]);
+
     // Auto-start scan when currentSample changes (for continuous enrollment)
     useEffect(() => {
         if (
@@ -98,13 +110,13 @@ export function FingerprintScanner({
                         setScanStatus('success');
                         setQuality(result.quality);
                         setMessage(`Fingerprint captured! Quality: ${result.quality}%${result.mode === 'simulated' ? ' (Simulated)' : ''}`);
-                        onCapture(result.template, result.quality);
-                        onSampleComplete?.();
+                        onCaptureRef.current(result.template, result.quality);
+                        onSampleCompleteRef.current?.();
                     },
                     (error) => {
                         setScanStatus('error');
                         setMessage(error);
-                        onError?.(error);
+                        onErrorRef.current?.(error);
                     },
                     (statusInfo) => {
                         if (statusInfo.type === 'scanning') {
@@ -121,7 +133,8 @@ export function FingerprintScanner({
             }, 800);
             return () => clearTimeout(timer);
         }
-    }, [autoScan, currentSample, requiredSamples, mode, initialized, sdkMode, readerConnected, startCapture, onCapture, onError, onSampleComplete]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [autoScan, currentSample, requiredSamples, mode, initialized, sdkMode, readerConnected, startCapture]);
 
     const getStatusColor = () => {
         switch (scanStatus) {
