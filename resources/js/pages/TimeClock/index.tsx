@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FingerprintScanner } from '@/pages/Bio/fingerprint-scanner';
 import { Head, router } from '@inertiajs/react';
 import { Clock, Fingerprint, LogIn, LogOut } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast, Toaster } from 'sonner';
 
 interface TimeLog {
@@ -39,28 +39,6 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [scanKey, setScanKey] = useState(0);
     const [selectedLogType, setSelectedLogType] = useState<'IN' | 'OUT'>('IN');
-
-    const fetchRecentLogs = async () => {
-        try {
-            const response = await fetch(route('timeclock.recent'), {
-                headers: {
-                    Accept: 'application/json',
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setRecentLogs(data);
-            }
-        } catch (error) {
-            console.error('Failed to fetch recent logs:', error);
-        }
-    };
-
-    useEffect(() => {
-        fetchRecentLogs();
-        const interval = setInterval(fetchRecentLogs, 30000);
-        return () => clearInterval(interval);
-    }, []);
 
     const handleFingerprintCapture = async (template: string, quality: number) => {
         setIsProcessing(true);
@@ -213,20 +191,47 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-2">
-                                        {clock_result ? (
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-blue-600">
-                                                    <Clock className="h-6 w-6 text-white" />
+                                        {recentLogs.length > 0 ? (
+                                            recentLogs.map((log) => (
+                                                <div
+                                                    key={log.id}
+                                                    className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div
+                                                            className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                                                                log.log_type === 'IN'
+                                                                    ? 'bg-green-100 text-green-600'
+                                                                    : 'bg-orange-100 text-orange-600'
+                                                            }`}
+                                                        >
+                                                            {log.log_type === 'IN' ? <LogIn className="h-4 w-4" /> : <LogOut className="h-4 w-4" />}
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-medium text-gray-900">{log.employee?.name || 'Unknown'}</p>
+                                                            <p className="text-xs text-gray-500">{formatDate(log.date_time)}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <span
+                                                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                                                                log.log_type === 'IN'
+                                                                    ? 'bg-green-100 text-green-700'
+                                                                    : 'bg-orange-100 text-orange-700'
+                                                            }`}
+                                                        >
+                                                            {log.log_type}
+                                                        </span>
+                                                        <p className="text-sm font-medium text-gray-900">{formatTime(log.date_time)}</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-900">{clock_result.employee.name}</p>
-                                                    <p className="text-xs text-gray-500">
-                                                        {formatTime(clock_result.time)} on {formatDate(clock_result.time)}
-                                                    </p>
-                                                </div>
-                                            </div>
+                                            ))
                                         ) : (
-                                            <p className="text-sm text-gray-500">No logs found.</p>
+                                            <div className="rounded-lg border border-dashed p-8 text-center">
+                                                <Clock className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+                                                <p className="text-sm text-gray-500">No logs yet today</p>
+                                                <p className="text-xs text-gray-400">Be the first to clock in!</p>
+                                            </div>
                                         )}
                                     </div>
                                 </CardContent>
