@@ -234,6 +234,7 @@ class TimeClockController extends Controller
                 ];
             }
         }
+
         return [
             'match' => false,
             'message' => $result['message'] ?? 'No match found',

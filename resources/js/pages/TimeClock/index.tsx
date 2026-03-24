@@ -1,10 +1,11 @@
 import { FingerprintDeviceStatus } from '@/components/device-status-indicator';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Toaster } from '@/components/ui/sonner';
 import { FingerprintScanner } from '@/pages/Bio/fingerprint-scanner';
 import { Head, router } from '@inertiajs/react';
 import { Clock, Fingerprint } from 'lucide-react';
 import { useState } from 'react';
-
+import { toast } from 'sonner';
 interface TimeLog {
     id: number;
     employee_id: number;
@@ -28,31 +29,30 @@ interface ClockResult {
 }
 
 interface TimeClockProps {
-    flash?: {
-        success?: string;
-        error?: string;
-    };
     clock_result?: ClockResult;
 }
 
-export default function TimeClock({ flash, clock_result }: TimeClockProps) {
+export default function TimeClock({ clock_result }: TimeClockProps) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [scanKey, setScanKey] = useState(0);
 
     const handleFingerprintCapture = async (template: string, quality: number) => {
         setIsProcessing(true);
+
         router.post(
             route('timeclock.clock'),
             { fingerprint_template: template },
-
             {
                 preserveScroll: true,
+
+                onSuccess: (response: { props: FlashProps }) => {
+                    toast?.error(response.props.flash?.error);
+                    toast?.success(response.props.flash?.success);
+                },
+
                 onFinish: () => {
                     setScanKey((prev) => prev + 1);
                     setIsProcessing(false);
-                },
-                onError: () => {
-                    console.log(1);
                 },
             },
         );
@@ -78,7 +78,7 @@ export default function TimeClock({ flash, clock_result }: TimeClockProps) {
     return (
         <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-50 to-slate-100">
             <Head title="Time Clock" />
-
+            <Toaster position="top-right" />
             {/* Header */}
             <header className="bg-white shadow-sm">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
