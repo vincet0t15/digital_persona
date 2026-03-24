@@ -7,7 +7,7 @@ import { type BreadcrumbItem } from '@/types';
 import { EmployeeCreate } from '@/types/employee';
 import { Office } from '@/types/office';
 import { Head, useForm } from '@inertiajs/react';
-import { UploadIcon, XIcon, UserPlus } from 'lucide-react';
+import { UploadIcon, UserPlus, XIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { FingerprintScanner } from './fingerprint-scanner';
 
@@ -104,7 +104,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
 
                                 <button
                                     type="button"
-                                    className="bg-background relative flex aspect-square w-full max-w-[200px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-colors hover:border-primary"
+                                    className="bg-background hover:border-primary relative flex aspect-square w-full max-w-[200px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-colors"
                                     onClick={() => document.getElementById('photo')?.click()}
                                 >
                                     {photoPreviewUrl ? (
@@ -121,12 +121,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                 </button>
 
                                 <div className="flex flex-wrap justify-center gap-2">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => document.getElementById('photo')?.click()}
-                                    >
+                                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo')?.click()}>
                                         <UploadIcon className="mr-1 size-4" />
                                         {photoPreviewUrl ? 'Change Photo' : 'Choose Photo'}
                                     </Button>
@@ -151,19 +146,14 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                     )}
                                 </div>
 
-                                <p className="text-muted-foreground text-center text-xs">
-                                    Supported: jpeg, jpg, png, webp (max 2MB)
-                                </p>
+                                <p className="text-muted-foreground text-center text-xs">Supported: jpeg, jpg, png, webp (max 2MB)</p>
                             </div>
                         </div>
 
                         {/* Fingerprint Scanner Card */}
                         <div className="bg-card rounded-xl border p-6">
                             <h3 className="mb-4 text-lg font-medium">Fingerprint Enrollment</h3>
-                            <FingerprintScanner
-                                mode="enroll"
-                                onCapture={handleFingerprintCapture}
-                            />
+                            <FingerprintScanner mode="enroll" onCapture={handleFingerprintCapture} />
                             {fingerprintTemplate && (
                                 <div className="mt-4 rounded-lg bg-green-50 p-3 text-center text-sm text-green-700">
                                     Fingerprint captured successfully
@@ -178,7 +168,9 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                             <h3 className="mb-4 text-lg font-medium">Employee Details</h3>
                             <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Full Name <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor="name">
+                                        Full Name <span className="text-red-500">*</span>
+                                    </Label>
                                     <Input
                                         id="name"
                                         type="text"
@@ -190,7 +182,9 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="username">Username <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor="username">
+                                        Username <span className="text-red-500">*</span>
+                                    </Label>
                                     <Input
                                         id="username"
                                         type="text"
@@ -202,7 +196,9 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor="password">
+                                        Password <span className="text-red-500">*</span>
+                                    </Label>
                                     <Input
                                         id="password"
                                         type="password"
@@ -214,7 +210,9 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="office">Office <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor="office">
+                                        Office <span className="text-red-500">*</span>
+                                    </Label>
                                     <CustomComboBox
                                         items={officeOptions}
                                         placeholder="Select an office"

@@ -76,15 +76,11 @@ class BiometricController extends Controller
 
         file_put_contents($pngFile, $pngBase64);
 
-        $matcherPath = storage_path('app/matcher/FingerprintMatcher.exe');
-
-
-        if (!file_exists($matcherPath)) {
-            $matcherPath = 'c:\\laragon\\www\\BIOMETRICPHP\\matcher\\FingerprintMatcher.exe';
-        }
+        // Check public/matcher/ folder first
+        $matcherPath = public_path('matcher/FingerprintMatcher.exe');
 
         if (!file_exists($matcherPath)) {
-            Log::error('FingerprintMatcher.exe not found');
+            Log::error('FingerprintMatcher.exe not found at: ' . $matcherPath);
             @unlink($pngFile);
             return false;
         }
@@ -127,16 +123,13 @@ class BiometricController extends Controller
 
         file_put_contents($galleryFile, implode("\n", $galleryLines));
 
-        $matcherPath = storage_path('app/matcher/FingerprintMatcher.exe');
-
-        // Fallback to BIOMETRICPHP matcher if not found in storage
-        if (!file_exists($matcherPath)) {
-            $matcherPath = 'c:\\laragon\\www\\BIOMETRICPHP\\matcher\\FingerprintMatcher.exe';
-        }
+        // Check public/matcher/ folder
+        $matcherPath = public_path('matcher/FingerprintMatcher.exe');
 
         if (!file_exists($matcherPath)) {
             @unlink($capturedFile);
             @unlink($galleryFile);
+            Log::error('FingerprintMatcher.exe not found at: ' . $matcherPath);
             return ['match' => false, 'message' => 'Matcher not found'];
         }
 
