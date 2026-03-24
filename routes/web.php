@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\BiometricController;
+use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -13,11 +13,9 @@ Route::middleware(['auth'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-
-    // Biometric
-    Route::prefix('biometric')->group(function () {
-        Route::get('/register', [BiometricController::class, 'register'])->name('biometric.register');
-    });
+    // Employee Registration with Biometric
+    Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+    Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
 });
 
 require __DIR__ . '/settings.php';

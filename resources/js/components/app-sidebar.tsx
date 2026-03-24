@@ -23,7 +23,7 @@ const mainNavItems: NavGroup[] = [
         children: [
             {
                 title: 'Register',
-                href: '/biometric/register',
+                href: '/employees/create',
                 icon: FingerprintIcon,
             },
             {

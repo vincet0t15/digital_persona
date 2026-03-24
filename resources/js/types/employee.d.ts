@@ -6,6 +6,13 @@ export interface Employee {
     image: string | null;
 }
 
-export type EmployeeCreate = Omit<Employee, 'id','image'> & {
+export interface EmployeeCreate {
+    name: string;
+    username: string;
+    office_id: string;
+    password: string;
     photo: File | null;
-};;
+    fingerprint_template: string ;
+    fingerprint_quality: number ;
+    finger_name: string ;
+}

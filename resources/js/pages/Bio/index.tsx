@@ -18,7 +18,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Create Employee',
-        href: '/biometric/register',
+        href: '/employees/create',
     },
 ];
 
@@ -32,7 +32,10 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
         username: '',
         office_id: '',
         password: '',
-        photo: null,
+        photo: '',
+        fingerprint_template: '',
+        fingerprint_quality: '',
+        finger_name: '',
     });
 
     const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
@@ -65,12 +68,17 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
 
     const handleFingerprintCapture = (template: string, quality: number) => {
         setFingerprintTemplate(template);
+        setData('fingerprint_template', template);
+        setData('fingerprint_quality', quality);
+        setData('finger_name', 'Right Thumb');
         console.log('Fingerprint captured with quality:', quality);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/biometric/register');
+        post(route('employees.store'), {
+            forceFormData: true,
+        });
     };
 
     return (
