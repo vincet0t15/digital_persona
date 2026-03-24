@@ -40,11 +40,19 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
     }));
 
     const onOfficeChange = (value: string | null) => {
-        setData('office_id', value || '');
+        const newOfficeId = value || '';
+        setData('office_id', newOfficeId);
 
-        const queryString = data.office_id ? { office_id: data.office_id, search: data.search } : undefined;
+        // Build query params - only include non-empty values
+        const queryParams: Record<string, string> = {};
+        if (newOfficeId) {
+            queryParams.office_id = newOfficeId;
+        }
+        if (data.search) {
+            queryParams.search = data.search;
+        }
 
-        router.get(route('employees.index'), queryString, {
+        router.get(route('employees.index'), queryParams, {
             preserveState: true,
             preserveScroll: true,
         });
