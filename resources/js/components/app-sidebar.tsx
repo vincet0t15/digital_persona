@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { NavGroup } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, FingerprintIcon, LayoutGrid, Users2Icon } from 'lucide-react';
+import { BookOpen, Clock1, FingerprintIcon, LayoutGrid, Users2Icon } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavGroup[] = [
@@ -35,6 +35,16 @@ const mainNavItems: NavGroup[] = [
                 title: 'Identify',
                 href: '/employees/identify',
                 icon: BookOpen,
+            },
+        ],
+    },
+    {
+        title: 'Daily Time Record',
+        children: [
+            {
+                title: 'Time Logs',
+                href: '/employees/logs',
+                icon: Clock1,
             },
         ],
     },
