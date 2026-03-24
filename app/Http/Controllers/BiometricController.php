@@ -163,8 +163,8 @@ class BiometricController extends Controller
                 ->with('error', 'Failed to process fingerprint. Please try again.');
         }
 
-        // Get all fingerprints from database
-        $fingerprints = Fingeprint::with('employee')
+        // Get all fingerprints from database with samples
+        $fingerprints = Fingeprint::with(['employee', 'samples'])
             ->whereNotNull('fingerprint_template')
             ->where('fingerprint_template', '!=', '')
             ->get();
@@ -177,17 +177,21 @@ class BiometricController extends Controller
             ]);
         }
 
-        // Build gallery entries
+        // Build gallery entries with all template samples for better matching
         $galleryEntries = [];
         $employeeMap = [];
 
         foreach ($fingerprints as $fingerprint) {
             $employeeMap[$fingerprint->employee_id] = $fingerprint->employee;
-            if (!empty($fingerprint->fingerprint_template)) {
-                $galleryEntries[] = [
-                    'employee_id' => $fingerprint->employee_id,
-                    'template' => $fingerprint->fingerprint_template,
-                ];
+            // Add all template samples for matching
+            $allTemplates = $fingerprint->getAllTemplates();
+            foreach ($allTemplates as $template) {
+                if (!empty($template)) {
+                    $galleryEntries[] = [
+                        'employee_id' => $fingerprint->employee_id,
+                        'template' => $template,
+                    ];
+                }
             }
         }
 
@@ -250,23 +254,27 @@ class BiometricController extends Controller
 
         // Get all fingerprints from database (cached for 60 seconds to improve performance)
         $fingerprints = cache()->remember('enrolled_fingerprints', 60, function () {
-            return Fingeprint::with('employee')
+            return Fingeprint::with(['employee', 'samples'])
                 ->whereNotNull('fingerprint_template')
                 ->where('fingerprint_template', '!=', '')
                 ->get();
         });
 
-        // Build gallery entries
+        // Build gallery entries with all template samples for better matching
         $galleryEntries = [];
         $employeeMap = [];
 
         foreach ($fingerprints as $fingerprint) {
             $employeeMap[$fingerprint->employee_id] = $fingerprint->employee;
-            if (!empty($fingerprint->fingerprint_template)) {
-                $galleryEntries[] = [
-                    'employee_id' => $fingerprint->employee_id,
-                    'template' => $fingerprint->fingerprint_template,
-                ];
+            // Add all template samples for matching
+            $allTemplates = $fingerprint->getAllTemplates();
+            foreach ($allTemplates as $template) {
+                if (!empty($template)) {
+                    $galleryEntries[] = [
+                        'employee_id' => $fingerprint->employee_id,
+                        'template' => $template,
+                    ];
+                }
             }
         }
 

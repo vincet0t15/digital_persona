@@ -55,25 +55,44 @@ class EmployeeController extends Controller
             'image' => $imagePath,
         ]);
 
-        // Process and save all fingerprints
+        // Process and save all fingerprints with multiple samples
         $enrolledCount = 0;
 
         foreach ($fingerprints as $fingerprintData) {
-            $pngBase64 = $fingerprintData['template'];
             $quality = $fingerprintData['quality'] ?? 0;
             $fingerName = $fingerprintData['finger_name'];
+            $samples = $fingerprintData['samples'] ?? [];
 
-            $fmdTemplate = $this->convertPngToFmd($pngBase64);
+            // Convert all samples to FMD templates
+            $fmdTemplates = [];
+            foreach ($samples as $sample) {
+                $fmd = $this->convertPngToFmd($sample['template']);
+                if ($fmd !== false) {
+                    $fmdTemplates[] = $fmd;
+                }
+            }
 
-            if ($fmdTemplate !== false) {
-                Fingeprint::create([
+            // Only save if we have at least one valid template
+            if (count($fmdTemplates) > 0) {
+                // Create main fingerprint record with first template
+                $fingerprint = Fingeprint::create([
                     'employee_id' => $employee->id,
                     'finger_name' => $fingerName,
-                    'fingerprint_template' => $fmdTemplate,
+                    'fingerprint_template' => $fmdTemplates[0],
                     'fingerprint_quality' => $quality,
                     'reader_label' => 'Primary',
                     'enrolled_from_ip' => $request->ip(),
                 ]);
+
+                // Save additional samples in separate table
+                for ($i = 1; $i < count($fmdTemplates); $i++) {
+                    $fingerprint->samples()->create([
+                        'sample_index' => $i + 1,
+                        'template' => $fmdTemplates[$i],
+                        'quality' => $quality,
+                    ]);
+                }
+
                 $enrolledCount++;
             }
         }

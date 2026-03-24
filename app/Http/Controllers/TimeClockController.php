@@ -59,7 +59,7 @@ class TimeClockController extends Controller
                 ->with('error', 'Failed to process fingerprint. Please try again.');
         }
 
-        $fingerprints = Fingeprint::with('employee')
+        $fingerprints = Fingeprint::with(['employee', 'samples'])
             ->whereNotNull('fingerprint_template')
             ->where('fingerprint_template', '!=', '')
             ->get();
@@ -69,16 +69,21 @@ class TimeClockController extends Controller
                 ->with('error', 'No enrolled fingerprints found in the system.');
         }
 
+        // Build gallery entries with all template samples for better matching
         $galleryEntries = [];
         $employeeMap = [];
 
         foreach ($fingerprints as $fingerprint) {
             $employeeMap[$fingerprint->employee_id] = $fingerprint->employee;
-            if (!empty($fingerprint->fingerprint_template)) {
-                $galleryEntries[] = [
-                    'employee_id' => $fingerprint->employee_id,
-                    'template' => $fingerprint->fingerprint_template,
-                ];
+            // Add all template samples for matching
+            $allTemplates = $fingerprint->getAllTemplates();
+            foreach ($allTemplates as $template) {
+                if (!empty($template)) {
+                    $galleryEntries[] = [
+                        'employee_id' => $fingerprint->employee_id,
+                        'template' => $template,
+                    ];
+                }
             }
         }
 
