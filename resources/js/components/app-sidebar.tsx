@@ -27,7 +27,7 @@ const mainNavItems: NavGroup[] = [
                 icon: FingerprintIcon,
             },
             {
-                title: 'Year Levels',
+                title: 'Identify',
                 href: '#',
                 icon: BookOpen,
             },

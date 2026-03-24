@@ -7,6 +7,7 @@ export interface Employee {
 }
 
 export interface EmployeeCreate {
+    [key: string]: string | number | File | null;
     name: string;
     username: string;
     office_id: string;
