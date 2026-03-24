@@ -20,47 +20,7 @@ class BiometricController extends Controller
         ]);
     }
 
-    public function enroll(Request $request)
-    {
-        $request->validate([
-            'fingerprint_template' => 'required|string',
-            'fingerprint_quality' => 'nullable|integer|min:0|max:100',
-        ]);
 
-        $pngBase64 = $request->input('fingerprint_template');
-        $quality = $request->input('fingerprint_quality', 0);
-
-
-        $fmdTemplate = $this->convertPngToFmd($pngBase64);
-
-        if ($fmdTemplate === false) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to process fingerprint. Please try scanning again.',
-            ], 400);
-        }
-
-
-        $user = Auth::user();
-
-        $fingerprint = Fingeprint::create([
-            'user_id' => $user->id,
-            'fingerprint_template' => $fmdTemplate,
-            'fingerprint_quality' => $quality,
-            'reader_label' => 'Primary',
-            'enrolled_from_ip' => $request->ip(),
-        ]);
-
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Fingerprint enrolled successfully!',
-            'data' => [
-                'id' => $fingerprint->id,
-                'quality' => $quality,
-            ],
-        ]);
-    }
 
     private function convertPngToFmd(string $pngBase64): string|false
     {
@@ -74,7 +34,7 @@ class BiometricController extends Controller
 
         // Fallback to BIOMETRICPHP matcher if not found in public
         if (!file_exists($matcherPath)) {
-            $matcherPath = 'c:\\laragon\\www\\BIOMETRICPHP\\matcher\\FingerprintMatcher.exe';
+            $matcherPath = public_path('matcher/FingerprintMatcher.exe');
         }
 
         if (!file_exists($matcherPath)) {
@@ -111,7 +71,6 @@ class BiometricController extends Controller
 
         file_put_contents($capturedFile, $capturedFmd);
 
-        // Build gallery file
         $galleryLines = [];
         $indexToUserId = [];
         foreach ($galleryEntries as $idx => $entry) {
@@ -121,12 +80,12 @@ class BiometricController extends Controller
 
         file_put_contents($galleryFile, implode("\n", $galleryLines));
 
-        // Check public/matcher/ folder
+
         $matcherPath = public_path('matcher/FingerprintMatcher.exe');
 
-        // Fallback to BIOMETRICPHP matcher if not found in public
+
         if (!file_exists($matcherPath)) {
-            $matcherPath = 'c:\\laragon\\www\\BIOMETRICPHP\\matcher\\FingerprintMatcher.exe';
+            $matcherPath = public_path('matcher/FingerprintMatcher.exe');
         }
 
         if (!file_exists($matcherPath)) {

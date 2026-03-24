@@ -160,12 +160,17 @@ export function FingerprintScanner({ mode, onCapture, onError, className }: Fing
             {/* Action Buttons */}
             <div className="flex gap-2">
                 {!scanning ? (
-                    <Button onClick={handleStartScan} disabled={!initialized || (sdkMode === 'real' && !readerConnected)} className="gap-2">
+                    <Button
+                        type="button"
+                        onClick={handleStartScan}
+                        disabled={!initialized || (sdkMode === 'real' && !readerConnected)}
+                        className="gap-2"
+                    >
                         <Scan className="h-4 w-4" />
                         {scanStatus === 'success' ? 'Rescan' : mode === 'enroll' ? 'Enroll Fingerprint' : 'Scan to Identify'}
                     </Button>
                 ) : (
-                    <Button onClick={handleStopScan} variant="outline" className="gap-2">
+                    <Button type="button" onClick={handleStopScan} variant="outline" className="gap-2">
                         <XCircle className="h-4 w-4" />
                         Cancel
                     </Button>

@@ -23,12 +23,24 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
-        // Debug: Log all request data
-        Log::info('Employee store request', [
-            'all_data' => $request->all(),
-            'has_fingerprint' => $request->has('fingerprint_template'),
-            'fingerprint_template_length' => $request->has('fingerprint_template') ? strlen($request->input('fingerprint_template')) : 0,
+        $request->validate([
+            'fingerprint_template' => 'required|string',
+            'fingerprint_quality' => 'nullable|integer|min:0|max:100',
         ]);
+
+        $pngBase64 = $request->input('fingerprint_template');
+        $quality = $request->input('fingerprint_quality', 0);
+
+        $fmdTemplate = $this->convertPngToFmd($pngBase64);
+
+
+        if ($fmdTemplate === false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process fingerprint. Please try scanning again.',
+            ], 400);
+        }
+
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -36,9 +48,6 @@ class EmployeeController extends Controller
             'password' => 'required|string|min:6',
             'office_id' => 'required|integer|exists:offices,id',
             'photo' => 'nullable|image|max:2048',
-            'fingerprint_template' => 'nullable|string',
-            'fingerprint_quality' => 'nullable|integer|min:0|max:100',
-            'finger_name' => 'nullable|string|max:50',
         ]);
 
         // Handle photo upload
@@ -56,25 +65,56 @@ class EmployeeController extends Controller
             'image' => $imagePath,
         ]);
 
-        // Create fingerprint if template provided
-        if (!empty($validated['fingerprint_template'])) {
-            Log::info('Creating fingerprint for employee', [
-                'employee_id' => $employee->id,
-                'template_length' => strlen($validated['fingerprint_template']),
-            ]);
 
-            Fingeprint::create([
-                'employee_id' => $employee->id,
-                'finger_name' => $validated['finger_name'] ?? 'Right Thumb',
-                'fingerprint_template' => $validated['fingerprint_template'],
-                'fingerprint_quality' => $validated['fingerprint_quality'] ?? 0,
-                'reader_label' => 'Primary',
-                'enrolled_from_ip' => $request->ip(),
-            ]);
-        } else {
-            Log::warning('No fingerprint template provided for employee', ['employee_id' => $employee->id]);
+        Fingeprint::create([
+            'employee_id' => $employee->id,
+            'finger_name' => 'Right Thumb',
+            'fingerprint_template' => $fmdTemplate,
+            'fingerprint_quality' => $quality,
+            'reader_label' => 'Primary',
+            'enrolled_from_ip' => $request->ip(),
+        ]);
+
+        return redirect()->back()->with('success', 'Employee registered successfully.');
+    }
+
+    private function convertPngToFmd(string $pngBase64): string|false
+    {
+        $tempDir = sys_get_temp_dir();
+        $pngFile = $tempDir . DIRECTORY_SEPARATOR . 'fp_png_' . uniqid() . '.txt';
+
+        file_put_contents($pngFile, $pngBase64);
+
+        $matcherPath = storage_path('app/matcher/FingerprintMatcher.exe');
+
+
+        if (!file_exists($matcherPath)) {
+            $matcherPath = public_path('matcher/FingerprintMatcher.exe');
         }
 
-        return redirect()->route('dashboard')->with('success', 'Employee registered successfully.');
+        if (!file_exists($matcherPath)) {
+            Log::error('FingerprintMatcher.exe not found');
+            @unlink($pngFile);
+            return false;
+        }
+
+        $cmd = '"' . $matcherPath . '" png2fmd "' . $pngFile . '" 2>&1';
+        $output = shell_exec($cmd);
+
+        @unlink($pngFile);
+
+        if ($output === null) {
+            return false;
+        }
+
+        $result = json_decode(trim($output), true);
+
+        if ($result && isset($result['success']) && $result['success'] === true && isset($result['fmd'])) {
+            return $result['fmd'];
+        }
+
+        Log::error('PNG to FMD conversion failed', ['output' => $output]);
+
+        return false;
     }
 }
