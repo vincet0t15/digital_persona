@@ -154,10 +154,13 @@ class BiometricController extends Controller
         $capturedFmd = $this->convertPngToFmd($capturedPng);
 
         if ($capturedFmd === false) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to process fingerprint.',
-            ], 400);
+            return redirect()->back()
+                ->with('result', [
+                    'success' => false,
+                    'duplicate' => false,
+                    'message' => 'Failed to process fingerprint.',
+                ])
+                ->with('error', 'Failed to process fingerprint. Please try again.');
         }
 
         // Get all fingerprints from database
@@ -214,11 +217,13 @@ class BiometricController extends Controller
             }
         }
 
-        return redirect()->back()->with('result', [
-            'success' => true,
-            'duplicate' => false,
-            'message' => 'Fingerprint is not registered.',
-        ]);
+        return redirect()->back()
+            ->with('result', [
+                'success' => true,
+                'duplicate' => false,
+                'message' => 'Fingerprint is not registered.',
+            ])
+            ->with('success', 'Fingerprint is unique and can be enrolled.');
     }
 
     /**

@@ -118,6 +118,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                         // Reset samples on duplicate
                         setPendingSamples([]);
                         setCurrentSampleIndex(0);
+                        toast.error(result.message || 'This fingerprint is already registered.');
                     } else {
                         const sample: FingerprintData = {
                             template,
@@ -139,10 +140,12 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                             });
                             setPendingSamples([]);
                             setCurrentSampleIndex(0);
+                            toast.success(`${selectedFinger} fingerprint enrolled successfully! Click "Add Fingerprint" to save.`);
                         } else {
                             // More samples needed
                             setCurrentSampleIndex(newSamples.length);
                             setCurrentFingerprint(null);
+                            toast.info(`Sample ${newSamples.length} of ${REQUIRED_SAMPLES} captured. Please scan again.`);
                         }
                     }
                 },
