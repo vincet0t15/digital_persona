@@ -110,6 +110,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                 preserveScroll: true,
                 onSuccess: (page: any) => {
                     const result = page.props.result as DuplicateCheckResult;
+                    alert(JSON.stringify(result, null, 2));
                     if (result?.duplicate) {
                         setDuplicateWarning(result);
                         setCurrentFingerprint(null);
@@ -146,6 +147,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                 },
                 onError: () => {
                     // If check fails, still allow the fingerprint to be captured
+                    alert('Duplicate fingerprint detected. Please try again.');
                     const sample: FingerprintData = {
                         template,
                         quality,
@@ -204,9 +206,11 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
         post(route('employees.store'), {
             onSuccess: () => {
                 console.log('Employee created successfully');
+                alert('Employee created successfully');
             },
             onError: (errors) => {
                 console.error('Form errors:', errors);
+                alert(1);
             },
         });
     };

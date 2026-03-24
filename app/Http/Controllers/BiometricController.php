@@ -199,15 +199,17 @@ class BiometricController extends Controller
                     'employee_name' => $matchedEmployee->name,
                 ]);
 
-                return response()->json([
-                    'success' => true,
-                    'duplicate' => true,
-                    'employee' => [
-                        'id' => $matchedEmployee->id,
-                        'name' => $matchedEmployee->name,
-                    ],
-                    'message' => "This fingerprint is already registered to {$matchedEmployee->name}.",
-                ]);
+                return redirect()->back()
+                    ->with('result', [
+                        'success' => true,
+                        'duplicate' => true,
+                        'employee' => [
+                            'id' => $matchedEmployee->id,
+                            'name' => $matchedEmployee->name,
+                        ],
+                        'message' => "This fingerprint is already registered to {$matchedEmployee->name}.",
+                    ])
+                    ->with('error', "This fingerprint is already registered to {$matchedEmployee->name}.");
             }
         }
 
