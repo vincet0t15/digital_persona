@@ -188,7 +188,25 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
                                     </CardTitle>
                                     <CardDescription>Last 20 time clock entries</CardDescription>
                                 </CardHeader>
-                                <CardContent>{/*  */}</CardContent>
+                                <CardContent>
+                                    <div className="space-y-2">
+                                        {clock_result ? (
+                                            <div className="flex items-center gap-2">
+                                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600">
+                                                    <Clock className="h-6 w-6 text-white" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-900">{clock_result.employee.name}</p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {formatTime(clock_result.time)} on {formatDate(clock_result.time)}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <p className="text-sm text-gray-500">No logs found.</p>
+                                        )}
+                                    </div>
+                                </CardContent>
                             </Card>
                         </div>
                     </div>
