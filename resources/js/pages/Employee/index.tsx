@@ -1,6 +1,7 @@
 import { CustomComboBox } from '@/components/CustomComboBox';
 import Heading from '@/components/heading';
 import Pagination from '@/components/paginationData';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +13,9 @@ import { FilterProps } from '@/types/filter';
 import { Office } from '@/types/office';
 import { PaginatedDataResponse } from '@/types/pagination';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Fingerprint, PlusIcon, Search } from 'lucide-react';
+import { Fingerprint, PlusIcon, Search, User } from 'lucide-react';
+import { useState } from 'react';
+import { EmployeeManageDialog } from './manageDialog';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -29,6 +32,8 @@ interface EmployeeIndexProps {
     filters: FilterProps;
 }
 export default function EmployeeIndex({ offices, employees, filters }: EmployeeIndexProps) {
+    const [openManageDialog, setOpenManageDialog] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const { data, setData } = useForm({
         search: filters.search || '',
         office_id: filters.office_id || '',
@@ -43,7 +48,6 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
         const newOfficeId = value || '';
         setData('office_id', newOfficeId);
 
-        // Build query params - only include non-empty values
         const queryParams: Record<string, string> = {};
         if (newOfficeId) {
             queryParams.office_id = newOfficeId;
@@ -58,6 +62,10 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
         });
     };
 
+    const handleClickAvatar = (employee: Employee) => {
+        setSelectedEmployee(employee);
+        setOpenManageDialog(true);
+    };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Employee List" />
@@ -98,8 +106,6 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                         <TableHeader className="bg-muted/50">
                             <TableRow>
                                 <TableHead className="text-primary font-bold">Name</TableHead>
-                                <TableHead className="text-primary font-bold">Code</TableHead>
-                                <TableHead className="text-primary font-bold">Username</TableHead>
                                 <TableHead className="text-primary text-right font-bold">Action</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -107,11 +113,31 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                             {employees.data.length > 0 ? (
                                 employees.data.map((employee) => (
                                     <TableRow key={employee.id} className="hover:bg-muted/30 text-sm">
-                                        <TableCell className="text-sm">{employee.name}</TableCell>
-                                        <TableCell className="text-sm">
-                                            {employee.office?.name ?? <span className="text-muted-foreground">—</span>}
+                                        <TableCell className="cursor-pointer text-sm">
+                                            <div className="flex cursor-pointer items-center gap-2">
+                                                <Avatar
+                                                    className="h-12 w-12 border-2 border-slate-200 shadow-sm dark:border-slate-700"
+                                                    onClick={() => handleClickAvatar(employee)}
+                                                >
+                                                    {employee.image ? (
+                                                        <AvatarImage
+                                                            src={'storage/' + employee.image}
+                                                            alt={`${employee.name}`}
+                                                            className="object-cover"
+                                                        />
+                                                    ) : null}
+                                                    <AvatarFallback className="bg-slate-100 dark:bg-slate-800">
+                                                        <User className="h-6 w-6 text-slate-400" />
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="flex flex-col">
+                                                    <span className="font-bold uppercase">{employee.name}</span>
+                                                    <span className="text-muted-foreground text-[0.70rem]">{employee.office?.name}</span>
+                                                    <span className="text-muted-foreground text-[0.70rem]">{employee.username}</span>
+                                                </div>
+                                            </div>
                                         </TableCell>
-                                        <TableCell className="text-sm">{employee.username}</TableCell>
+
                                         <TableCell className="flex items-center justify-end gap-2 text-sm">
                                             <Link
                                                 href={route('employees.fingerprints', employee.id)}
@@ -138,6 +164,10 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                 <div>
                     <Pagination data={employees} />
                 </div>
+
+                {openManageDialog && selectedEmployee && (
+                    <EmployeeManageDialog isOpen={openManageDialog} onClose={() => setOpenManageDialog(false)} employee={selectedEmployee} />
+                )}
             </div>
         </AppLayout>
     );

@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\Fingeprint;
 use App\Models\Office;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class EmployeeController extends Controller
@@ -38,16 +36,16 @@ class EmployeeController extends Controller
                 ->with('error', 'Invalid fingerprints data. Please add at least one fingerprint.');
         }
 
-        // Generate random username and password (same value for initial login)
+
         $randomCredentials = $this->generateRandomCredentials();
 
-        // Handle photo upload
+
         $imagePath = null;
         if ($request->hasFile('photo')) {
             $imagePath = $request->file('photo')->store('employees', 'public');
         }
 
-        // Create employee with random credentials
+
         $employee = Employee::create([
             'name' => $validated['name'],
             'username' => $randomCredentials,
@@ -57,7 +55,7 @@ class EmployeeController extends Controller
             'must_change_password' => true,
         ]);
 
-        // Process and save all fingerprints with multiple samples
+
         $enrolledCount = 0;
 
         foreach ($fingerprints as $fingerprintData) {
@@ -65,7 +63,7 @@ class EmployeeController extends Controller
             $fingerName = $fingerprintData['finger_name'];
             $samples = $fingerprintData['samples'] ?? [];
 
-            // Convert all samples to FMD templates
+
             $fmdTemplates = [];
             foreach ($samples as $sample) {
                 $fmd = $this->convertPngToFmd($sample['template']);
@@ -74,9 +72,9 @@ class EmployeeController extends Controller
                 }
             }
 
-            // Only save if we have at least one valid template
+
             if (count($fmdTemplates) > 0) {
-                // Create main fingerprint record with first template
+
                 $fingerprint = Fingeprint::create([
                     'employee_id' => $employee->id,
                     'finger_name' => $fingerName,
@@ -86,7 +84,7 @@ class EmployeeController extends Controller
                     'enrolled_from_ip' => $request->ip(),
                 ]);
 
-                // Save additional samples in separate table
+
                 for ($i = 1; $i < count($fmdTemplates); $i++) {
                     $fingerprint->samples()->create([
                         'sample_index' => $i + 1,
@@ -100,13 +98,12 @@ class EmployeeController extends Controller
         }
 
         if ($enrolledCount === 0) {
-            // Rollback employee creation if no fingerprints were saved
             $employee->delete();
             return redirect()->back()
                 ->with('error', 'Failed to process fingerprints. Please try scanning again.');
         }
 
-        // Clear the fingerprint cache so new enrollments are available immediately
+
         cache()->forget('enrolled_fingerprints');
 
         return redirect()->route('employees.index')
@@ -181,9 +178,7 @@ class EmployeeController extends Controller
         ]);
     }
 
-    /**
-     * Show fingerprint management page for an employee
-     */
+
     public function manageFingerprints(Employee $employee)
     {
         $employee->load('fingerprints');
@@ -195,9 +190,7 @@ class EmployeeController extends Controller
         ]);
     }
 
-    /**
-     * Store additional fingerprints for an employee
-     */
+
     public function storeFingerprints(Request $request, Employee $employee)
     {
         $request->validate([
@@ -211,7 +204,7 @@ class EmployeeController extends Controller
                 ->with('error', 'Invalid fingerprints data. Please add at least one fingerprint.');
         }
 
-        // Process and save all fingerprints
+
         $enrolledCount = 0;
 
         foreach ($fingerprints as $fingerprintData) {
@@ -239,19 +232,17 @@ class EmployeeController extends Controller
                 ->with('error', 'Failed to process fingerprints. Please try scanning again.');
         }
 
-        // Clear the fingerprint cache
+
         cache()->forget('enrolled_fingerprints');
 
         return redirect()->route('employees.fingerprints', $employee)
             ->with('success', "{$enrolledCount} fingerprint(s) added successfully.");
     }
 
-    /**
-     * Delete a fingerprint
-     */
+
     public function deleteFingerprint(Employee $employee, Fingeprint $fingerprint)
     {
-        // Ensure the fingerprint belongs to the employee
+
         if ($fingerprint->employee_id !== $employee->id) {
             return redirect()->back()
                 ->with('error', 'Fingerprint does not belong to this employee.');
@@ -259,19 +250,16 @@ class EmployeeController extends Controller
 
         $fingerprint->delete();
 
-        // Clear the fingerprint cache
+
         cache()->forget('enrolled_fingerprints');
 
         return redirect()->route('employees.fingerprints', $employee)
             ->with('success', 'Fingerprint deleted successfully.');
     }
 
-    /**
-     * Generate random credentials for new employee
-     */
+
     private function generateRandomCredentials(): string
     {
-        // Generate 8-character random string (letters and numbers)
         return substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 8);
     }
 }
