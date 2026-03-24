@@ -123,10 +123,13 @@ export function useFingerprint() {
 
         // Cleanup function to reset scanning state when component unmounts
         return () => {
+            // Reset global scanning flags to prevent "scan already in progress" errors
+            isScanningGlobal = false;
+            acquisitionStarted = false;
+
             if (sdkInstance && selectedReader) {
                 try {
                     sdkInstance.stopAcquisition(selectedReader);
-                    acquisitionStarted = false;
                 } catch (err) {
                     console.warn('[FP] Cleanup stopAcquisition error:', err);
                 }
