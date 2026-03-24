@@ -78,14 +78,50 @@ export function FingerprintScanner({
 
     // Auto-start scan when currentSample changes (for continuous enrollment)
     useEffect(() => {
-        if (autoScan && mode === 'enroll' && currentSample < requiredSamples && initialized && (sdkMode === 'simulated' || readerConnected)) {
+        if (
+            autoScan &&
+            mode === 'enroll' &&
+            currentSample < requiredSamples &&
+            currentSample > 0 &&
+            initialized &&
+            (sdkMode === 'simulated' || readerConnected)
+        ) {
             // Small delay to allow user to lift finger
             const timer = setTimeout(() => {
-                handleStartScan();
+                // Reset scan status before starting new scan
+                setScanStatus('scanning');
+                setQuality(0);
+                setMessage('');
+                startCapture(
+                    mode,
+                    (result) => {
+                        setScanStatus('success');
+                        setQuality(result.quality);
+                        setMessage(`Fingerprint captured! Quality: ${result.quality}%${result.mode === 'simulated' ? ' (Simulated)' : ''}`);
+                        onCapture(result.template, result.quality);
+                        onSampleComplete?.();
+                    },
+                    (error) => {
+                        setScanStatus('error');
+                        setMessage(error);
+                        onError?.(error);
+                    },
+                    (statusInfo) => {
+                        if (statusInfo.type === 'scanning') {
+                            setScanStatus('scanning');
+                            setMessage(statusInfo.message || 'Scanning...');
+                        } else if (statusInfo.type === 'processing') {
+                            setScanStatus('processing');
+                            setMessage(statusInfo.message || 'Processing...');
+                        } else if (statusInfo.type === 'quality' && statusInfo.quality !== undefined) {
+                            setQuality(statusInfo.quality);
+                        }
+                    },
+                );
             }, 800);
             return () => clearTimeout(timer);
         }
-    }, [autoScan, currentSample, requiredSamples, mode, initialized, sdkMode, readerConnected, handleStartScan]);
+    }, [autoScan, currentSample, requiredSamples, mode, initialized, sdkMode, readerConnected, startCapture, onCapture, onError, onSampleComplete]);
 
     const getStatusColor = () => {
         switch (scanStatus) {

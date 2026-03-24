@@ -213,6 +213,7 @@ export function useFingerprint() {
                     }
 
                     setState((prev) => ({ ...prev, scanning: false, hasTemplate: true }));
+                    isScanningRef.current = false;
 
                     callbacksRef.current.onCapture?.({
                         success: true,
@@ -222,6 +223,7 @@ export function useFingerprint() {
                     });
                 } catch (err) {
                     setState((prev) => ({ ...prev, scanning: false }));
+                    isScanningRef.current = false;
                     console.error('[FP] processCapturedSample error:', err);
                     callbacksRef.current.onError?.('Failed to process fingerprint: ' + (err as Error).message);
                 }
@@ -309,6 +311,7 @@ export function useFingerprint() {
             const quality = Math.floor(Math.random() * 30) + 70;
 
             setState((prev) => ({ ...prev, scanning: false, hasTemplate: true }));
+            isScanningRef.current = false;
 
             callbacksRef.current.onCapture?.({
                 success: true,
@@ -319,6 +322,8 @@ export function useFingerprint() {
         }, 2500);
     };
 
+    const isScanningRef = useRef(false);
+
     const startCapture = useCallback(
         (
             purpose: 'enroll' | 'identify',
@@ -326,11 +331,12 @@ export function useFingerprint() {
             onError: (error: string) => void,
             onStatus: (status: StatusInfo) => void,
         ) => {
-            if (state.scanning) {
+            if (isScanningRef.current || state.scanning) {
                 onError('A scan is already in progress');
                 return;
             }
 
+            isScanningRef.current = true;
             callbacksRef.current = { onCapture, onError, onStatus };
             setState((prev) => ({ ...prev, scanning: true }));
             setError(null);
@@ -360,11 +366,13 @@ export function useFingerprint() {
                             doStartAcquisition(purpose);
                         } else {
                             setState((prev) => ({ ...prev, scanning: false }));
+                            isScanningRef.current = false;
                             callbacksRef.current.onError?.('No fingerprint reader detected. Please connect your U.are.U 4500.');
                         }
                     })
                     .catch((err: Error) => {
                         setState((prev) => ({ ...prev, scanning: false }));
+                        isScanningRef.current = false;
                         callbacksRef.current.onError?.('Failed to find reader: ' + (err.message || err));
                     });
                 return;
@@ -373,6 +381,7 @@ export function useFingerprint() {
             doStartAcquisition(purpose);
         } catch (err) {
             setState((prev) => ({ ...prev, scanning: false }));
+            isScanningRef.current = false;
             callbacksRef.current.onError?.('Capture error: ' + (err as Error).message);
         }
     };
@@ -393,6 +402,7 @@ export function useFingerprint() {
             .catch((err: Error) => {
                 setState((prev) => ({ ...prev, scanning: false }));
                 acquisitionStarted = false;
+                isScanningRef.current = false;
                 console.error('[FP] startAcquisition failed:', err);
                 callbacksRef.current.onError?.('Failed to start acquisition: ' + (err.message || err));
             });
@@ -401,6 +411,7 @@ export function useFingerprint() {
     const stopCapture = useCallback(() => {
         // Always reset the flag first to prevent race conditions
         acquisitionStarted = false;
+        isScanningRef.current = false;
 
         if (sdkMode === 'real' && sdkInstance) {
             sdkInstance
