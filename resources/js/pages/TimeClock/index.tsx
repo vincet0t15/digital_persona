@@ -199,49 +199,51 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2 text-lg">
                                         <Clock className="h-5 w-5" />
-                                        Last Time Log
+                                        Recent Time Logs
                                     </CardTitle>
-                                    <CardDescription>Most recent time in/out entry</CardDescription>
+                                    <CardDescription>Last 5 time in/out entries</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="space-y-4">
-                                        {clock_result ? (
-                                            <div className="flex items-center gap-3">
-                                                {/* Avatar / Image */}
-                                                <div className="flex items-center justify-center overflow-hidden rounded-full bg-gray-200">
-                                                    {clock_result.employee.image ? (
-                                                        <Avatar>
-                                                            <AvatarImage src={clock_result.employee.image} />
-                                                            <AvatarFallback>CN</AvatarFallback>
-                                                        </Avatar>
-                                                    ) : (
-                                                        <span className="text-sm font-semibold text-gray-700">
-                                                            {getInitials(clock_result.employee.name)}
+                                    <div className="space-y-3">
+                                        {recent_logs.length > 0 ? (
+                                            recent_logs.map((log) => (
+                                                <div key={log.id} className="flex items-center gap-3 rounded-lg border p-3">
+                                                    {/* Avatar / Image */}
+                                                    <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gray-200">
+                                                        {log.employee.image ? (
+                                                            <Avatar className="h-10 w-10">
+                                                                <AvatarImage src={log.employee.image} />
+                                                                <AvatarFallback>{getInitials(log.employee.name)}</AvatarFallback>
+                                                            </Avatar>
+                                                        ) : (
+                                                            <span className="text-xs font-semibold text-gray-700">
+                                                                {getInitials(log.employee.name)}
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Details */}
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="truncate text-sm font-medium text-gray-900">{log.employee.name}</p>
+                                                        <p className="text-xs text-gray-500">
+                                                            {log.date} at {log.time}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Log Type Badge */}
+                                                    <div className="text-right">
+                                                        <span
+                                                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                                                                log.log_type === 'IN'
+                                                                    ? 'bg-green-100 text-green-700'
+                                                                    : 'bg-orange-100 text-orange-700'
+                                                            }`}
+                                                        >
+                                                            {log.log_type}
                                                         </span>
-                                                    )}
+                                                    </div>
                                                 </div>
-
-                                                {/* Details */}
-                                                <div className="flex-1">
-                                                    <p className="text-sm font-medium text-gray-900">{clock_result.employee.name}</p>
-                                                    <p className="text-xs text-gray-500">
-                                                        {clock_result.log_type === 'IN' ? 'Time In' : 'Time Out'} at {clock_result.time}
-                                                    </p>
-                                                </div>
-
-                                                {/* Log Type Badge */}
-                                                <div className="text-right">
-                                                    <span
-                                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                                                            clock_result.log_type === 'IN'
-                                                                ? 'bg-green-100 text-green-700'
-                                                                : 'bg-orange-100 text-orange-700'
-                                                        }`}
-                                                    >
-                                                        {clock_result.log_type}
-                                                    </span>
-                                                </div>
-                                            </div>
+                                            ))
                                         ) : (
                                             <div className="rounded-lg border border-dashed p-8 text-center">
                                                 <Clock className="mx-auto mb-2 h-8 w-8 text-gray-400" />

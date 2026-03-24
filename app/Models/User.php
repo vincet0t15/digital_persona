@@ -13,14 +13,21 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * The primary field for authentication.
+     */
+    protected $username = 'username';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
         'name',
-        'email',
+        'username',
         'password',
+        'is_admin',
+        'is_active',
     ];
 
     /**
@@ -41,8 +48,17 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the username field for authentication.
+     */
+    public function getAuthIdentifierName(): string
+    {
+        return 'username';
     }
 }
