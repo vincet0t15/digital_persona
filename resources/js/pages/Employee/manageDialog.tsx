@@ -46,7 +46,7 @@ export function EmployeeManageDialog({ isOpen, onClose, employee }: EmployeeShow
                     {/* Header with Avatar */}
                     <div className="bg-muted/30 flex flex-col items-center gap-3 pt-8 pb-4">
                         <Avatar className="ring-background h-24 w-24 shadow-lg ring-4">
-                            <AvatarImage src={employee.image || ''} alt="Employee" />
+                            <AvatarImage src={'storage/' + employee.image || ''} alt="Employee" />
                             <AvatarFallback className="text-lg font-semibold">{employee.name.charAt(0)}</AvatarFallback>
                         </Avatar>
 
