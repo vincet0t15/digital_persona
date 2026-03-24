@@ -131,93 +131,88 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
 
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <Heading title="Register Employee" description="Register a new employee with biometric data" />
-                {/* Header */}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Main Content Grid */}
+                    {/* Main Content Grid - 3 columns on desktop */}
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                        {/* LEFT COLUMN - Photo (2 columns) */}
+                        <div className="lg:col-span-3">
+                            <div className="sticky top-4 flex flex-col items-center space-y-4">
+                                <input
+                                    id="photo"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    className="hidden"
+                                    onChange={handlePhotoChange}
+                                />
 
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                        {/* PICTURE */}
-                        <div className="flex flex-col items-center space-y-4">
-                            <input id="photo" type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handlePhotoChange} />
-
-                            <button
-                                type="button"
-                                className="bg-background relative flex aspect-square w-full max-w-xs cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed"
-                                onClick={() => document.getElementById('photo')?.click()}
-                            >
-                                {photoPreviewUrl ? (
-                                    <img src={photoPreviewUrl} alt="Preview" className="h-full w-full object-cover" />
-                                ) : (
-                                    <div className="flex flex-col items-center justify-center gap-2 text-center">
-                                        <div className="bg-muted flex size-12 items-center justify-center rounded-full">
-                                            <UploadCloud className="text-muted-foreground size-5" />
+                                <button
+                                    type="button"
+                                    className="bg-background relative flex aspect-square w-full max-w-[200px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed"
+                                    onClick={() => document.getElementById('photo')?.click()}
+                                >
+                                    {photoPreviewUrl ? (
+                                        <img src={photoPreviewUrl} alt="Preview" className="h-full w-full object-cover" />
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center gap-2 p-4 text-center">
+                                            <div className="bg-muted flex size-12 items-center justify-center rounded-full">
+                                                <UploadCloud className="text-muted-foreground size-5" />
+                                            </div>
+                                            <div className="text-sm font-semibold">Upload Photo</div>
+                                            <div className="text-muted-foreground text-xs">Click to browse</div>
                                         </div>
-                                        <div className="text-sm font-semibold">Upload Photo</div>
-                                        <div className="text-muted-foreground text-xs">Click to browse</div>
-                                    </div>
-                                )}
-                            </button>
+                                    )}
+                                </button>
 
-                            <div className="flex flex-wrap justify-center gap-2">
-                                <Button type="button" variant="outline" onClick={() => document.getElementById('photo')?.click()}>
-                                    <UploadCloud className="mr-1 size-4" />
-                                    {photoPreviewUrl ? 'Change' : 'Choose'}
-                                </Button>
-
-                                {photoPreviewUrl && (
-                                    <Button
-                                        type="button"
-                                        variant="destructive"
-                                        onClick={() => {
-                                            if (photoPreviewUrlRef.current) {
-                                                URL.revokeObjectURL(photoPreviewUrlRef.current);
-                                                photoPreviewUrlRef.current = null;
-                                            }
-                                            setPhotoPreviewUrl(null);
-                                            setData('photo', null);
-                                        }}
-                                    >
-                                        <XIcon className="mr-1 size-4" />
-                                        Remove
+                                <div className="flex flex-wrap justify-center gap-2">
+                                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo')?.click()}>
+                                        <UploadCloud className="mr-1 size-4" />
+                                        {photoPreviewUrl ? 'Change' : 'Choose'}
                                     </Button>
-                                )}
-                            </div>
 
-                            <p className="text-muted-foreground text-center text-xs">jpeg, jpg, png, webp (max 2MB)</p>
+                                    {photoPreviewUrl && (
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => {
+                                                if (photoPreviewUrlRef.current) {
+                                                    URL.revokeObjectURL(photoPreviewUrlRef.current);
+                                                    photoPreviewUrlRef.current = null;
+                                                }
+                                                setPhotoPreviewUrl(null);
+                                                setData('photo', null);
+                                            }}
+                                        >
+                                            <XIcon className="mr-1 size-4" />
+                                            Remove
+                                        </Button>
+                                    )}
+                                </div>
+
+                                <p className="text-muted-foreground text-center text-xs">jpeg, jpg, png, webp (max 2MB)</p>
+                            </div>
                         </div>
-                        {/* FORM */}
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2">
-                                <div className="flex w-full flex-col gap-1">
-                                    <Label>First Name</Label>
-                                    <Input name="first_name" placeholder="First Name" />
-                                </div>
-                                <div className="flex w-full flex-col gap-1">
-                                    <Label>Middle Name</Label>
-                                    <Input name="middle_name" placeholder="Middle Name" />
-                                </div>
+
+                        {/* MIDDLE COLUMN - Employee Details (5 columns) */}
+                        <div className="space-y-4 lg:col-span-4">
+                            <h3 className="text-lg font-semibold">Employee Details</h3>
+
+                            {/* Full Name */}
+                            <div className="space-y-2">
+                                <Label htmlFor="name">
+                                    Full Name <span className="text-destructive">*</span>
+                                </Label>
+                                <Input
+                                    id="name"
+                                    name="name"
+                                    placeholder="Enter full name"
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                />
                             </div>
 
-                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-2">
-                                <div className="flex w-full flex-col gap-1">
-                                    <Label>Last Name</Label>
-                                    <Input name="last_name" placeholder="Last Name" />
-                                </div>
-                                <div className="flex w-full flex-col gap-1">
-                                    <Label>Suffix</Label>
-                                    <CustomComboBox
-                                        items={[
-                                            { value: 'Jr.', label: 'Jr.' },
-                                            { value: 'Sr.', label: 'Sr.' },
-                                            { value: 'II', label: 'II' },
-                                            { value: 'III', label: 'III' },
-                                        ]}
-                                        placeholder="Suffix"
-                                    />
-                                </div>
-                            </div>
-
+                            {/* Office */}
                             <div className="space-y-2">
                                 <Label htmlFor="office">
                                     Office <span className="text-destructive">*</span>
@@ -229,9 +224,44 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                     onSelect={(value) => setData('office_id', value ?? '')}
                                 />
                             </div>
+
+                            <Separator className="my-4" />
+
+                            {/* Account Credentials */}
+                            <h3 className="text-lg font-semibold">Account Credentials</h3>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="username">
+                                    Username <span className="text-destructive">*</span>
+                                </Label>
+                                <Input
+                                    id="username"
+                                    name="username"
+                                    placeholder="Enter username"
+                                    value={data.username}
+                                    onChange={(e) => setData('username', e.target.value)}
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="password">
+                                    Password <span className="text-destructive">*</span>
+                                </Label>
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    placeholder="Enter password"
+                                    value={data.password}
+                                    onChange={(e) => setData('password', e.target.value)}
+                                />
+                            </div>
                         </div>
-                        {/* BIOMETRIC */}
-                        <div className="space-y-4">
+
+                        {/* RIGHT COLUMN - Biometric (5 columns) */}
+                        <div className="space-y-4 lg:col-span-5">
+                            <h3 className="text-lg font-semibold">Biometric Enrollment</h3>
+
                             <div className="space-y-2">
                                 <Label htmlFor="finger-select">Select Finger</Label>
                                 <Select value={selectedFinger} onValueChange={setSelectedFinger}>
@@ -277,7 +307,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                     <Separator />
                                     <div className="space-y-3">
                                         <h4 className="text-sm font-medium">Enrolled Fingerprints ({fingerprints.length})</h4>
-                                        <div className="space-y-2">
+                                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                                             {fingerprints.map((fp: FingerprintData, index: number) => (
                                                 <div key={index} className="bg-muted/30 flex items-center justify-between rounded-lg border p-3">
                                                     <div className="flex items-center gap-3">
@@ -303,6 +333,16 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                 </>
                             )}
                         </div>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="flex justify-end gap-4 border-t pt-4">
+                        <Button type="button" variant="outline" onClick={() => window.history.back()}>
+                            Cancel
+                        </Button>
+                        <Button type="submit" disabled={processing}>
+                            {processing ? 'Registering...' : 'Register Employee'}
+                        </Button>
                     </div>
                 </form>
             </div>
