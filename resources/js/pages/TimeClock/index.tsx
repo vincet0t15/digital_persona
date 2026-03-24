@@ -9,14 +9,14 @@ import { useCallback, useRef, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 interface TimeLog {
     id: number;
-    employee_id: number;
     employee: {
         id: number;
         name: string;
         image: string | null;
     };
     log_type: 'IN' | 'OUT';
-    date_time: string;
+    time: string;
+    date: string;
 }
 
 interface ClockResult {
@@ -31,9 +31,10 @@ interface ClockResult {
 
 interface TimeClockProps {
     clock_result?: ClockResult;
+    recent_logs?: TimeLog[];
 }
 
-export default function TimeClock({ clock_result }: TimeClockProps) {
+export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockProps) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [scanKey, setScanKey] = useState(0);
     const [selectedLogType, setSelectedLogType] = useState<'IN' | 'OUT'>('IN');
@@ -207,9 +208,8 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
                                         {clock_result ? (
                                             <div className="flex items-center gap-3">
                                                 {/* Avatar / Image */}
-                                                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-gray-200">
+                                                <div className="flex items-center justify-center overflow-hidden rounded-full bg-gray-200">
                                                     {clock_result.employee.image ? (
-                                                        // eslint-disable-next-line @next/next/no-img-element
                                                         <Avatar>
                                                             <AvatarImage src={clock_result.employee.image} />
                                                             <AvatarFallback>CN</AvatarFallback>

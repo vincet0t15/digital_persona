@@ -19,7 +19,27 @@ class TimeClockController extends Controller
      */
     public function index()
     {
-        return Inertia::render('TimeClock/index');
+        $recentLogs = TimeLog::with('employee')
+            ->orderBy('date_time', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($log) {
+                return [
+                    'id' => $log->id,
+                    'employee' => [
+                        'id' => $log->employee->id,
+                        'name' => $log->employee->name,
+                        'image' => $log->employee->image ? asset('storage/' . $log->employee->image) : null,
+                    ],
+                    'log_type' => $log->log_type,
+                    'time' => Carbon::parse($log->date_time)->format('h:i A'),
+                    'date' => Carbon::parse($log->date_time)->format('M d'),
+                ];
+            });
+
+        return Inertia::render('TimeClock/index', [
+            'recent_logs' => $recentLogs,
+        ]);
     }
 
     /**
