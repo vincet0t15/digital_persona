@@ -47,8 +47,10 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
         office_id: '',
         password: '',
         photo: '',
-        fingerprints: [],
+        fingerprints_json: '',
     });
+
+    const [fingerprints, setFingerprints] = useState<FingerprintData[]>([]);
 
     const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
     const [selectedFinger, setSelectedFinger] = useState<string>('Right Thumb');
@@ -90,27 +92,28 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
 
     const handleAddFingerprint = () => {
         if (currentFingerprint) {
-            const newFingerprints = [...data.fingerprints, currentFingerprint];
-            setData('fingerprints', newFingerprints);
+            const newFingerprints = [...fingerprints, currentFingerprint];
+            setFingerprints(newFingerprints);
+            setData('fingerprints_json', JSON.stringify(newFingerprints));
             setCurrentFingerprint(null);
         }
     };
 
     const handleRemoveFingerprint = (index: number) => {
-        const newFingerprints = data.fingerprints.filter((_, i) => i !== index);
-        setData('fingerprints', newFingerprints);
+        const newFingerprints = fingerprints.filter((_, i) => i !== index);
+        setFingerprints(newFingerprints);
+        setData('fingerprints_json', JSON.stringify(newFingerprints));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Ensure fingerprint_quality is a number before sending
-        if (data.fingerprint_template) {
-            setData('fingerprint_quality', Number(data.fingerprint_quality) || 0);
+        if (fingerprints.length === 0) {
+            alert('Please add at least one fingerprint');
+            return;
         }
 
         post(route('employees.store'), {
-            forceFormData: true,
             onSuccess: () => {
                 console.log('Employee created successfully');
             },
@@ -200,10 +203,67 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                         {/* Fingerprint Scanner Card */}
                         <div className="bg-card rounded-xl border p-6">
                             <h3 className="mb-4 text-lg font-medium">Fingerprint Enrollment</h3>
+
+                            {/* Finger Selection */}
+                            <div className="mb-4 space-y-2">
+                                <Label htmlFor="finger-select">Select Finger</Label>
+                                <Select value={selectedFinger} onValueChange={setSelectedFinger}>
+                                    <SelectTrigger id="finger-select" className="w-full">
+                                        <SelectValue placeholder="Select a finger" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {FINGER_OPTIONS.map((finger) => (
+                                            <SelectItem key={finger.value} value={finger.value}>
+                                                {finger.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Scanner */}
                             <FingerprintScanner mode="enroll" onCapture={handleFingerprintCapture} />
-                            {fingerprintTemplate && (
-                                <div className="mt-4 rounded-lg bg-green-50 p-3 text-center text-sm text-green-700">
-                                    Fingerprint captured successfully
+
+                            {/* Current Captured Fingerprint */}
+                            {currentFingerprint && (
+                                <div className="mt-4 rounded-lg bg-green-50 p-3">
+                                    <div className="flex items-center justify-between">
+                                        <div className="text-sm text-green-700">
+                                            <p className="font-medium">{currentFingerprint.finger_name}</p>
+                                            <p>Quality: {currentFingerprint.quality}%</p>
+                                        </div>
+                                        <Button type="button" size="sm" onClick={handleAddFingerprint} className="gap-1">
+                                            <Fingerprint className="h-4 w-4" />
+                                            Add
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* List of Added Fingerprints */}
+                            {fingerprints.length > 0 && (
+                                <div className="mt-4 space-y-2">
+                                    <h4 className="text-sm font-medium">Added Fingerprints ({fingerprints.length})</h4>
+                                    <div className="space-y-2">
+                                        {fingerprints.map((fp: FingerprintData, index: number) => (
+                                            <div key={index} className="flex items-center justify-between rounded-lg border bg-gray-50 p-2">
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <Fingerprint className="h-4 w-4 text-gray-500" />
+                                                    <span>{fp.finger_name}</span>
+                                                    <span className="text-muted-foreground">({fp.quality}%)</span>
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => handleRemoveFingerprint(index)}
+                                                    className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                                                >
+                                                    <XIcon className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>

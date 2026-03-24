@@ -23,32 +23,23 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'fingerprint_template' => 'required|string',
-            'fingerprint_quality' => 'nullable|integer|min:0|max:100',
-        ]);
-
-        $pngBase64 = $request->input('fingerprint_template');
-        $quality = $request->input('fingerprint_quality', 0);
-
-        $fmdTemplate = $this->convertPngToFmd($pngBase64);
-
-
-        if ($fmdTemplate === false) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to process fingerprint. Please try scanning again.',
-            ], 400);
-        }
-
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:employees,username',
             'password' => 'required|string|min:6',
             'office_id' => 'required|integer|exists:offices,id',
             'photo' => 'nullable|image|max:2048',
+            'fingerprints_json' => 'required|string',
         ]);
+
+        $fingerprints = json_decode($request->input('fingerprints_json'), true);
+
+        if (empty($fingerprints) || !is_array($fingerprints)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid fingerprints data. Please add at least one fingerprint.',
+            ], 400);
+        }
 
         // Handle photo upload
         $imagePath = null;
@@ -65,17 +56,39 @@ class EmployeeController extends Controller
             'image' => $imagePath,
         ]);
 
+        // Process and save all fingerprints
+        $enrolledCount = 0;
 
-        Fingeprint::create([
-            'employee_id' => $employee->id,
-            'finger_name' => 'Right Thumb',
-            'fingerprint_template' => $fmdTemplate,
-            'fingerprint_quality' => $quality,
-            'reader_label' => 'Primary',
-            'enrolled_from_ip' => $request->ip(),
-        ]);
+        foreach ($fingerprints as $fingerprintData) {
+            $pngBase64 = $fingerprintData['template'];
+            $quality = $fingerprintData['quality'] ?? 0;
+            $fingerName = $fingerprintData['finger_name'];
 
-        return redirect()->back()->with('success', 'Employee registered successfully.');
+            $fmdTemplate = $this->convertPngToFmd($pngBase64);
+
+            if ($fmdTemplate !== false) {
+                Fingeprint::create([
+                    'employee_id' => $employee->id,
+                    'finger_name' => $fingerName,
+                    'fingerprint_template' => $fmdTemplate,
+                    'fingerprint_quality' => $quality,
+                    'reader_label' => 'Primary',
+                    'enrolled_from_ip' => $request->ip(),
+                ]);
+                $enrolledCount++;
+            }
+        }
+
+        if ($enrolledCount === 0) {
+            // Rollback employee creation if no fingerprints were saved
+            $employee->delete();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process fingerprints. Please try scanning again.',
+            ], 400);
+        }
+
+        return redirect()->back()->with('success', "Employee registered successfully with {$enrolledCount} fingerprint(s).");
     }
 
     private function convertPngToFmd(string $pngBase64): string|false

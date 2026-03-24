@@ -13,11 +13,11 @@ export interface FingerprintData {
 }
 
 export interface EmployeeCreate {
-    [key: string]: string | number | File | null | FingerprintData[];
+    [key: string]: string | number | File | null;
     name: string;
     username: string;
     office_id: string;
     password: string;
     photo: File | string | null;
-    fingerprints: FingerprintData[];
+    fingerprints_json: string;
 }
