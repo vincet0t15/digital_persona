@@ -193,7 +193,7 @@ class BiometricController extends Controller
             }
         }
 
-        return response()->json([
+        return redirect()->back()->with('result', [
             'success' => true,
             'duplicate' => false,
             'message' => 'Fingerprint is not registered.',

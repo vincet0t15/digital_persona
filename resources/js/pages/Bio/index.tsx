@@ -10,7 +10,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { EmployeeCreate, FingerprintData } from '@/types/employee';
 import { Office } from '@/types/office';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { Fingerprint, UploadCloud, X, XIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { FingerprintScanner } from './fingerprint-scanner';
@@ -95,45 +95,41 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
         setData('photo', file);
     };
 
-    const handleFingerprintCapture = async (template: string, quality: number) => {
+    const handleFingerprintCapture = (template: string, quality: number) => {
         setDuplicateWarning(null);
         setIsCheckingDuplicate(true);
 
-        try {
-            const response = await fetch(route('biometric.check-duplicate'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                    Accept: 'application/json',
+        router.post(
+            route('biometric.check-duplicate'),
+            { fingerprint_template: template },
+            {
+                preserveScroll: true,
+                onSuccess: (page: any) => {
+                    const result = page.props.result as DuplicateCheckResult;
+                    if (result?.duplicate) {
+                        setDuplicateWarning(result);
+                        setCurrentFingerprint(null);
+                    } else {
+                        setCurrentFingerprint({
+                            template,
+                            quality,
+                            finger_name: selectedFinger,
+                        });
+                    }
                 },
-                body: JSON.stringify({
-                    fingerprint_template: template,
-                }),
-            });
-
-            const result: DuplicateCheckResult = await response.json();
-
-            if (result.duplicate) {
-                setDuplicateWarning(result);
-                setCurrentFingerprint(null);
-            } else {
-                setCurrentFingerprint({
-                    template,
-                    quality,
-                    finger_name: selectedFinger,
-                });
-            }
-        } catch (error) {
-            console.error('Error checking duplicate fingerprint:', error);
-            setCurrentFingerprint({
-                template,
-                quality,
-                finger_name: selectedFinger,
-            });
-        } finally {
-            setIsCheckingDuplicate(false);
-        }
+                onError: () => {
+                    // If check fails, still allow the fingerprint to be captured
+                    setCurrentFingerprint({
+                        template,
+                        quality,
+                        finger_name: selectedFinger,
+                    });
+                },
+                onFinish: () => {
+                    setIsCheckingDuplicate(false);
+                },
+            },
+        );
 
         console.log('Fingerprint captured with quality:', quality);
     };
