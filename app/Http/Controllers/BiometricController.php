@@ -42,14 +42,6 @@ class BiometricController extends Controller
 
         $user = Auth::user();
 
-
-        if (empty($user->fingerprint_template)) {
-            $user->fingerprint_template = $fmdTemplate;
-            $user->fingerprint_quality = $quality;
-            $user->save();
-        }
-
-
         $fingerprint = Fingeprint::create([
             'user_id' => $user->id,
             'fingerprint_template' => $fmdTemplate,
