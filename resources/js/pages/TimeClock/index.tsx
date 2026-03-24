@@ -1,11 +1,12 @@
 import { FingerprintDeviceStatus } from '@/components/device-status-indicator';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Toaster } from '@/components/ui/sonner';
 import { FingerprintScanner } from '@/pages/Bio/fingerprint-scanner';
 import { Head, router } from '@inertiajs/react';
-import { Clock, Fingerprint } from 'lucide-react';
+import { Clock, Fingerprint, LogIn, LogOut } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { toast, Toaster } from 'sonner';
+
 interface TimeLog {
     id: number;
     employee_id: number;
@@ -33,23 +34,28 @@ interface TimeClockProps {
 }
 
 export default function TimeClock({ clock_result }: TimeClockProps) {
+    console.log(clock_result);
     const [isProcessing, setIsProcessing] = useState(false);
     const [scanKey, setScanKey] = useState(0);
+    const [selectedLogType, setSelectedLogType] = useState<'IN' | 'OUT'>('IN');
 
     const handleFingerprintCapture = async (template: string, quality: number) => {
         setIsProcessing(true);
 
         router.post(
             route('timeclock.clock'),
-            { fingerprint_template: template },
+            { fingerprint_template: template, log_type: selectedLogType },
             {
                 preserveScroll: true,
-
-                onSuccess: (response: { props: FlashProps }) => {
-                    toast?.error(response.props.flash?.error);
-                    toast?.success(response.props.flash?.success);
+                onSuccess: (page) => {
+                    const flash = (page.props as { flash?: { success?: string; error?: string } }).flash;
+                    if (flash?.error) {
+                        toast.error(flash.error);
+                    }
+                    if (flash?.success) {
+                        toast.success(flash.success);
+                    }
                 },
-
                 onFinish: () => {
                     setScanKey((prev) => prev + 1);
                     setIsProcessing(false);
@@ -123,10 +129,34 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
                                         <Fingerprint className="h-6 w-6" />
                                         Scan Fingerprint
                                     </CardTitle>
-                                    <CardDescription>Place your finger on the scanner to record your time in or out</CardDescription>
+                                    <CardDescription>Choose Time In or Time Out then place your finger on the scanner</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-6">
                                     <FingerprintDeviceStatus />
+
+                                    {/* Time In / Out Toggle */}
+                                    <div className="flex justify-center gap-3">
+                                        <Button
+                                            type="button"
+                                            variant={selectedLogType === 'IN' ? 'default' : 'outline'}
+                                            className="gap-2"
+                                            onClick={() => setSelectedLogType('IN')}
+                                            disabled={isProcessing}
+                                        >
+                                            <LogIn className="h-4 w-4" />
+                                            Time In
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant={selectedLogType === 'OUT' ? 'default' : 'outline'}
+                                            className="gap-2"
+                                            onClick={() => setSelectedLogType('OUT')}
+                                            disabled={isProcessing}
+                                        >
+                                            <LogOut className="h-4 w-4" />
+                                            Time Out
+                                        </Button>
+                                    </div>
 
                                     <div className="flex justify-center">
                                         <FingerprintScanner

@@ -95,7 +95,7 @@ export function useFingerprint() {
                                 hasTemplate: false,
                                 selectedReader,
                             });
-                            setStatus(readerConnected ? 'U.are.U reader connected' : 'DP Agent running — No reader');
+                            setStatus(readerConnected ? 'Fingerprint Device Connected' : 'DP Agent running — No reader');
                             return;
                         } catch (err) {
                             console.warn('[FP] Re-check failed, reinitializing:', err);
@@ -141,7 +141,7 @@ export function useFingerprint() {
         sdkInstance.onDeviceConnected = (e: { deviceUid: string }) => {
             readerConnected = true;
             console.log('[FP] Device connected:', e.deviceUid);
-            setStatus('U.are.U reader connected');
+            setStatus('Fingerprint Device Connected');
             if (!selectedReader) {
                 selectedReader = e.deviceUid;
             }

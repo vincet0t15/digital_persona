@@ -210,7 +210,7 @@ export function FingerprintScanner({
                         )}
                     />
                     {sdkMode === 'real' && readerConnected
-                        ? 'U.are.U Reader Connected'
+                        ? 'Fingerprint Device Connected'
                         : sdkMode === 'real' && !readerConnected
                           ? 'DP Agent Running — No Reader'
                           : 'Simulation Mode'}

@@ -18,7 +18,7 @@ interface DeviceStatusIndicatorProps {
 }
 
 const defaultLabels = {
-    connected: 'U.are.U Reader Connected',
+    connected: 'Fingerprint Device Connected',
     disconnected: 'DP Agent Running — No Reader',
     simulation: 'Simulation Mode',
     error: 'Device Error',

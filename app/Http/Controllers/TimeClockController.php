@@ -68,13 +68,20 @@ class TimeClockController extends Controller
             $matchedEmployee = $employeeMap[$result['employee_id']] ?? null;
 
             if ($matchedEmployee) {
-                $lastLog = TimeLog::where('employee_id', $matchedEmployee->id)
-                    ->orderBy('date_time', 'desc')
-                    ->first();
+                // If user explicitly selected log type, use it; otherwise, auto-toggle
+                $requestedLogType = $request->input('log_type');
 
-                $logType = 'IN';
-                if ($lastLog && $lastLog->log_type === 'IN') {
-                    $logType = 'OUT';
+                if (in_array($requestedLogType, ['IN', 'OUT'], true)) {
+                    $logType = $requestedLogType;
+                } else {
+                    $lastLog = TimeLog::where('employee_id', $matchedEmployee->id)
+                        ->orderBy('date_time', 'desc')
+                        ->first();
+
+                    $logType = 'IN';
+                    if ($lastLog && $lastLog->log_type === 'IN') {
+                        $logType = 'OUT';
+                    }
                 }
 
                 try {
