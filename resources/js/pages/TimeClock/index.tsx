@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FingerprintScanner } from '@/pages/Bio/fingerprint-scanner';
 import { Head, router } from '@inertiajs/react';
 import { Clock, Fingerprint, LogIn, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 
 interface TimeLog {
@@ -34,18 +34,24 @@ interface TimeClockProps {
 }
 
 export default function TimeClock({ clock_result }: TimeClockProps) {
-    console.log(clock_result);
     const [recentLogs, setRecentLogs] = useState<TimeLog[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
     const [scanKey, setScanKey] = useState(0);
     const [selectedLogType, setSelectedLogType] = useState<'IN' | 'OUT'>('IN');
 
-    const handleFingerprintCapture = async (template: string, quality: number) => {
+    // Use ref to always get the latest selectedLogType value in the callback
+    const selectedLogTypeRef = useRef(selectedLogType);
+    selectedLogTypeRef.current = selectedLogType;
+
+    const handleFingerprintCapture = useCallback((template: string, quality: number) => {
+        // Get the current value from ref to avoid stale closure
+        const currentLogType = selectedLogTypeRef.current;
+
         setIsProcessing(true);
 
         router.post(
             route('timeclock.clock'),
-            { fingerprint_template: template, log_type: selectedLogType },
+            { fingerprint_template: template, log_type: currentLogType },
             {
                 preserveScroll: true,
                 onSuccess: (page) => {
@@ -63,7 +69,7 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
                 },
             },
         );
-    };
+    }, []);
 
     const formatTime = (dateTime: string) => {
         const date = new Date(dateTime);
