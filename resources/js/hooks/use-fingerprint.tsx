@@ -69,21 +69,38 @@ export function useFingerprint() {
     // Initialize SDK
     useEffect(() => {
         const init = async () => {
-            if (sdkInitialized) {
-                setState({
-                    initialized: sdkInitialized,
-                    readerConnected,
-                    mode: sdkMode,
-                    scanning: false,
-                    hasTemplate: false,
-                    selectedReader,
-                });
-                return;
-            }
-
             // Check if DigitalPersona SDK is loaded
             if (typeof window.Fingerprint !== 'undefined' && typeof window.Fingerprint.WebApi !== 'undefined') {
                 try {
+                    // If already initialized, re-check device status to ensure connection is still valid
+                    if (sdkInitialized && sdkInstance) {
+                        console.log('[FP] SDK already initialized, checking device status...');
+                        try {
+                            const devices = await sdkInstance.enumerateDevices();
+                            if (devices && devices.length > 0) {
+                                selectedReader = devices[0];
+                                readerConnected = true;
+                            } else {
+                                readerConnected = false;
+                                selectedReader = '';
+                            }
+                            setState({
+                                initialized: true,
+                                readerConnected,
+                                mode: sdkMode,
+                                scanning: false,
+                                hasTemplate: false,
+                                selectedReader,
+                            });
+                            setStatus(readerConnected ? 'U.are.U reader connected' : 'DP Agent running — No reader');
+                            return;
+                        } catch (err) {
+                            console.warn('[FP] Re-check failed, reinitializing:', err);
+                            // Reset and reinitialize
+                            sdkInitialized = false;
+                            sdkInstance = null;
+                        }
+                    }
                     await initRealSDK();
                 } catch (err) {
                     console.warn('[FP] DigitalPersona SDK init failed:', (err as Error).message);
@@ -100,6 +117,19 @@ export function useFingerprint() {
         };
 
         init();
+
+        // Cleanup function to reset scanning state when component unmounts
+        return () => {
+            if (sdkInstance && selectedReader) {
+                try {
+                    sdkInstance.stopAcquisition(selectedReader);
+                    acquisitionStarted = false;
+                } catch (err) {
+                    console.warn('[FP] Cleanup stopAcquisition error:', err);
+                }
+            }
+            setState((prev) => ({ ...prev, scanning: false }));
+        };
     }, []);
 
     const initRealSDK = (): Promise<void> => {
@@ -137,11 +167,14 @@ export function useFingerprint() {
                     const qualityName = window.Fingerprint.QualityCode[e.quality] || 'Unknown';
                     const qualityPercent = e.quality === 0 ? 100 : Math.max(0, 100 - e.quality * 10);
 
-                    callbacksRef.current.onStatus?.({
-                        type: 'quality',
-                        quality: qualityPercent,
-                        qualityCode: qualityName,
-                    });
+                    // Use setTimeout to ensure we access the latest callbacksRef
+                    setTimeout(() => {
+                        callbacksRef.current.onStatus?.({
+                            type: 'quality',
+                            quality: qualityPercent,
+                            qualityCode: qualityName,
+                        });
+                    }, 0);
                 };
 
                 sdkInstance.onSamplesAcquired = (s: { samples: string }) => {
@@ -150,12 +183,18 @@ export function useFingerprint() {
                         return;
                     }
                     console.log('[FP] Sample acquired');
-                    processCapturedSample(s);
+                    // Use setTimeout to ensure we access the latest callbacksRef
+                    setTimeout(() => {
+                        processCapturedSample(s);
+                    }, 0);
                 };
 
                 sdkInstance.onErrorOccurred = (e: { error: string }) => {
                     console.error('[FP] Error occurred:', e.error);
-                    callbacksRef.current.onError?.('Device error: ' + (e.error || 'Unknown error'));
+                    // Use setTimeout to ensure we access the latest callbacksRef
+                    setTimeout(() => {
+                        callbacksRef.current.onError?.('Device error: ' + (e.error || 'Unknown error'));
+                    }, 0);
                 };
 
                 sdkInstance
@@ -204,7 +243,7 @@ export function useFingerprint() {
         });
     };
 
-    const processCapturedSample = (sampleEvent: { samples: string }) => {
+    const processCapturedSample = useCallback((sampleEvent: { samples: string }) => {
         try {
             if (sdkInstance && acquisitionStarted) {
                 sdkInstance
@@ -246,7 +285,7 @@ export function useFingerprint() {
             console.error('[FP] processCapturedSample error:', err);
             callbacksRef.current.onError?.('Failed to process fingerprint: ' + (err as Error).message);
         }
-    };
+    }, []);
 
     const startSimulatedCapture = () => {
         setStatus('Place your finger on the reader...');
