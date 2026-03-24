@@ -82,6 +82,16 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
         });
     };
 
+    const getInitials = (name?: string | null) => {
+        if (!name) return '?';
+        const parts = name.trim().split(' ');
+        const initials = parts
+            .slice(0, 2)
+            .map((p) => p[0])
+            .join('');
+        return initials.toUpperCase();
+    };
+
     return (
         <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-50 to-slate-100">
             <Head title="Time Clock" />
@@ -185,52 +195,56 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2 text-lg">
                                         <Clock className="h-5 w-5" />
-                                        Recent Logs
+                                        Last Time Log
                                     </CardTitle>
-                                    <CardDescription>Last 20 time clock entries</CardDescription>
+                                    <CardDescription>Most recent time in/out entry</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="space-y-2">
-                                        {recentLogs.length > 0 ? (
-                                            recentLogs.map((log) => (
-                                                <div
-                                                    key={log.id}
-                                                    className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div
-                                                            className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                                                                log.log_type === 'IN'
-                                                                    ? 'bg-green-100 text-green-600'
-                                                                    : 'bg-orange-100 text-orange-600'
-                                                            }`}
-                                                        >
-                                                            {log.log_type === 'IN' ? <LogIn className="h-4 w-4" /> : <LogOut className="h-4 w-4" />}
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm font-medium text-gray-900">{log.employee?.name || 'Unknown'}</p>
-                                                            <p className="text-xs text-gray-500">{formatDate(log.date_time)}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="text-right">
-                                                        <span
-                                                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                                                                log.log_type === 'IN'
-                                                                    ? 'bg-green-100 text-green-700'
-                                                                    : 'bg-orange-100 text-orange-700'
-                                                            }`}
-                                                        >
-                                                            {log.log_type}
+                                    <div className="space-y-4">
+                                        {clock_result ? (
+                                            <div className="flex items-center gap-3">
+                                                {/* Avatar / Image */}
+                                                <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-gray-200">
+                                                    {clock_result.employee.image ? (
+                                                        // eslint-disable-next-line @next/next/no-img-element
+                                                        <img
+                                                            src={clock_result.employee.image}
+                                                            alt={clock_result.employee.name}
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-sm font-semibold text-gray-700">
+                                                            {getInitials(clock_result.employee.name)}
                                                         </span>
-                                                        <p className="text-sm font-medium text-gray-900">{formatTime(log.date_time)}</p>
-                                                    </div>
+                                                    )}
                                                 </div>
-                                            ))
+
+                                                {/* Details */}
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-medium text-gray-900">{clock_result.employee.name}</p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {clock_result.log_type === 'IN' ? 'Time In' : 'Time Out'} at {clock_result.time}
+                                                    </p>
+                                                </div>
+
+                                                {/* Log Type Badge */}
+                                                <div className="text-right">
+                                                    <span
+                                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                                                            clock_result.log_type === 'IN'
+                                                                ? 'bg-green-100 text-green-700'
+                                                                : 'bg-orange-100 text-orange-700'
+                                                        }`}
+                                                    >
+                                                        {clock_result.log_type}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         ) : (
                                             <div className="rounded-lg border border-dashed p-8 text-center">
                                                 <Clock className="mx-auto mb-2 h-8 w-8 text-gray-400" />
-                                                <p className="text-sm text-gray-500">No logs yet today</p>
-                                                <p className="text-xs text-gray-400">Be the first to clock in!</p>
+                                                <p className="text-sm text-gray-500">No time logs yet</p>
+                                                <p className="text-xs text-gray-400">Scan your fingerprint to record your first log.</p>
                                             </div>
                                         )}
                                     </div>
