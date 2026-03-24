@@ -10,6 +10,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
+use function Laravel\Prompts\error;
+
 class TimeClockController extends Controller
 {
     /**
@@ -33,10 +35,8 @@ class TimeClockController extends Controller
         $capturedFmd = $this->convertPngToFmd($capturedPng);
 
         if ($capturedFmd === false) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to process fingerprint. Please try again.',
-            ], 422);
+            return redirect()->back()
+                ->with('error', 'Failed to process fingerprint. Please try again.');
         }
 
         $fingerprints = Fingeprint::with('employee')
@@ -45,10 +45,8 @@ class TimeClockController extends Controller
             ->get();
 
         if (count($fingerprints) === 0) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No enrolled fingerprints found in the system.',
-            ], 422);
+            return redirect()->back()
+                ->with('error', 'No enrolled fingerprints found in the system.');
         }
 
         $galleryEntries = [];
@@ -90,10 +88,8 @@ class TimeClockController extends Controller
                         'error' => $e->getMessage(),
                         'employee_id' => $matchedEmployee->id,
                     ]);
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Failed to save time log. Please try again.',
-                    ], 500);
+                    return redirect()->back()
+                        ->with('error', 'Failed to save time log. Please try again.');
                 }
 
                 Log::info('Time clock recorded', [
@@ -102,10 +98,9 @@ class TimeClockController extends Controller
                     'log_type' => $logType,
                 ]);
 
-                return response()->json([
-                    'success' => true,
-                    'message' => "{$matchedEmployee->name} - Time {$logType} recorded successfully!",
-                    'clock_result' => [
+                return redirect()->back()
+                    ->with('success', "{$matchedEmployee->name} - Time {$logType} recorded successfully!")
+                    ->with('clock_result', [
                         'employee' => [
                             'id' => $matchedEmployee->id,
                             'name' => $matchedEmployee->name,
@@ -113,20 +108,15 @@ class TimeClockController extends Controller
                         ],
                         'log_type' => $logType,
                         'time' => Carbon::now()->format('h:i A'),
-                    ],
-                ]);
+                    ]);
             }
         }
 
-        return response()->json([
-            'success' => false,
-            'message' => 'Fingerprint not recognized. Please try again or contact admin.',
-        ], 422);
+        return redirect()->back()
+            ->with('error', 'No matching fingerprint found. Please register your fingerprint or try again.');
     }
 
-    /**
-     * Get recent time logs for display
-     */
+
     public function recentLogs()
     {
         $logs = TimeLog::with('employee')
@@ -186,6 +176,7 @@ class TimeClockController extends Controller
 
         $galleryLines = [];
         $indexToEmployeeId = [];
+
         foreach ($galleryEntries as $idx => $entry) {
             $galleryLines[] = $idx . '|' . $entry['template'];
             $indexToEmployeeId[$idx] = $entry['employee_id'];
@@ -202,8 +193,11 @@ class TimeClockController extends Controller
         if (!file_exists($matcherPath)) {
             @unlink($capturedFile);
             @unlink($galleryFile);
-            Log::error('FingerprintMatcher.exe not found');
-            return ['match' => false, 'message' => 'Matcher not found'];
+
+            return [
+                'match' => false,
+                'message' => 'Matcher not found',
+            ];
         }
 
         $cmd = '"' . $matcherPath . '" identify "' . $capturedFile . '" "' . $galleryFile . '" 2>&1';
@@ -213,13 +207,19 @@ class TimeClockController extends Controller
         @unlink($galleryFile);
 
         if ($output === null) {
-            return ['match' => false, 'message' => 'Matcher execution failed'];
+            return [
+                'match' => false,
+                'message' => 'Matcher execution failed',
+            ];
         }
 
         $result = json_decode(trim($output), true);
 
         if ($result === null) {
-            return ['match' => false, 'message' => 'Invalid matcher response'];
+            return [
+                'match' => false,
+                'message' => 'Invalid matcher response',
+            ];
         }
 
         if (isset($result['match']) && $result['match'] === true && isset($result['person_id'])) {
@@ -234,7 +234,6 @@ class TimeClockController extends Controller
                 ];
             }
         }
-
         return [
             'match' => false,
             'message' => $result['message'] ?? 'No match found',

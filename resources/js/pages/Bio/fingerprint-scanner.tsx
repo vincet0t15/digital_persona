@@ -88,6 +88,18 @@ export function FingerprintScanner({
         onSampleCompleteRef.current = onSampleComplete;
     }, [onCapture, onError, onSampleComplete]);
 
+    // Auto-start scan on mount for identify mode (continuous scanning for time clock)
+    useEffect(() => {
+        if (autoScan && mode === 'identify' && initialized && (sdkMode === 'simulated' || readerConnected) && scanStatus === 'idle') {
+            // Small delay to allow component to fully mount
+            const timer = setTimeout(() => {
+                handleStartScan();
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [autoScan, mode, initialized, sdkMode, readerConnected]);
+
     // Auto-start scan when currentSample changes (for continuous enrollment)
     useEffect(() => {
         if (
@@ -284,7 +296,9 @@ export function FingerprintScanner({
                             ? `Place your finger on the U.are.U 4500 reader ${requiredSamples} times. The scanner will automatically capture each sample - just lift and place your finger again after each beep.`
                             : `Place your finger on the U.are.U 4500 reader ${requiredSamples} times for better accuracy. Lift and place again for each scan.`
                         : 'Place your finger on the U.are.U 4500 reader and hold steady until the scan completes.'
-                    : 'Place your finger on the reader to identify yourself.'}
+                    : autoScan
+                      ? 'Place your finger on the reader to time in/out. The scanner will automatically reset for the next employee.'
+                      : 'Place your finger on the reader to identify yourself.'}
             </p>
         </div>
     );
