@@ -15,6 +15,15 @@ import { Fingerprint, UploadCloud, X, XIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { FingerprintScanner } from './fingerprint-scanner';
 
+interface DuplicateCheckResult {
+    duplicate: boolean;
+    employee?: {
+        id: number;
+        name: string;
+    };
+    message?: string;
+}
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -58,6 +67,8 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
     const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
     const [selectedFinger, setSelectedFinger] = useState<string>('Right Thumb');
     const [currentFingerprint, setCurrentFingerprint] = useState<FingerprintData | null>(null);
+    const [duplicateWarning, setDuplicateWarning] = useState<DuplicateCheckResult | null>(null);
+    const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
     const photoPreviewUrlRef = useRef<string | null>(null);
 
     const officeOptions = offices.map((office) => ({
@@ -84,12 +95,48 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
         setData('photo', file);
     };
 
-    const handleFingerprintCapture = (template: string, quality: number) => {
-        setCurrentFingerprint({
-            template,
-            quality,
-            finger_name: selectedFinger,
-        });
+    const handleFingerprintCapture = async (template: string, quality: number) => {
+        setDuplicateWarning(null);
+        setIsCheckingDuplicate(true);
+
+        // Check for duplicate fingerprint
+        try {
+            const response = await fetch(route('biometric.check-duplicate'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({
+                    fingerprint_template: template,
+                }),
+            });
+
+            const result: DuplicateCheckResult = await response.json();
+
+            if (result.duplicate) {
+                setDuplicateWarning(result);
+                setCurrentFingerprint(null);
+            } else {
+                setCurrentFingerprint({
+                    template,
+                    quality,
+                    finger_name: selectedFinger,
+                });
+            }
+        } catch (error) {
+            console.error('Error checking duplicate fingerprint:', error);
+            // If check fails, still allow the fingerprint to be captured
+            setCurrentFingerprint({
+                template,
+                quality,
+                finger_name: selectedFinger,
+            });
+        } finally {
+            setIsCheckingDuplicate(false);
+        }
+
         console.log('Fingerprint captured with quality:', quality);
     };
 
@@ -281,6 +328,47 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
 
                             {/* Scanner */}
                             <FingerprintScanner mode="enroll" onCapture={handleFingerprintCapture} showStatus={false} />
+
+                            {/* Checking Duplicate Loader */}
+                            {isCheckingDuplicate && (
+                                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+                                        <p className="text-sm text-blue-700">Checking fingerprint database...</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Duplicate Warning */}
+                            {duplicateWarning && duplicateWarning.duplicate && (
+                                <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100">
+                                            <XIcon className="h-5 w-5 text-red-600" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="font-medium text-red-900">Duplicate Fingerprint Detected</p>
+                                            <p className="text-sm text-red-700">
+                                                {duplicateWarning.message || 'This fingerprint is already registered.'}
+                                            </p>
+                                            {duplicateWarning.employee && (
+                                                <p className="mt-1 text-sm font-medium text-red-800">
+                                                    Employee: {duplicateWarning.employee.name} (ID: {duplicateWarning.employee.id})
+                                                </p>
+                                            )}
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                className="mt-2"
+                                                onClick={() => setDuplicateWarning(null)}
+                                            >
+                                                Dismiss
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Current Captured Fingerprint */}
                             {currentFingerprint && (

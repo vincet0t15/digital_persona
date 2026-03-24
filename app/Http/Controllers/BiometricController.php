@@ -121,6 +121,86 @@ class BiometricController extends Controller
     }
 
     /**
+     * Check if fingerprint is already registered (for duplicate detection during enrollment)
+     */
+    public function checkDuplicate(Request $request)
+    {
+        $request->validate([
+            'fingerprint_template' => 'required|string',
+        ]);
+
+        $capturedPng = $request->input('fingerprint_template');
+
+        // Convert captured PNG to ANSI FMD
+        $capturedFmd = $this->convertPngToFmd($capturedPng);
+
+        if ($capturedFmd === false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process fingerprint.',
+            ], 400);
+        }
+
+        // Get all fingerprints from database
+        $fingerprints = Fingeprint::with('employee')
+            ->whereNotNull('fingerprint_template')
+            ->where('fingerprint_template', '!=', '')
+            ->get();
+
+        if (count($fingerprints) === 0) {
+            return response()->json([
+                'success' => true,
+                'duplicate' => false,
+                'message' => 'No fingerprints in database.',
+            ]);
+        }
+
+        // Build gallery entries
+        $galleryEntries = [];
+        $employeeMap = [];
+
+        foreach ($fingerprints as $fingerprint) {
+            $employeeMap[$fingerprint->employee_id] = $fingerprint->employee;
+            if (!empty($fingerprint->fingerprint_template)) {
+                $galleryEntries[] = [
+                    'employee_id' => $fingerprint->employee_id,
+                    'template' => $fingerprint->fingerprint_template,
+                ];
+            }
+        }
+
+        // Run matcher
+        $result = $this->matchFingerprint($capturedFmd, $galleryEntries);
+
+        if ($result['match'] && isset($result['employee_id'])) {
+            $matchedEmployee = $employeeMap[$result['employee_id']] ?? null;
+
+            if ($matchedEmployee) {
+                Log::info('Duplicate fingerprint detected during enrollment', [
+                    'employee_id' => $matchedEmployee->id,
+                    'employee_name' => $matchedEmployee->name,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'duplicate' => true,
+                    'employee' => [
+                        'id' => $matchedEmployee->id,
+                        'name' => $matchedEmployee->name,
+                    ],
+                    'message' => "This fingerprint is already registered to {$matchedEmployee->name}.",
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'duplicate' => false,
+            'message' => 'Fingerprint is not registered.',
+        ]);
+    }
+
+    /**
      * Identify an employee by fingerprint
      */
     public function identify(Request $request)

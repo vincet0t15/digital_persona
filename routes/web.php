@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Biometric API endpoints
     Route::post('/biometric/identify', [BiometricController::class, 'identify'])->name('biometric.identify');
+    Route::post('/biometric/check-duplicate', [BiometricController::class, 'checkDuplicate'])->name('biometric.check-duplicate');
 });
 
 require __DIR__ . '/settings.php';
