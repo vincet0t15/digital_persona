@@ -1,4 +1,5 @@
 import { FingerprintDeviceStatus } from '@/components/device-status-indicator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FingerprintScanner } from '@/pages/Bio/fingerprint-scanner';
@@ -6,7 +7,6 @@ import { Head, router } from '@inertiajs/react';
 import { Clock, Fingerprint, LogIn, LogOut } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { toast, Toaster } from 'sonner';
-
 interface TimeLog {
     id: number;
     employee_id: number;
@@ -210,11 +210,10 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
                                                 <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-gray-200">
                                                     {clock_result.employee.image ? (
                                                         // eslint-disable-next-line @next/next/no-img-element
-                                                        <img
-                                                            src={clock_result.employee.image}
-                                                            alt={clock_result.employee.name}
-                                                            className="h-full w-full object-cover"
-                                                        />
+                                                        <Avatar>
+                                                            <AvatarImage src={clock_result.employee.image} />
+                                                            <AvatarFallback>CN</AvatarFallback>
+                                                        </Avatar>
                                                     ) : (
                                                         <span className="text-sm font-semibold text-gray-700">
                                                             {getInitials(clock_result.employee.name)}

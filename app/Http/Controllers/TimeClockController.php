@@ -111,7 +111,7 @@ class TimeClockController extends Controller
                         'employee' => [
                             'id' => $matchedEmployee->id,
                             'name' => $matchedEmployee->name,
-                            'image' => $matchedEmployee->image,
+                            'image' => $matchedEmployee->image ? asset('storage/' . $matchedEmployee->image) : null,
                         ],
                         'log_type' => $logType,
                         'time' => Carbon::now('Singapore')->format('h:i A'),
