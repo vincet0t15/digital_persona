@@ -87,7 +87,7 @@ class TimeClockController extends Controller
                 try {
                     TimeLog::create([
                         'employee_id' => $matchedEmployee->id,
-                        'date_time' => Carbon::now(),
+                        'date_time' => Carbon::now('Singapore'),
                         'log_type' => $logType,
                     ]);
                 } catch (\Exception $e) {
@@ -114,7 +114,7 @@ class TimeClockController extends Controller
                             'image' => $matchedEmployee->image,
                         ],
                         'log_type' => $logType,
-                        'time' => Carbon::now()->format('h:i A'),
+                        'time' => Carbon::now('Singapore')->format('h:i A'),
                     ]);
             }
         }
