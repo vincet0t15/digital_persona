@@ -2,9 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { Fingerprint, Scan, User, UserCheck, XCircle } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FingerprintScanner } from './fingerprint-scanner';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -27,44 +27,25 @@ interface IdentificationResult {
     success: boolean;
     match: boolean;
     score?: number;
-    data?: IdentifiedEmployee;
+    employee_data?: IdentifiedEmployee;
     message?: string;
 }
 
 interface PageProps {
-    flash?: {
-        result?: IdentificationResult;
-    };
+    result?: IdentificationResult;
+
     [key: string]: any;
 }
 
-export default function IdentifyEmployee() {
+export default function IdentifyEmployee({ result }: PageProps) {
+    console.log('data:', result);
     const { props } = usePage<PageProps>();
-    const [scanResult, setScanResult] = useState<IdentificationResult | null>(null);
     const [isIdentifying, setIsIdentifying] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const { data, setData, post, processing, reset, transform } = useForm({
         fingerprint_template: '',
     });
-
-    // Handle flash message from backend
-    useEffect(() => {
-        console.log('Props changed:', props);
-        console.log('Flash object:', props.flash);
-        const result = props.flash?.result;
-        console.log('Result value:', result);
-        console.log('Result type:', typeof result);
-        if (result) {
-            console.log('Result received:', result);
-            console.log('Result.match:', result.match);
-            console.log('Result.data:', result.data);
-            setScanResult(result);
-            if (!result.success) {
-                setError(result.message || 'Identification failed');
-            }
-        }
-    }, [props.flash?.result]);
 
     const handleFingerprintCapture = (template: string, quality: number) => {
         // Set the data synchronously then post
@@ -81,7 +62,6 @@ export default function IdentifyEmployee() {
             onStart: () => {
                 setIsIdentifying(true);
                 setError(null);
-                setScanResult(null);
             },
             onError: () => {
                 setError('Something went wrong.');
@@ -94,12 +74,12 @@ export default function IdentifyEmployee() {
 
     const handleError = (errorMessage: string) => {
         setError(errorMessage);
-        setScanResult(null);
     };
 
     const handleReset = () => {
-        setScanResult(null);
         setError(null);
+        // Reload the page to clear the flash message
+        router.reload();
     };
 
     return (
@@ -132,7 +112,7 @@ export default function IdentifyEmployee() {
                     </Card>
 
                     {/* Identification Result */}
-                    {scanResult?.match && scanResult.data && (
+                    {result?.match && result.employee_data && (
                         <Card className="border-green-200 bg-green-50">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-green-800">
@@ -146,9 +126,9 @@ export default function IdentifyEmployee() {
                                         <User className="text-primary-foreground h-8 w-8" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-semibold text-green-900">{scanResult.data.name}</h3>
-                                        <p className="text-green-700">Employee ID: {scanResult.data.id}</p>
-                                        {scanResult.score && <p className="text-sm text-green-600">Match Score: {scanResult.score}</p>}
+                                        <h3 className="text-xl font-semibold text-green-900">{result.employee_data.name}</h3>
+                                        <p className="text-green-700">Employee ID: {result.employee_data.id}</p>
+                                        {result.score && <p className="text-sm text-green-600">Match Score: {result.score}</p>}
                                     </div>
                                 </div>
                                 <div className="flex gap-2 pt-2">
@@ -162,7 +142,7 @@ export default function IdentifyEmployee() {
                     )}
 
                     {/* No Match Result */}
-                    {scanResult && !scanResult.match && (
+                    {result && !result.match && (
                         <Card className="border-red-200 bg-red-50">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-red-800">
@@ -171,7 +151,7 @@ export default function IdentifyEmployee() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <p className="text-red-700">{scanResult.message || 'No matching fingerprint found in the database.'}</p>
+                                <p className="text-red-700">{result.message || 'No matching fingerprint found in the database.'}</p>
                                 <Button onClick={handleReset} variant="outline" className="gap-2">
                                     <Scan className="h-4 w-4" />
                                     Try Again
@@ -181,7 +161,7 @@ export default function IdentifyEmployee() {
                     )}
 
                     {/* Error Display */}
-                    {error && !scanResult && (
+                    {error && !result && (
                         <Card className="border-red-200 bg-red-50">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-red-800">

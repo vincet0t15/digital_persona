@@ -183,11 +183,12 @@ class BiometricController extends Controller
                     'score' => $result['score'] ?? 0,
                 ]);
 
-                return back()->with('result', [
+
+                return redirect()->back()->with('result', [
                     'success' => true,
                     'match' => true,
                     'score' => $result['score'] ?? 0,
-                    'data' => [
+                    'employee_data' => [
                         'id' => $matchedEmployee->id,
                         'name' => $matchedEmployee->name,
                     ],
