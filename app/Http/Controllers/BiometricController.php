@@ -188,10 +188,7 @@ class BiometricController extends Controller
                     'success' => true,
                     'match' => true,
                     'score' => $result['score'] ?? 0,
-                    'employee_data' => [
-                        'id' => $matchedEmployee->id,
-                        'name' => $matchedEmployee->name,
-                    ],
+                    'employee_data' => $matchedEmployee,
                 ]);
             }
         }
