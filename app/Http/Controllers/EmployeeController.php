@@ -88,6 +88,9 @@ class EmployeeController extends Controller
             ], 400);
         }
 
+        // Clear the fingerprint cache so new enrollments are available immediately
+        cache()->forget('enrolled_fingerprints');
+
         return redirect()->back()->with('success', "Employee registered successfully with {$enrolledCount} fingerprint(s).");
     }
 

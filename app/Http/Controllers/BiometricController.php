@@ -61,6 +61,7 @@ class BiometricController extends Controller
 
     private function matchFingerprint(string $capturedFmd, array $galleryEntries): array
     {
+        $startTime = microtime(true);
         $tempDir = sys_get_temp_dir();
         $capturedFile = $tempDir . DIRECTORY_SEPARATOR . 'fp_captured_' . uniqid() . '.txt';
         $galleryFile = $tempDir . DIRECTORY_SEPARATOR . 'fp_gallery_' . uniqid() . '.txt';
@@ -91,15 +92,32 @@ class BiometricController extends Controller
         @unlink($capturedFile);
         @unlink($galleryFile);
 
+        $executionTime = round((microtime(true) - $startTime) * 1000, 2);
+
         if ($output === null) {
+            Log::warning('Fingerprint matcher execution failed', [
+                'gallery_size' => count($galleryEntries),
+                'execution_time_ms' => $executionTime,
+            ]);
             return ['match' => false, 'message' => 'Matcher execution failed'];
         }
 
         $result = json_decode(trim($output), true);
 
         if ($result === null) {
+            Log::warning('Invalid matcher response', [
+                'gallery_size' => count($galleryEntries),
+                'execution_time_ms' => $executionTime,
+                'output' => $output,
+            ]);
             return ['match' => false, 'message' => 'Invalid matcher response'];
         }
+
+        Log::info('Fingerprint matching completed', [
+            'gallery_size' => count($galleryEntries),
+            'execution_time_ms' => $executionTime,
+            'match' => $result['match'] ?? false,
+        ]);
 
         if (isset($result['match']) && $result['match'] === true && isset($result['person_id'])) {
             $matchedIndex = intval($result['person_id']);
@@ -222,11 +240,13 @@ class BiometricController extends Controller
             ]);
         }
 
-        // Get all fingerprints from database
-        $fingerprints = Fingeprint::with('employee')
-            ->whereNotNull('fingerprint_template')
-            ->where('fingerprint_template', '!=', '')
-            ->get();
+        // Get all fingerprints from database (cached for 60 seconds to improve performance)
+        $fingerprints = cache()->remember('enrolled_fingerprints', 60, function () {
+            return Fingeprint::with('employee')
+                ->whereNotNull('fingerprint_template')
+                ->where('fingerprint_template', '!=', '')
+                ->get();
+        });
 
         // Build gallery entries
         $galleryEntries = [];
