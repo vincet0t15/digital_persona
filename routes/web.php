@@ -18,6 +18,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
 
+    // Employee Identification
+    Route::get('/employees/identify', function () {
+        return Inertia::render('Bio/identify');
+    })->name('employees.identify');
+
     // Biometric API endpoints
     Route::post('/biometric/identify', [BiometricController::class, 'identify'])->name('biometric.identify');
 });

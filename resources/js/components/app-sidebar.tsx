@@ -28,7 +28,7 @@ const mainNavItems: NavGroup[] = [
             },
             {
                 title: 'Identify',
-                href: '#',
+                href: '/employees/identify',
                 icon: BookOpen,
             },
         ],
