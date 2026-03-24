@@ -1,0 +1,467 @@
+2026-03-02 03:35:26 IDENTIFY
+Captured FMD length: 784
+Gallery records: 1
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a4f76e1affc.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a4f76e1affe.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":7,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 03:37:12 IDENTIFY
+Captured FMD length: 848
+Gallery records: 1
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a4f7d84053a.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a4f7d84053b.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":7,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 03:41:48 IDENTIFY
+Captured FMD length: 668
+Gallery records: 2
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a4f8ecb1d16.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a4f8ecb1d18.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":8,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 03:44:57 IDENTIFY
+Captured FMD length: 776
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a4f9a9903a9.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a4f9a9903aa.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":8,"score":100.0,"dissimilarity":0,"total_matches":2}
+
+---
+2026-03-02 03:45:11 IDENTIFY
+Captured FMD length: 680
+Gallery records: 2
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a4f9b7e2224.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a4f9b7e2226.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":9,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 03:45:33 IDENTIFY
+Captured FMD length: 840
+Gallery records: 2
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a4f9cd9121e.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a4f9cd91220.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":9,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 03:57:03 IDENTIFY
+Captured FMD length: 936
+Gallery records: 1
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a4fc7f27598.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a4fc7f2759a.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":10,"score":100.0,"dissimilarity":9,"total_matches":1}
+
+---
+2026-03-02 03:57:22 IDENTIFY
+Captured FMD length: 860
+Gallery records: 1
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a4fc9202bb3.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a4fc9202bb4.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":10,"score":100.0,"dissimilarity":2,"total_matches":1}
+
+---
+2026-03-02 10:59:12 IDENTIFY
+Captured FMD length: 816
+Gallery records: 1
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a4fd0002a39.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a4fd0002a3a.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":10,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 11:00:30 IDENTIFY
+Captured FMD length: 860
+Gallery records: 2
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a4fd4eb1363.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a4fd4eb1368.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":11,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 11:43:34 IDENTIFY
+Captured FMD length: 776
+Gallery records: 2
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a507666331f.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a5076663322.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":10,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 11:51:35 IDENTIFY
+Captured FMD length: 764
+Gallery records: 2
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a5094701e79.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a5094701e7e.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":11,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 12:05:23 IDENTIFY
+Captured FMD length: 936
+Gallery records: 2
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a50c83a074a.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a50c83a074c.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":10,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 12:14:15 png2fmd error: {"success":false,"error":"The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters. "}
+
+2026-03-02 12:14:24 png2fmd error: {"success":false,"error":"The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters. "}
+
+2026-03-02 12:14:31 png2fmd error: {"success":false,"error":"The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters. "}
+
+2026-03-02 12:14:36 png2fmd error: {"success":false,"error":"The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters. "}
+
+2026-03-02 12:14:40 png2fmd error: {"success":false,"error":"The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters. "}
+
+2026-03-02 12:14:50 png2fmd error: {"success":false,"error":"The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters. "}
+
+2026-03-02 12:14:54 png2fmd error: {"success":false,"error":"The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters. "}
+
+2026-03-02 12:14:58 png2fmd error: {"success":false,"error":"The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters. "}
+
+2026-03-02 12:21:59 IDENTIFY
+Captured FMD length: 936
+Gallery records: 2
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a510674a9b0.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a510674a9b2.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":10,"score":100.0,"dissimilarity":7,"total_matches":1}
+
+---
+2026-03-02 13:47:50 IDENTIFY
+Captured FMD length: 604
+Gallery records: 2
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a52486e8c8d.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a52486e8c8f.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 13:48:16 IDENTIFY
+Captured FMD length: 936
+Gallery records: 2
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a524a09605b.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a524a09605d.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":10,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 13:49:21 IDENTIFY
+Captured FMD length: 784
+Gallery records: 2
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a524e187153.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a524e187155.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":10,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 13:51:17 IDENTIFY
+Captured FMD length: 840
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a52555e50f0.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a52555e50f3.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":12,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 13:51:32 IDENTIFY
+Captured FMD length: 700
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a5256404a12.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a5256404a15.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":12,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 13:53:57 IDENTIFY
+Captured FMD length: 936
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a525f54968d.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a525f54968e.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":10,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 14:33:09 IDENTIFY
+Captured FMD length: 936
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a52f253126f.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a52f2531270.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":10,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 14:49:50 IDENTIFY
+Captured FMD length: 624
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a5330ebb80e.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a5330ebb811.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 14:50:02 IDENTIFY
+Captured FMD length: 872
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a5331a115f9.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a5331a115fa.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 14:50:47 IDENTIFY
+Captured FMD length: 880
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a53347d0530.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a53347d0531.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 14:50:57 IDENTIFY
+Captured FMD length: 860
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a53351b8a9f.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a53351b8aa0.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 14:51:24 IDENTIFY
+Captured FMD length: 828
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a5336c3349b.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a5336c3349c.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 14:51:31 IDENTIFY
+Captured FMD length: 860
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a533734b0e0.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a533734b0f2.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 14:53:26 IDENTIFY
+Captured FMD length: 776
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a533e645454.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a533e645455.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":11,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 14:53:32 IDENTIFY
+Captured FMD length: 488
+Gallery records: 3
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a533ecd392c.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a533ecd392d.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":10,"score":100.0,"dissimilarity":135,"total_matches":1}
+
+---
+2026-03-02 14:54:53 IDENTIFY
+Captured FMD length: 764
+Gallery records: 4
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a5343d7a129.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a5343d7a12a.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":13,"score":100.0,"dissimilarity":7,"total_matches":1}
+
+---
+2026-03-02 14:55:25 IDENTIFY
+Captured FMD length: 872
+Gallery records: 4
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a5345d14409.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a5345d1440e.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 14:58:43 IDENTIFY
+Captured FMD length: 904
+Gallery records: 4
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a535231407b.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a535231407e.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 15:05:35 IDENTIFY
+Captured FMD length: 720
+Gallery records: 4
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a536bf50ba0.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a536bf50ba6.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 15:05:40 IDENTIFY
+Captured FMD length: 828
+Gallery records: 4
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a536c4ba2c6.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a536c4ba2c7.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 15:05:45 IDENTIFY
+Captured FMD length: 892
+Gallery records: 4
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a536c968c56.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a536c968c57.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 15:05:54 DIAGNOSE from 192.168.1.185
+{
+    "client_ip": "192.168.1.185",
+    "timestamp": "2026-03-02 15:05:53",
+    "raw_data": {
+        "length": 212708,
+        "first_50_chars": "iVBORw0KGgoAAAANSUhEUgAAAfQAAAImCAMAAACSFogBAAAAAX",
+        "last_20_chars": "hNeHAAAAAElFTkSuQmCC",
+        "has_data_uri_prefix": false,
+        "has_comma": false,
+        "has_base64url_chars": false,
+        "has_standard_base64_chars": true,
+        "has_newlines": false
+    },
+    "png2fmd": {
+        "command": "\"C:\\xampp\\htdocs\\BIOMETRICPHP\\matcher\\FingerprintMatcher.exe\" png2fmd \"C:\\Users\\ITPROG~1\\AppData\\Local\\Temp\\fp_diag_69a536d195e82.txt\" 2>&1",
+        "file_written_size": 212708,
+        "raw_output": "{\"success\":true,\"fmd\":\"PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RmlkPjxCeXRlcz5SazFTQUNBeU1BQUJvQUF6QUFBQUFBSDBBaVlBeFFERkFRQUFBRlpBZ0tVQThIeGNRTHNBM1JkU2dKVUJuenBTZ0c0QWVuZFJRSTRCUzR0TlFJTUJvamhMZ1FNQkpYaEtnSGNBamhsSWdQTUJIWWRJUVIwQlZuVkZnVklCZHloRmdHa0JYSUpFZ1g0QTh5UkRRV29BNFlWRGdXVUF1MEZCUU13QTdIaEJnWEVBeHlSQVFJa0JuWmxBZ1JjQlVuTkFRVjBCZDM5QWdVc0FzVVUvUVdNQThEVS9RVzBBN2ljK1FXQUE2UjQrUVZBQlpZSStRV2NCT293OWdQRUExd0E4UVB3QlkyNDhnVndBODQ4N1FYRUJDVE03UUlRQnlKODdnVmNBL0RvN2dXWUJYQ1U3UU1nQm1LVTdRVklCQTRzNlFVVUJKRGc1Z013QnVKODRRVDhCUm9VM2dWa0JKWXMyZ1Z3Qk9DODJRVThCVkg4MlFYY0E2U2cyZ1djQkl5ODJRVllCUUlzMmdUb0JlWDgyUVZRQXQ1czFBVW9CSDR3MUFYSUJWSUkxQVhBQXNDczBBV2NBL1pJMEFXRUEvbzgwQVdjQktVQTBBVjBCVUlNMEFZUUE3aVV6QVBJQlBoNHpBVVlCZG4wekFNOEJrMFF6QVZFQXpFY3pBWEFCUmlvekFQZ0JLQ3N5QVVVQlRIOHlBWDRBdDRVeUFZY0E1U1V5QVlBQTVpVXlBQUE9PC9CeXRlcz48Rm9ybWF0PjE3Njk0NzM8L0Zvcm1hdD48VmVyc2lvbj4xLjAuMDwvVmVyc2lvbj48L0ZpZD4=\",\"width\":500,\"height\":550}\n",
+        "output_length": 943,
+        "parsed_result": {
+            "success": true,
+            "fmd": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RmlkPjxCeXRlcz5SazFTQUNBeU1BQUJvQUF6QUFBQUFBSDBBaVlBeFFERkFRQUFBRlpBZ0tVQThIeGNRTHNBM1JkU2dKVUJuenBTZ0c0QWVuZFJRSTRCUzR0TlFJTUJvamhMZ1FNQkpYaEtnSGNBamhsSWdQTUJIWWRJUVIwQlZuVkZnVklCZHloRmdHa0JYSUpFZ1g0QTh5UkRRV29BNFlWRGdXVUF1MEZCUU13QTdIaEJnWEVBeHlSQVFJa0JuWmxBZ1JjQlVuTkFRVjBCZDM5QWdVc0FzVVUvUVdNQThEVS9RVzBBN2ljK1FXQUE2UjQrUVZBQlpZSStRV2NCT293OWdQRUExd0E4UVB3QlkyNDhnVndBODQ4N1FYRUJDVE03UUlRQnlKODdnVmNBL0RvN2dXWUJYQ1U3UU1nQm1LVTdRVklCQTRzNlFVVUJKRGc1Z013QnVKODRRVDhCUm9VM2dWa0JKWXMyZ1Z3Qk9DODJRVThCVkg4MlFYY0E2U2cyZ1djQkl5ODJRVllCUUlzMmdUb0JlWDgyUVZRQXQ1czFBVW9CSDR3MUFYSUJWSUkxQVhBQXNDczBBV2NBL1pJMEFXRUEvbzgwQVdjQktVQTBBVjBCVUlNMEFZUUE3aVV6QVBJQlBoNHpBVVlCZG4wekFNOEJrMFF6QVZFQXpFY3pBWEFCUmlvekFQZ0JLQ3N5QVVVQlRIOHlBWDRBdDRVeUFZY0E1U1V5QVlBQTVpVXlBQUE9PC9CeXRlcz48Rm9ybWF0PjE3Njk0NzM8L0Zvcm1hdD48VmVyc2lvbj4xLjAuMDwvVmVyc2lvbj48L0ZpZD4=",
+            "width": 500,
+            "height": 550
+        },
+        "status": "SUCCESS",
+        "fmd_length": 892
+    },
+    "gallery": {
+        "total_persons": 4,
+        "persons_details": [
+            {
+                "id": 10,
+                "name": "Kevin Reyes",
+                "template_length": 936,
+                "quality": 90
+            },
+            {
+                "id": 11,
+                "name": "Jasper",
+                "template_length": 936,
+                "quality": 90
+            },
+            {
+                "id": 12,
+                "name": "Rian",
+                "template_length": 592,
+                "quality": 90
+            },
+            {
+                "id": 13,
+                "name": "bbb",
+                "template_length": 880,
+                "quality": 90
+            }
+        ]
+    },
+    "matching": {
+        "command": "\"C:\\xampp\\htdocs\\BIOMETRICPHP\\matcher\\FingerprintMatcher.exe\" identify \"C:\\Users\\ITPROG~1\\AppData\\Local\\Temp\\fp_diag_cap_69a536d1baee2.txt\" \"C:\\Users\\ITPROG~1\\AppData\\Local\\Temp\\fp_diag_gal_69a536d1baee3.txt\" 2>&1",
+        "captured_fmd_file_size": 892,
+        "gallery_file_size": 3359,
+        "gallery_records": 4,
+        "raw_output": "{\"success\":true,\"match\":false,\"message\":\"No matching fingerprint found\"}\n",
+        "parsed_result": {
+            "success": true,
+            "match": false,
+            "message": "No matching fingerprint found"
+        },
+        "status": "NO_MATCH"
+    },
+    "individual_comparisons": [
+        {
+            "person_id": 10,
+            "person_name": "Kevin Reyes",
+            "result": {
+                "success": true,
+                "match": false,
+                "score": 80,
+                "dissimilarity": 428479319
+            }
+        },
+        {
+            "person_id": 11,
+            "person_name": "Jasper",
+            "result": {
+                "success": true,
+                "match": false,
+                "score": 0,
+                "dissimilarity": 2147483647
+            }
+        },
+        {
+            "person_id": 12,
+            "person_name": "Rian",
+            "result": {
+                "success": true,
+                "match": false,
+                "score": 0,
+                "dissimilarity": 2147483647
+            }
+        },
+        {
+            "person_id": 13,
+            "person_name": "bbb",
+            "result": {
+                "success": true,
+                "match": false,
+                "score": 0,
+                "dissimilarity": 2147483647
+            }
+        }
+    ]
+}
+---
+2026-03-02 15:13:28 IDENTIFY
+Captured FMD length: 668
+Gallery records: 5
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a5389809cd8.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a5389809cd9.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":14,"score":100.0,"dissimilarity":11,"total_matches":1}
+
+---
+2026-03-02 15:13:44 IDENTIFY
+Captured FMD length: 796
+Gallery records: 5
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a538a8b45a1.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a538a8b45a2.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 15:14:44 IDENTIFY
+Captured FMD length: 936
+Gallery records: 5
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a538e4755c6.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a538e4755c7.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 15:14:49 IDENTIFY
+Captured FMD length: 796
+Gallery records: 5
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a538e960d52.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a538e960d53.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 15:48:04 IDENTIFY (multi-reader)
+Captured FMD length: 828
+Gallery records: 6 (from 5 persons)
+Client IP: 192.168.1.185
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a540b4ca86f.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a540b4ca871.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-02 15:48:09 IDENTIFY (multi-reader)
+Captured FMD length: 752
+Gallery records: 6 (from 5 persons)
+Client IP: 192.168.1.185
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a540b9485d5.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a540b9485d8.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":5,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
+2026-03-02 15:48:19 IDENTIFY (multi-reader)
+Captured FMD length: 872
+Gallery records: 6 (from 5 persons)
+Client IP: 192.168.1.185
+Command: "C:\xampp\htdocs\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\ITPROG~1\AppData\Local\Temp\fp_captured_69a540c38586b.txt" "C:\Users\ITPROG~1\AppData\Local\Temp\fp_gallery_69a540c38586c.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-23 17:25:30 png2fmd error: {"success":false,"error":"Unable to load DLL 'dpfpdd.dll': The specified module could not be found. (Exception from HRESULT: 0x8007007E)"}
+
+2026-03-23 17:25:46 png2fmd error: {"success":false,"error":"Unable to load DLL 'dpfpdd.dll': The specified module could not be found. (Exception from HRESULT: 0x8007007E)"}
+
+2026-03-23 17:38:58 png2fmd error: {"success":false,"error":"Unable to load DLL 'dpfpdd.dll': The specified module could not be found. (Exception from HRESULT: 0x8007007E)"}
+
+2026-03-23 17:39:49 png2fmd error: {"success":false,"error":"Unable to load DLL 'dpfpdd.dll': The specified module could not be found. (Exception from HRESULT: 0x8007007E)"}
+
+2026-03-23 17:42:55 png2fmd error: {"success":false,"error":"Unable to load DLL 'dpfpdd.dll': The specified module could not be found. (Exception from HRESULT: 0x8007007E)"}
+
+2026-03-23 17:46:01 png2fmd error: {"success":false,"error":"Unable to load DLL 'dpfpdd.dll': The specified module could not be found. (Exception from HRESULT: 0x8007007E)"}
+
+2026-03-23 20:40:21 png2fmd error: {"success":false,"error":"Unable to load DLL 'dpfpdd.dll': The specified module could not be found. (Exception from HRESULT: 0x8007007E)"}
+
+2026-03-23 22:43:42 png2fmd error: {"success":false,"error":"The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters. "}
+
+2026-03-23 22:50:38 IDENTIFY (multi-reader)
+Captured FMD length: 392
+Gallery records: 2 (from 2 persons)
+Client IP: ::1
+Command: "C:\laragon\www\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\xKing\AppData\Local\Temp\fp_captured_69c1533ee6e8a.txt" "C:\Users\xKing\AppData\Local\Temp\fp_gallery_69c1533ee6e8d.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":1,"score":100.0,"dissimilarity":1,"total_matches":1}
+
+---
+2026-03-23 22:50:52 IDENTIFY (multi-reader)
+Captured FMD length: 496
+Gallery records: 2 (from 2 persons)
+Client IP: ::1
+Command: "C:\laragon\www\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\xKing\AppData\Local\Temp\fp_captured_69c1534c4eca8.txt" "C:\Users\xKing\AppData\Local\Temp\fp_gallery_69c1534c4ecae.txt" 2>&1
+Output: {"success":true,"match":false,"message":"No matching fingerprint found"}
+
+---
+2026-03-23 22:50:57 IDENTIFY (multi-reader)
+Captured FMD length: 476
+Gallery records: 2 (from 2 persons)
+Client IP: ::1
+Command: "C:\laragon\www\BIOMETRICPHP\matcher\FingerprintMatcher.exe" identify "C:\Users\xKing\AppData\Local\Temp\fp_captured_69c153519b8d7.txt" "C:\Users\xKing\AppData\Local\Temp\fp_gallery_69c153519b8d9.txt" 2>&1
+Output: {"success":true,"match":true,"person_id":0,"score":100.0,"dissimilarity":0,"total_matches":1}
+
+---
