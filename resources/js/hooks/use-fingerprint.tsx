@@ -253,8 +253,6 @@ export function useFingerprint() {
                 sdkInstance
                     .enumerateDevices()
                     .then((devices: string[]) => {
-                        console.log('[FP] Devices found:', devices);
-
                         if (devices && devices.length > 0) {
                             selectedReader = devices[0];
                             readerConnected = true;

@@ -34,17 +34,14 @@ interface TimeClockProps {
 }
 
 export default function TimeClock({ clock_result }: TimeClockProps) {
-    const [recentLogs, setRecentLogs] = useState<TimeLog[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
     const [scanKey, setScanKey] = useState(0);
     const [selectedLogType, setSelectedLogType] = useState<'IN' | 'OUT'>('IN');
 
-    // Use ref to always get the latest selectedLogType value in the callback
     const selectedLogTypeRef = useRef(selectedLogType);
     selectedLogTypeRef.current = selectedLogType;
 
     const handleFingerprintCapture = useCallback((template: string, quality: number) => {
-        // Get the current value from ref to avoid stale closure
         const currentLogType = selectedLogTypeRef.current;
 
         setIsProcessing(true);
