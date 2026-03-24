@@ -13,7 +13,6 @@ class BiometricController extends Controller
     {
         $paths = [
             public_path('matcher/FingerprintMatcher.exe'),
-            'c:\\laragon\\www\\BIOMETRICPHP\\matcher\\FingerprintMatcher.exe',
         ];
 
         foreach ($paths as $path) {
@@ -136,10 +135,11 @@ class BiometricController extends Controller
         $capturedFmd = $this->convertPngToFmd($capturedPng);
 
         if ($capturedFmd === false) {
-            return response()->json([
+            return back()->with('result', [
                 'success' => false,
+                'match' => false,
                 'message' => 'Failed to process captured fingerprint. Please try again.',
-            ], 400);
+            ]);
         }
 
         // Get all fingerprints from database
@@ -162,8 +162,9 @@ class BiometricController extends Controller
             }
         }
 
+
         if (count($galleryEntries) === 0) {
-            return response()->json([
+            return back()->with('result', [
                 'success' => true,
                 'match' => false,
                 'message' => 'No enrolled fingerprints found',
@@ -182,7 +183,7 @@ class BiometricController extends Controller
                     'score' => $result['score'] ?? 0,
                 ]);
 
-                return response()->json([
+                return back()->with('result', [
                     'success' => true,
                     'match' => true,
                     'score' => $result['score'] ?? 0,
@@ -198,7 +199,7 @@ class BiometricController extends Controller
             'ip' => $request->ip(),
         ]);
 
-        return response()->json([
+        return back()->with('result', [
             'success' => true,
             'match' => false,
             'message' => $result['message'] ?? 'No matching fingerprint found',

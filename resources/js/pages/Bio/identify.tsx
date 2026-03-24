@@ -2,9 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { Fingerprint, Scan, User, UserCheck, XCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FingerprintScanner } from './fingerprint-scanner';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -31,22 +31,42 @@ interface IdentificationResult {
     message?: string;
 }
 
+interface PageProps {
+    result?: IdentificationResult;
+    [key: string]: any;
+}
+
 export default function IdentifyEmployee() {
+    const { props } = usePage<PageProps>();
     const [scanResult, setScanResult] = useState<IdentificationResult | null>(null);
     const [isIdentifying, setIsIdentifying] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, reset, transform } = useForm({
         fingerprint_template: '',
     });
 
-    const getCsrfToken = (): string => {
-        const meta = document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement | null;
-        return meta?.content || '';
-    };
+    // Handle flash message from backend
+    useEffect(() => {
+        console.log('Props changed:', props);
+        if (props.result) {
+            console.log('Result received:', props.result);
+            setScanResult(props.result);
+            if (!props.result.success) {
+                setError(props.result.message || 'Identification failed');
+            }
+        }
+    }, [props.result]);
 
     const handleFingerprintCapture = (template: string, quality: number) => {
+        // Set the data synchronously then post
         setData('fingerprint_template', template);
+
+        // Use transform to ensure the data is included in the request
+        transform((formData) => ({
+            ...formData,
+            fingerprint_template: template,
+        }));
 
         post(route('biometric.identify'), {
             preserveScroll: true,
@@ -54,15 +74,6 @@ export default function IdentifyEmployee() {
                 setIsIdentifying(true);
                 setError(null);
                 setScanResult(null);
-            },
-            onSuccess: (page: any) => {
-                const result = page.props?.result;
-
-                setScanResult(result);
-
-                if (!result?.success) {
-                    setError(result?.message || 'Identification failed');
-                }
             },
             onError: () => {
                 setError('Something went wrong.');
