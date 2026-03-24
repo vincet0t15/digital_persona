@@ -13,6 +13,7 @@ export interface FingerprintData {
     template: string;
     quality: number;
     finger_name: string;
+    samples?: FingerprintData[];
 }
 
 export interface EmployeeCreate {

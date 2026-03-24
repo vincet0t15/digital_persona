@@ -52,6 +52,8 @@ const FINGER_OPTIONS = [
     { value: 'Left Pinky', label: 'Left Pinky' },
 ];
 
+const REQUIRED_SAMPLES = 5; // Number of samples per finger
+
 export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
     const { data, setData, post, processing } = useForm<EmployeeCreate>({
         name: '',
@@ -69,6 +71,8 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
     const [currentFingerprint, setCurrentFingerprint] = useState<FingerprintData | null>(null);
     const [duplicateWarning, setDuplicateWarning] = useState<DuplicateCheckResult | null>(null);
     const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
+    const [pendingSamples, setPendingSamples] = useState<FingerprintData[]>([]);
+    const [currentSampleIndex, setCurrentSampleIndex] = useState(0);
     const photoPreviewUrlRef = useRef<string | null>(null);
 
     const officeOptions = offices.map((office) => ({
@@ -109,21 +113,61 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                     if (result?.duplicate) {
                         setDuplicateWarning(result);
                         setCurrentFingerprint(null);
+                        // Reset samples on duplicate
+                        setPendingSamples([]);
+                        setCurrentSampleIndex(0);
                     } else {
-                        setCurrentFingerprint({
+                        const sample: FingerprintData = {
                             template,
                             quality,
                             finger_name: selectedFinger,
-                        });
+                        };
+
+                        // Add to pending samples
+                        const newSamples = [...pendingSamples, sample];
+                        setPendingSamples(newSamples);
+
+                        if (newSamples.length >= REQUIRED_SAMPLES) {
+                            // All samples collected, create the fingerprint entry
+                            setCurrentFingerprint({
+                                template,
+                                quality,
+                                finger_name: selectedFinger,
+                                samples: newSamples,
+                            });
+                            setPendingSamples([]);
+                            setCurrentSampleIndex(0);
+                        } else {
+                            // More samples needed
+                            setCurrentSampleIndex(newSamples.length);
+                            setCurrentFingerprint(null);
+                        }
                     }
                 },
                 onError: () => {
                     // If check fails, still allow the fingerprint to be captured
-                    setCurrentFingerprint({
+                    const sample: FingerprintData = {
                         template,
                         quality,
                         finger_name: selectedFinger,
-                    });
+                    };
+
+                    const newSamples = [...pendingSamples, sample];
+                    setPendingSamples(newSamples);
+
+                    if (newSamples.length >= REQUIRED_SAMPLES) {
+                        setCurrentFingerprint({
+                            template,
+                            quality,
+                            finger_name: selectedFinger,
+                            samples: newSamples,
+                        });
+                        setPendingSamples([]);
+                        setCurrentSampleIndex(0);
+                    } else {
+                        setCurrentSampleIndex(newSamples.length);
+                        setCurrentFingerprint(null);
+                    }
                 },
                 onFinish: () => {
                     setIsCheckingDuplicate(false);
@@ -321,10 +365,39 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                             </div>
 
                             {/* Scanner */}
-                            <FingerprintScanner mode="enroll" onCapture={handleFingerprintCapture} showStatus={false} />
+                            <FingerprintScanner
+                                mode="enroll"
+                                onCapture={handleFingerprintCapture}
+                                showStatus={false}
+                                requiredSamples={REQUIRED_SAMPLES}
+                                currentSample={currentSampleIndex}
+                            />
+
+                            {/* Sample Progress */}
+                            {pendingSamples.length > 0 && pendingSamples.length < REQUIRED_SAMPLES && (
+                                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+                                        <div>
+                                            <p className="text-sm font-medium text-blue-700">Collecting Samples...</p>
+                                            <p className="text-xs text-blue-600">
+                                                {pendingSamples.length} of {REQUIRED_SAMPLES} samples collected. Please scan again.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex gap-1">
+                                        {Array.from({ length: REQUIRED_SAMPLES }).map((_, idx) => (
+                                            <div
+                                                key={idx}
+                                                className={`h-2 flex-1 rounded-full ${idx < pendingSamples.length ? 'bg-green-500' : 'bg-blue-200'}`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Checking Duplicate Loader */}
-                            {isCheckingDuplicate && (
+                            {isCheckingDuplicate && pendingSamples.length === 0 && (
                                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
                                     <div className="flex items-center gap-3">
                                         <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
@@ -375,12 +448,28 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                             <div>
                                                 <p className="font-medium text-green-900">{currentFingerprint.finger_name}</p>
                                                 <p className="text-sm text-green-700">Quality: {currentFingerprint.quality}%</p>
+                                                {currentFingerprint.samples && (
+                                                    <p className="text-xs text-green-600">{currentFingerprint.samples.length} samples collected</p>
+                                                )}
                                             </div>
                                         </div>
                                         <Button type="button" size="sm" onClick={handleAddFingerprint}>
                                             Add Fingerprint
                                         </Button>
                                     </div>
+                                    {currentFingerprint.samples && (
+                                        <div className="mt-3 flex gap-1">
+                                            {currentFingerprint.samples.map((sample, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className="flex h-8 flex-1 items-center justify-center rounded bg-green-100 text-xs font-medium text-green-700"
+                                                    title={`Sample ${idx + 1}: ${sample.quality}% quality`}
+                                                >
+                                                    {sample.quality}%
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
@@ -392,23 +481,38 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                         <h4 className="text-sm font-medium">Enrolled Fingerprints ({fingerprints.length})</h4>
                                         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                                             {fingerprints.map((fp: FingerprintData, index: number) => (
-                                                <div key={index} className="bg-muted/30 flex items-center justify-between rounded-lg border p-3">
-                                                    <div className="flex items-center gap-3">
-                                                        <Fingerprint className="text-muted-foreground h-4 w-4" />
-                                                        <div>
-                                                            <p className="text-sm font-medium">{fp.finger_name}</p>
-                                                            <p className="text-muted-foreground text-xs">Quality: {fp.quality}%</p>
+                                                <div key={index} className="bg-muted/30 flex flex-col rounded-lg border p-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-3">
+                                                            <Fingerprint className="text-muted-foreground h-4 w-4" />
+                                                            <div>
+                                                                <p className="text-sm font-medium">{fp.finger_name}</p>
+                                                                <p className="text-muted-foreground text-xs">
+                                                                    Quality: {fp.quality}%{fp.samples && ` • ${fp.samples.length} samples`}
+                                                                </p>
+                                                            </div>
                                                         </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => handleRemoveFingerprint(index)}
+                                                            className="text-muted-foreground hover:text-destructive h-8 w-8"
+                                                        >
+                                                            <X className="h-4 w-4" />
+                                                        </Button>
                                                     </div>
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => handleRemoveFingerprint(index)}
-                                                        className="text-muted-foreground hover:text-destructive h-8 w-8"
-                                                    >
-                                                        <X className="h-4 w-4" />
-                                                    </Button>
+                                                    {fp.samples && (
+                                                        <div className="mt-2 flex gap-1">
+                                                            {fp.samples.map((sample, idx) => (
+                                                                <div
+                                                                    key={idx}
+                                                                    className="h-1.5 flex-1 rounded-full bg-green-500"
+                                                                    title={`Sample ${idx + 1}: ${sample.quality}% quality`}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>

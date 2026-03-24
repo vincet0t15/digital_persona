@@ -14,9 +14,19 @@ interface FingerprintScannerProps {
     onError?: (error: string) => void;
     className?: string;
     showStatus?: boolean;
+    requiredSamples?: number;
+    currentSample?: number;
 }
 
-export function FingerprintScanner({ mode, onCapture, onError, className, showStatus = true }: FingerprintScannerProps) {
+export function FingerprintScanner({
+    mode,
+    onCapture,
+    onError,
+    className,
+    showStatus = true,
+    requiredSamples = 1,
+    currentSample = 0,
+}: FingerprintScannerProps) {
     const { initialized, readerConnected, mode: sdkMode, scanning, status, startCapture, stopCapture } = useFingerprint();
     const [scanStatus, setScanStatus] = useState<'idle' | 'scanning' | 'processing' | 'success' | 'error'>('idle');
     const [quality, setQuality] = useState<number>(0);
@@ -180,10 +190,32 @@ export function FingerprintScanner({ mode, onCapture, onError, className, showSt
                 )}
             </div>
 
+            {/* Sample Counter for Enrollment */}
+            {mode === 'enroll' && requiredSamples > 1 && (
+                <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-600">Sample:</span>
+                    <div className="flex gap-1">
+                        {Array.from({ length: requiredSamples }).map((_, idx) => (
+                            <div
+                                key={idx}
+                                className={`h-2.5 w-2.5 rounded-full transition-colors ${
+                                    idx < currentSample ? 'bg-green-500' : idx === currentSample ? 'animate-pulse bg-blue-500' : 'bg-gray-300'
+                                }`}
+                            />
+                        ))}
+                    </div>
+                    <span className="text-sm text-gray-500">
+                        {currentSample + 1} of {requiredSamples}
+                    </span>
+                </div>
+            )}
+
             {/* Instructions */}
             <p className="max-w-xs text-center text-xs text-gray-500">
                 {mode === 'enroll'
-                    ? 'Place your finger on the U.are.U 4500 reader and hold steady until the scan completes.'
+                    ? requiredSamples > 1
+                        ? `Place your finger on the U.are.U 4500 reader ${requiredSamples} times for better accuracy. Lift and place again for each scan.`
+                        : 'Place your finger on the U.are.U 4500 reader and hold steady until the scan completes.'
                     : 'Place your finger on the reader to identify yourself.'}
             </p>
         </div>
