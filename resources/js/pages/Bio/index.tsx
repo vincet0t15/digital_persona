@@ -13,6 +13,7 @@ import { Office } from '@/types/office';
 import { Head, router, useForm } from '@inertiajs/react';
 import { Fingerprint, UploadCloud, X, XIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { FingerprintScanner } from './fingerprint-scanner';
 
 interface DuplicateCheckResult {
@@ -55,7 +56,7 @@ const FINGER_OPTIONS = [
 const REQUIRED_SAMPLES = 5; // Number of samples per finger
 
 export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
-    const { data, setData, post, processing } = useForm<EmployeeCreate>({
+    const { data, setData, post, processing, reset } = useForm<EmployeeCreate>({
         name: '',
         username: '',
         office_id: '',
@@ -110,7 +111,7 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                 preserveScroll: true,
                 onSuccess: (page: any) => {
                     const result = page.props.result as DuplicateCheckResult;
-                    alert(JSON.stringify(result, null, 2));
+
                     if (result?.duplicate) {
                         setDuplicateWarning(result);
                         setCurrentFingerprint(null);
@@ -146,8 +147,6 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                     }
                 },
                 onError: () => {
-                    // If check fails, still allow the fingerprint to be captured
-                    alert('Duplicate fingerprint detected. Please try again.');
                     const sample: FingerprintData = {
                         template,
                         quality,
@@ -204,13 +203,12 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
         }
 
         post(route('employees.store'), {
-            onSuccess: () => {
-                console.log('Employee created successfully');
-                alert('Employee created successfully');
+            onSuccess: (response: { props: FlashProps }) => {
+                toast.success(response.props.flash?.success);
+                reset();
             },
             onError: (errors) => {
                 console.error('Form errors:', errors);
-                alert(1);
             },
         });
     };

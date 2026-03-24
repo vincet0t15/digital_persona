@@ -143,6 +143,7 @@ class BiometricController extends Controller
      */
     public function checkDuplicate(Request $request)
     {
+
         $request->validate([
             'fingerprint_template' => 'required|string',
         ]);
