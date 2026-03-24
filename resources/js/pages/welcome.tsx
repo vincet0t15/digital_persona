@@ -43,23 +43,27 @@ export default function Welcome() {
                             <span className="text-xl font-bold text-slate-900 dark:text-white">Bio</span>
                         </div>
                         <div className="flex items-center gap-4">
+                            <Link
+                                href={route('timeclock.index')}
+                                className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                            >
+                                <Fingerprint className="h-4 w-4" />
+                                Time Clock
+                            </Link>
+                            <Link
+                                href={route('employee.login')}
+                                className="text-sm font-medium text-slate-600 transition hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                            >
+                                Employee Login
+                            </Link>
                             {auth.user ? (
-                                <>
-                                    <Link
-                                        href={route('timeclock.index')}
-                                        className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                                    >
-                                        <Fingerprint className="h-4 w-4" />
-                                        Time Clock
-                                    </Link>
-                                    <Link
-                                        href={route('dashboard')}
-                                        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
-                                    >
-                                        Dashboard
-                                        <ArrowRight className="h-4 w-4" />
-                                    </Link>
-                                </>
+                                <Link
+                                    href={route('dashboard')}
+                                    className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                                >
+                                    Dashboard
+                                    <ArrowRight className="h-4 w-4" />
+                                </Link>
                             ) : (
                                 <>
                                     <Link
@@ -141,47 +145,6 @@ export default function Welcome() {
                                     <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{feature.description}</p>
                                 </div>
                             ))}
-                        </div>
-                    </div>
-                </section>
-
-                {/* CTA Section */}
-                <section className="px-4 py-20 sm:px-6 lg:px-8">
-                    <div className="mx-auto max-w-4xl">
-                        <div className="relative overflow-hidden rounded-3xl bg-blue-600 px-6 py-16 text-center sm:px-12 dark:bg-blue-700">
-                            <div className="relative z-10">
-                                <h2 className="text-3xl font-bold text-white sm:text-4xl">Ready to get started?</h2>
-                                <p className="mx-auto mt-4 max-w-xl text-blue-100">
-                                    Join organizations using Bio to streamline their employee management with biometric authentication.
-                                </p>
-                                <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                                    {auth.user ? (
-                                        <Link
-                                            href={route('dashboard')}
-                                            className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-lg font-semibold text-blue-600 transition hover:bg-blue-50"
-                                        >
-                                            Go to Dashboard
-                                            <ArrowRight className="h-5 w-5" />
-                                        </Link>
-                                    ) : (
-                                        <>
-                                            <Link
-                                                href={route('register')}
-                                                className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-lg font-semibold text-blue-600 transition hover:bg-blue-50"
-                                            >
-                                                Create Free Account
-                                                <ArrowRight className="h-5 w-5" />
-                                            </Link>
-                                            <Link
-                                                href={route('login')}
-                                                className="inline-flex items-center gap-2 rounded-xl border-2 border-white/30 bg-transparent px-8 py-4 text-lg font-semibold text-white transition hover:bg-white/10"
-                                            >
-                                                Sign In
-                                            </Link>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>

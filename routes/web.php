@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BiometricController;
+use App\Http\Controllers\EmployeeAuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\TimeClockController;
 use Illuminate\Support\Facades\Route;
@@ -10,6 +11,19 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
+// Employee Authentication Routes (Public)
+Route::middleware('guest')->group(function () {
+    Route::get('/employee/login', [EmployeeAuthController::class, 'showLogin'])->name('employee.login');
+    Route::post('/employee/login', [EmployeeAuthController::class, 'login'])->name('employee.login.post');
+});
+
+// Employee Protected Routes
+Route::middleware('employee.auth')->group(function () {
+    Route::get('/employee/dashboard', [EmployeeAuthController::class, 'dashboard'])->name('employee.dashboard');
+    Route::post('/employee/logout', [EmployeeAuthController::class, 'logout'])->name('employee.logout');
+});
+
+// Time Clock (Public - for fingerprint clock in/out)
 Route::middleware('guest')->group(function () {
     Route::get('/time-clock', [TimeClockController::class, 'index'])->name('timeclock.index');
     Route::post('/time-clock', [TimeClockController::class, 'clock'])->name('timeclock.clock');

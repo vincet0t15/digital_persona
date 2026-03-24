@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Storage;
 
-class Employee extends Model
+class Employee extends Authenticatable
 {
     use SoftDeletes;
+
+    protected $guard = 'employee';
 
     protected $fillable = [
         'name',
@@ -16,7 +19,22 @@ class Employee extends Model
         'password',
         'office_id',
         'image',
+        'is_active',
     ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+            'is_active' => 'boolean',
+        ];
+    }
+
     public function fingerprints()
     {
         return $this->hasMany(Fingeprint::class);
