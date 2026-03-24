@@ -18,9 +18,6 @@ return new class extends Migration
             // Add is_admin and is_active fields
             $table->boolean('is_admin')->default(false)->after('password');
             $table->boolean('is_active')->default(true)->after('is_admin');
-
-            // Make email nullable (optional field)
-            $table->string('email')->nullable()->change();
             $table->timestamp('email_verified_at')->nullable()->change();
         });
     }

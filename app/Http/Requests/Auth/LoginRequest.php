@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -42,22 +44,28 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $credentials = $this->only('username', 'password');
-        $credentials['is_active'] = true;
+        $username = $this->input('username');
+        $password = $this->input('password');
 
-        Log::info('Login attempt', ['username' => $credentials['username']]);
+        Log::info('Login attempt', ['username' => $username]);
 
-        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
+        // Find user by username
+        $user = User::where('username', $username)->where('is_active', true)->first();
+
+        if (! $user || ! Hash::check($password, $user->password)) {
             RateLimiter::hit($this->throttleKey());
 
-            Log::info('Login failed', ['username' => $credentials['username']]);
+            Log::info('Login failed', ['username' => $username]);
 
             throw ValidationException::withMessages([
                 'username' => __('auth.failed'),
             ]);
         }
 
-        Log::info('Login success', ['username' => $credentials['username']]);
+        // Log the user in
+        Auth::login($user, $this->boolean('remember'));
+
+        Log::info('Login success', ['username' => $username, 'user_id' => $user->id]);
 
         RateLimiter::clear($this->throttleKey());
     }
