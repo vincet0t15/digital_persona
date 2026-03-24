@@ -6,26 +6,30 @@ import { Button } from '@/components/ui/button';
 import { useFingerprint } from '@/hooks/use-fingerprint';
 import { cn } from '@/lib/utils';
 import { CheckCircle, Fingerprint, Loader2, Scan, XCircle } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface FingerprintScannerProps {
     mode: 'enroll' | 'identify';
     onCapture: (template: string, quality: number) => void;
     onError?: (error: string) => void;
+    onSampleComplete?: () => void;
     className?: string;
     showStatus?: boolean;
     requiredSamples?: number;
     currentSample?: number;
+    autoScan?: boolean;
 }
 
 export function FingerprintScanner({
     mode,
     onCapture,
     onError,
+    onSampleComplete,
     className,
     showStatus = true,
     requiredSamples = 1,
     currentSample = 0,
+    autoScan = false,
 }: FingerprintScannerProps) {
     const { initialized, readerConnected, mode: sdkMode, scanning, status, startCapture, stopCapture } = useFingerprint();
     const [scanStatus, setScanStatus] = useState<'idle' | 'scanning' | 'processing' | 'success' | 'error'>('idle');
@@ -44,6 +48,8 @@ export function FingerprintScanner({
                 setQuality(result.quality);
                 setMessage(`Fingerprint captured! Quality: ${result.quality}%${result.mode === 'simulated' ? ' (Simulated)' : ''}`);
                 onCapture(result.template, result.quality);
+                // Notify parent that sample is complete for auto-scanning
+                onSampleComplete?.();
             },
             (error) => {
                 setScanStatus('error');
@@ -62,13 +68,24 @@ export function FingerprintScanner({
                 }
             },
         );
-    }, [mode, startCapture, onCapture, onError]);
+    }, [mode, startCapture, onCapture, onError, onSampleComplete]);
 
     const handleStopScan = useCallback(() => {
         stopCapture();
         setScanStatus('idle');
         setMessage('');
     }, [stopCapture]);
+
+    // Auto-start scan when currentSample changes (for continuous enrollment)
+    useEffect(() => {
+        if (autoScan && mode === 'enroll' && currentSample < requiredSamples && initialized && (sdkMode === 'simulated' || readerConnected)) {
+            // Small delay to allow user to lift finger
+            const timer = setTimeout(() => {
+                handleStartScan();
+            }, 800);
+            return () => clearTimeout(timer);
+        }
+    }, [autoScan, currentSample, requiredSamples, mode, initialized, sdkMode, readerConnected, handleStartScan]);
 
     const getStatusColor = () => {
         switch (scanStatus) {
@@ -214,7 +231,9 @@ export function FingerprintScanner({
             <p className="max-w-xs text-center text-xs text-gray-500">
                 {mode === 'enroll'
                     ? requiredSamples > 1
-                        ? `Place your finger on the U.are.U 4500 reader ${requiredSamples} times for better accuracy. Lift and place again for each scan.`
+                        ? autoScan
+                            ? `Place your finger on the U.are.U 4500 reader ${requiredSamples} times. The scanner will automatically capture each sample - just lift and place your finger again after each beep.`
+                            : `Place your finger on the U.are.U 4500 reader ${requiredSamples} times for better accuracy. Lift and place again for each scan.`
                         : 'Place your finger on the U.are.U 4500 reader and hold steady until the scan completes.'
                     : 'Place your finger on the reader to identify yourself.'}
             </p>
