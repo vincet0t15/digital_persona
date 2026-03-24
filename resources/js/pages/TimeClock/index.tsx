@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FingerprintScanner } from '@/pages/Bio/fingerprint-scanner';
 import { Head, router } from '@inertiajs/react';
 import { Clock, Fingerprint, LogIn, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 
 interface TimeLog {
@@ -35,9 +35,32 @@ interface TimeClockProps {
 
 export default function TimeClock({ clock_result }: TimeClockProps) {
     console.log(clock_result);
+    const [recentLogs, setRecentLogs] = useState<TimeLog[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
     const [scanKey, setScanKey] = useState(0);
     const [selectedLogType, setSelectedLogType] = useState<'IN' | 'OUT'>('IN');
+
+    const fetchRecentLogs = async () => {
+        try {
+            const response = await fetch(route('timeclock.recent'), {
+                headers: {
+                    Accept: 'application/json',
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setRecentLogs(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch recent logs:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchRecentLogs();
+        const interval = setInterval(fetchRecentLogs, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleFingerprintCapture = async (template: string, quality: number) => {
         setIsProcessing(true);
@@ -89,7 +112,7 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
             <header className="bg-white shadow-sm">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-blue-600">
                             <Clock className="h-6 w-6 text-white" />
                         </div>
                         <div>
@@ -169,8 +192,8 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
                                     </div>
 
                                     {isProcessing && (
-                                        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-center">
-                                            <div className="mx-auto mb-2 h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+                                        <div className="rounded-sm border border-blue-200 bg-blue-50 p-4 text-center">
+                                            <div className="mx-auto mb-2 h-6 w-6 animate-spin rounded-sm border-2 border-blue-500 border-t-transparent" />
                                             <p className="text-sm text-blue-700">Processing fingerprint...</p>
                                         </div>
                                     )}
@@ -192,7 +215,7 @@ export default function TimeClock({ clock_result }: TimeClockProps) {
                                     <div className="space-y-2">
                                         {clock_result ? (
                                             <div className="flex items-center gap-2">
-                                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600">
+                                                <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-blue-600">
                                                     <Clock className="h-6 w-6 text-white" />
                                                 </div>
                                                 <div>
