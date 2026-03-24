@@ -12,7 +12,7 @@ export function NavMain({ items = [] }: { items: NavGroup[] }) {
             {items.map((group) => (
                 <SidebarGroup key={group.title} className="px-2 py-0">
                     <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
-                    <SidebarMenu>
+                    <SidebarMenu className="gap-1">
                         {group.children.map((item) => (
                             <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton asChild isActive={isCurrentUrl(item.href)} tooltip={{ children: item.title }} className="">
