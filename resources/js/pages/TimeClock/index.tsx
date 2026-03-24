@@ -29,36 +29,10 @@ interface ClockResult {
     time: string;
 }
 
-interface TimeClockProps {
-    flash?: {
-        success?: string;
-        error?: string;
-    };
-    clock_result?: ClockResult;
-}
-
-export default function TimeClock({ flash, clock_result }: TimeClockProps) {
+export default function TimeClock() {
     const [recentLogs, setRecentLogs] = useState<TimeLog[]>([]);
     const [lastResult, setLastResult] = useState<ClockResult | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
-
-    // Show flash messages
-    useEffect(() => {
-        if (flash?.success) {
-            toast.success(flash.success);
-        }
-        if (flash?.error) {
-            toast.error(flash.error);
-        }
-    }, [flash]);
-
-    // Set clock result from props
-    useEffect(() => {
-        if (clock_result) {
-            setLastResult(clock_result);
-            fetchRecentLogs();
-        }
-    }, [clock_result]);
 
     // Fetch recent logs on mount
     useEffect(() => {
@@ -69,33 +43,57 @@ export default function TimeClock({ flash, clock_result }: TimeClockProps) {
 
     const fetchRecentLogs = async () => {
         try {
-            const response = await fetch(route('timeclock.recent'));
+            // Get CSRF token from meta tag
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const response = await fetch(route('timeclock.recent'), {
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    Accept: 'application/json',
+                },
+            });
             if (response.ok) {
                 const data = await response.json();
                 setRecentLogs(data);
+            } else {
+                console.error('Failed to fetch logs:', response.status, response.statusText);
             }
         } catch (error) {
             console.error('Failed to fetch recent logs:', error);
         }
     };
 
-    const handleFingerprintCapture = (template: string, quality: number) => {
+    const handleFingerprintCapture = async (template: string, quality: number) => {
         setIsProcessing(true);
 
-        router.post(
-            route('timeclock.clock'),
-            { fingerprint_template: template },
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    setIsProcessing(false);
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const response = await fetch(route('timeclock.clock'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    Accept: 'application/json',
                 },
-                onError: () => {
-                    setIsProcessing(false);
-                    toast.error('Failed to record time. Please try again.');
-                },
-            },
-        );
+                body: JSON.stringify({ fingerprint_template: template }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                toast.success(data.message);
+                if (data.clock_result) {
+                    setLastResult(data.clock_result);
+                }
+                fetchRecentLogs();
+            } else {
+                toast.error(data.message || 'Failed to record time. Please try again.');
+            }
+        } catch (error) {
+            console.error('Time clock error:', error);
+            toast.error('Failed to record time. Please try again.');
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     const formatTime = (dateTime: string) => {

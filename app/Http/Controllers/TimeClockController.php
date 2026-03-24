@@ -25,34 +25,32 @@ class TimeClockController extends Controller
      */
     public function clock(Request $request)
     {
-
         $request->validate([
             'fingerprint_template' => 'required|string',
         ]);
 
-
         $capturedPng = $request->input('fingerprint_template');
-
-        // Convert captured PNG to ANSI FMD
         $capturedFmd = $this->convertPngToFmd($capturedPng);
 
         if ($capturedFmd === false) {
-            return redirect()->back()
-                ->with('error', 'Failed to process fingerprint. Please try again.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to process fingerprint. Please try again.',
+            ], 422);
         }
 
-        // Get all fingerprints from database
         $fingerprints = Fingeprint::with('employee')
             ->whereNotNull('fingerprint_template')
             ->where('fingerprint_template', '!=', '')
             ->get();
 
         if (count($fingerprints) === 0) {
-            return redirect()->back()
-                ->with('error', 'No enrolled fingerprints found in the system.');
+            return response()->json([
+                'success' => false,
+                'message' => 'No enrolled fingerprints found in the system.',
+            ], 422);
         }
 
-        // Build gallery entries
         $galleryEntries = [];
         $employeeMap = [];
 
@@ -66,14 +64,12 @@ class TimeClockController extends Controller
             }
         }
 
-        // Run matcher
         $result = $this->matchFingerprint($capturedFmd, $galleryEntries);
 
         if ($result['match'] && isset($result['employee_id'])) {
             $matchedEmployee = $employeeMap[$result['employee_id']] ?? null;
 
             if ($matchedEmployee) {
-                // Determine if this is time in or time out
                 $lastLog = TimeLog::where('employee_id', $matchedEmployee->id)
                     ->orderBy('date_time', 'desc')
                     ->first();
@@ -83,12 +79,22 @@ class TimeClockController extends Controller
                     $logType = 'OUT';
                 }
 
-                // Create time log
-                TimeLog::create([
-                    'employee_id' => $matchedEmployee->id,
-                    'date_time' => Carbon::now(),
-                    'log_type' => $logType,
-                ]);
+                try {
+                    TimeLog::create([
+                        'employee_id' => $matchedEmployee->id,
+                        'date_time' => Carbon::now(),
+                        'log_type' => $logType,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Failed to save time log', [
+                        'error' => $e->getMessage(),
+                        'employee_id' => $matchedEmployee->id,
+                    ]);
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to save time log. Please try again.',
+                    ], 500);
+                }
 
                 Log::info('Time clock recorded', [
                     'employee_id' => $matchedEmployee->id,
@@ -96,18 +102,26 @@ class TimeClockController extends Controller
                     'log_type' => $logType,
                 ]);
 
-                return redirect()->back()
-                    ->with('success', "{$matchedEmployee->name} - Time {$logType} recorded successfully!")
-                    ->with('clock_result', [
-                        'employee' => $matchedEmployee,
+                return response()->json([
+                    'success' => true,
+                    'message' => "{$matchedEmployee->name} - Time {$logType} recorded successfully!",
+                    'clock_result' => [
+                        'employee' => [
+                            'id' => $matchedEmployee->id,
+                            'name' => $matchedEmployee->name,
+                            'image' => $matchedEmployee->image,
+                        ],
                         'log_type' => $logType,
                         'time' => Carbon::now()->format('h:i A'),
-                    ]);
+                    ],
+                ]);
             }
         }
 
-        return redirect()->back()
-            ->with('error', 'Fingerprint not recognized. Please try again or contact admin.');
+        return response()->json([
+            'success' => false,
+            'message' => 'Fingerprint not recognized. Please try again or contact admin.',
+        ], 422);
     }
 
     /**

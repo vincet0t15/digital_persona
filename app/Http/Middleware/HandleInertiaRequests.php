@@ -55,6 +55,7 @@ class HandleInertiaRequests extends Middleware
             ],
 
             'result' => fn() => $request->session()->get('result'),
+            'clock_result' => fn() => $request->session()->get('clock_result'),
         ]);
     }
 }
