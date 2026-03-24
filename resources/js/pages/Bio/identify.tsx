@@ -32,7 +32,9 @@ interface IdentificationResult {
 }
 
 interface PageProps {
-    result?: IdentificationResult;
+    flash?: {
+        result?: IdentificationResult;
+    };
     [key: string]: any;
 }
 
@@ -49,14 +51,20 @@ export default function IdentifyEmployee() {
     // Handle flash message from backend
     useEffect(() => {
         console.log('Props changed:', props);
-        if (props.result) {
-            console.log('Result received:', props.result);
-            setScanResult(props.result);
-            if (!props.result.success) {
-                setError(props.result.message || 'Identification failed');
+        console.log('Flash object:', props.flash);
+        const result = props.flash?.result;
+        console.log('Result value:', result);
+        console.log('Result type:', typeof result);
+        if (result) {
+            console.log('Result received:', result);
+            console.log('Result.match:', result.match);
+            console.log('Result.data:', result.data);
+            setScanResult(result);
+            if (!result.success) {
+                setError(result.message || 'Identification failed');
             }
         }
-    }, [props.result]);
+    }, [props.flash?.result]);
 
     const handleFingerprintCapture = (template: string, quality: number) => {
         // Set the data synchronously then post
