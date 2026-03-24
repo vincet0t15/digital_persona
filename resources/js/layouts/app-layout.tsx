@@ -11,7 +11,7 @@ export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
     <TooltipProvider>
         <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
             {children}
-            <Toaster />
+            <Toaster position="top-right" />
         </AppLayoutTemplate>
     </TooltipProvider>
 );
