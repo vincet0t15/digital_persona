@@ -35,6 +35,11 @@ class Shift extends Model
         return $this->hasMany(EmploymentType::class);
     }
 
+    public function employees()
+    {
+        return $this->hasMany(Employee::class);
+    }
+
     /**
      * Check if a given time is late for this shift.
      */

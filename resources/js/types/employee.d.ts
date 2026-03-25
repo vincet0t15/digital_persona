@@ -1,6 +1,7 @@
 import { EmploymentType } from "./employmentType";
 import { Office } from "./office";
 import { TimeLog } from "./timeLogs";
+import { Shift } from "./shift";
 
 export interface Employee {
     id: number;
@@ -11,6 +12,7 @@ export interface Employee {
     is_active: boolean;
     office: Office;
     employment_type: EmploymentType;
+    shift?: Shift | null;
     fingerprints?: FingerprintData[];
     time_logs: TimeLog[];
 }
@@ -28,6 +30,7 @@ export interface EmployeeCreate {
     username?: string;
     office_id: string;
     employment_type_id: string;
+    shift_id?: string | null;
     password?: string;
     photo: File | string | null;
     is_active?: boolean;

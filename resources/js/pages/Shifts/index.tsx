@@ -119,7 +119,7 @@ export default function ShiftIndex({ shifts }: ShiftsProps) {
                                         </TableCell>
                                         <TableCell>
                                             <Badge variant="outline" className="rounded-sm">
-                                                {shift.employment_types_count || 0} types
+                                                {shift.employees_count || 0} employees
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right">

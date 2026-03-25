@@ -10,7 +10,7 @@ class ShiftController extends Controller
 {
     public function index()
     {
-        $shifts = Shift::withCount('employmentTypes')
+        $shifts = Shift::withCount(['employmentTypes', 'employees'])
             ->orderBy('name')
             ->get();
 

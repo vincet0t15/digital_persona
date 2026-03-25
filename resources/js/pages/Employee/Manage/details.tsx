@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldGroup } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Employee, EmployeeCreate } from '@/types/employee';
 import { EmploymentType } from '@/types/employmentType';
 import { Office } from '@/types/office';
+import { Shift } from '@/types/shift';
 import { useForm } from '@inertiajs/react';
 import { UploadCloud, XIcon } from 'lucide-react';
 import { ChangeEvent, FormEventHandler, useRef, useState } from 'react';
@@ -17,6 +19,7 @@ interface Props {
     employee: Employee;
     offices: Office[];
     employmentTypes: EmploymentType[];
+    shifts: Shift[];
 }
 
 interface FormData {
@@ -29,7 +32,7 @@ interface FormData {
     [key: string]: string | number | boolean | File | null;
 }
 
-function EmployeeDetails({ employee, offices, employmentTypes }: Props) {
+function EmployeeDetails({ employee, offices, employmentTypes, shifts }: Props) {
     const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(employee.image ? `/storage/${employee.image}` : null);
     const photoPreviewUrlRef = useRef<string | null>(null);
 
@@ -37,6 +40,7 @@ function EmployeeDetails({ employee, offices, employmentTypes }: Props) {
         name: employee.name,
         office_id: String(employee.office_id),
         employment_type_id: String(employee.employment_type?.id || ''),
+        shift_id: employee.shift ? String(employee.shift.id) : null,
         is_active: Boolean(employee.is_active ?? true),
         photo: null,
     });
@@ -49,6 +53,11 @@ function EmployeeDetails({ employee, offices, employmentTypes }: Props) {
     const employmentTypeOptions = employmentTypes.map((type) => ({
         value: String(type.id),
         label: type.name,
+    }));
+
+    const shiftOptions = shifts.map((shift) => ({
+        value: String(shift.id),
+        label: shift.name,
     }));
 
     const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -175,6 +184,29 @@ function EmployeeDetails({ employee, offices, employmentTypes }: Props) {
                                     onSelect={(value) => setData('employment_type_id', value ?? '')}
                                 />
                                 <InputError message={errors.employment_type_id} />
+                            </Field>
+
+                            <Field>
+                                <Label>
+                                    <span className="flex items-center gap-2">Shift Schedule</span>
+                                </Label>
+                                <Select
+                                    value={data.shift_id || 'none'}
+                                    onValueChange={(value) => setData('shift_id', value === 'none' ? null : value)}
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select a shift" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="none">No Shift Assigned</SelectItem>
+                                        {shiftOptions.map((shift) => (
+                                            <SelectItem key={shift.value} value={shift.value}>
+                                                {shift.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.shift_id as string} />
                             </Field>
                         </FieldGroup>
                     </div>

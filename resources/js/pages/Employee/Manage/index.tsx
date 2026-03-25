@@ -8,6 +8,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Employee } from '@/types/employee';
 import { EmploymentType } from '@/types/employmentType';
 import { Office } from '@/types/office';
+import { Shift } from '@/types/shift';
 import { Head } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import EmployeeDetails from './details';
@@ -31,8 +32,10 @@ interface Props {
     employee: Employee;
     offices: Office[];
     employmentTypes: EmploymentType[];
+    shifts: Shift[];
 }
-export default function ManageEmployees({ employee, offices, employmentTypes }: Props) {
+
+export default function ManageEmployees({ employee, offices, employmentTypes, shifts }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Manage Employees" />
@@ -66,7 +69,7 @@ export default function ManageEmployees({ employee, offices, employmentTypes }: 
                         <TabsTrigger value="fingerprint">Fingerprint</TabsTrigger>
                     </TabsList>
                     <TabsContent value="details">
-                        <EmployeeDetails employee={employee} offices={offices} employmentTypes={employmentTypes} />
+                        <EmployeeDetails employee={employee} offices={offices} employmentTypes={employmentTypes} shifts={shifts} />
                     </TabsContent>
                     <TabsContent value="fingerprint">
                         <ManageFingerprints employee={employee} offices={offices} />

@@ -8,6 +8,7 @@ export interface Shift {
     grace_minutes: number;
     is_active: boolean;
     employment_types_count?: number;
+    employees_count?: number;
     created_at?: string;
     updated_at?: string;
 }

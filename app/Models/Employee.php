@@ -19,6 +19,7 @@ class Employee extends Authenticatable
         'password',
         'office_id',
         'employment_type_id',
+        'shift_id',
         'image',
         'is_active',
         'is_admin',
@@ -58,6 +59,11 @@ class Employee extends Authenticatable
     public function employmentType()
     {
         return $this->belongsTo(EmploymentType::class);
+    }
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
     }
 
     public function timeLogs()

@@ -36,7 +36,7 @@ class LogController extends Controller
 
     public function show(Request $request, Employee $employee)
     {
-        $employee->load(['office', 'employmentType.shift']);
+        $employee->load(['office', 'shift']);
 
         // Get available years for the employee's time logs
         $availableYears = TimeLog::where('employee_id', $employee->id)
@@ -67,7 +67,7 @@ class LogController extends Controller
             ->toArray();
 
         // Calculate late/undertime for each log based on shift
-        $shift = $employee->employmentType?->shift;
+        $shift = $employee->shift;
         $timeLogsWithAttendance = $timeLogs->getCollection()->map(function ($log) use ($shift) {
             $logTime = new \DateTime($log->date_time);
             $log->is_late = false;

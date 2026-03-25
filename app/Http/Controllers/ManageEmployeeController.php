@@ -13,14 +13,16 @@ class ManageEmployeeController extends Controller
 {
     public function index(Request $request, Employee $employee)
     {
-        $employee = Employee::with('fingerprints', 'employmentType', 'office')
+        $employee = Employee::with('fingerprints', 'employmentType', 'shift', 'office')
             ->find($employee->id);
         $offices = Office::all();
-        $employmentType = EmploymentType::all();
+        $employmentTypes = EmploymentType::all();
+        $shifts = \App\Models\Shift::where('is_active', true)->get();
 
         return Inertia::render('Employee/Manage/index', [
             'offices' => $offices,
-            'employmentTypes' => $employmentType,
+            'employmentTypes' => $employmentTypes,
+            'shifts' => $shifts,
             'employee' => $employee
         ]);
     }
@@ -31,6 +33,7 @@ class ManageEmployeeController extends Controller
             'name' => 'required|string|max:255',
             'office_id' => 'required|exists:offices,id',
             'employment_type_id' => 'required|exists:employment_types,id',
+            'shift_id' => 'nullable|exists:shifts,id',
             'is_active' => 'required|boolean',
             'photo' => 'nullable|image|max:2048',
         ]);
