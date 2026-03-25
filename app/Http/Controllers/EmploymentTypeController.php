@@ -38,4 +38,11 @@ class EmploymentTypeController extends Controller
 
         return redirect()->back()->with('success', 'Employment type created successfully.');
     }
+
+    public function destroy(EmploymentType $employmentType)
+    {
+        $employmentType->delete();
+
+        return redirect()->back()->with('success', 'Employment type deleted successfully.');
+    }
 }

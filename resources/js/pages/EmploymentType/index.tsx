@@ -13,6 +13,8 @@ import { Head } from '@inertiajs/react';
 import { PlusIcon, Search } from 'lucide-react';
 import { useState } from 'react';
 import { CreateEmploymentTypeDialog } from './create';
+import { DeleteEmploymentTypeDialog } from './delete';
+import { EditEmploymentTypeDialog } from './edit';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -29,6 +31,19 @@ interface EmploymentTypeProps {
 }
 export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeProps) {
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [openEditDialog, setOpenEditDialog] = useState(false);
+    const [selectedEmploymentType, setSelectedEmploymentType] = useState<EmploymentType | null>(null);
+
+    const handleDelete = (employmentType: EmploymentType) => {
+        setSelectedEmploymentType(employmentType);
+        setOpenDeleteDialog(true);
+    };
+
+    const handleEdit = (employmentType: EmploymentType) => {
+        setSelectedEmploymentType(employmentType);
+        setOpenEditDialog(true);
+    };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Employment Types" />
@@ -77,14 +92,23 @@ export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeP
                                         <TableCell className="text-muted-foreground text-sm">{data.description || '—'}</TableCell>
                                         <TableCell>
                                             <Badge variant={data.status ? 'default' : 'destructive'} className="rounded-sm">
-                                                {data.status ? 'Active' : 'Inactive'}
+                                                {data.status === true ? 'Active' : 'Inactive'}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
-                                                <span className="cursor-pointer text-sm text-teal-500 hover:underline">Edit</span>
-
-                                                <span className="cursor-pointer text-sm text-red-500 hover:underline">Delete</span>
+                                                <span
+                                                    className="cursor-pointer text-sm text-teal-500 hover:underline"
+                                                    onClick={() => handleEdit(data)}
+                                                >
+                                                    Edit
+                                                </span>
+                                                <span
+                                                    className="cursor-pointer text-sm text-red-500 hover:underline"
+                                                    onClick={() => handleDelete(data)}
+                                                >
+                                                    Delete
+                                                </span>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -99,6 +123,13 @@ export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeP
                 </div>
 
                 {openCreateDialog && <CreateEmploymentTypeDialog isOpen={openCreateDialog} onClose={setOpenCreateDialog} />}
+                {openDeleteDialog && selectedEmploymentType && (
+                    <DeleteEmploymentTypeDialog open={openDeleteDialog} onClose={setOpenDeleteDialog} employmentType={selectedEmploymentType} />
+                )}
+
+                {openEditDialog && selectedEmploymentType && (
+                    <EditEmploymentTypeDialog isOpen={openEditDialog} onClose={setOpenEditDialog} employmentType={selectedEmploymentType} />
+                )}
             </div>
         </AppLayout>
     );
