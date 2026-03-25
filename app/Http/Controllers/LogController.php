@@ -36,7 +36,7 @@ class LogController extends Controller
 
     public function show(Request $request, Employee $employee)
     {
-        $employee->load(['office', 'shift']);
+        $employee->load(['office', 'shift', 'employmentType']);
 
         // Get available years for the employee's time logs
         $availableYears = TimeLog::where('employee_id', $employee->id)
