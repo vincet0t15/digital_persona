@@ -18,7 +18,14 @@ class DtrController extends Controller
         $dateFrom = Carbon::createFromDate($year, $month, 1)->startOfDay();
         $dateTo = $dateFrom->copy()->endOfMonth()->endOfDay();
 
-        $employeeIds = $request->input('employee_ids', []);
+        $employeeIds = $request->input('employee_ids');
+
+        // Convert to array if it's a single string value
+        if (is_string($employeeIds)) {
+            $employeeIds = [$employeeIds];
+        } elseif (!is_array($employeeIds)) {
+            $employeeIds = [];
+        }
 
         $employeesQuery = Employee::with([
             'timeLogs' => function ($query) use ($dateFrom, $dateTo) {
