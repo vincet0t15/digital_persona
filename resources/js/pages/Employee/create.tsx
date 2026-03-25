@@ -1,6 +1,7 @@
 import { CustomComboBox } from '@/components/CustomComboBox';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
+import { Field, FieldGroup } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
@@ -8,7 +9,6 @@ import { type BreadcrumbItem } from '@/types';
 import { EmployeeCreate } from '@/types/employee';
 import { EmploymentType } from '@/types/employmentType';
 import { Office } from '@/types/office';
-
 import { Head, useForm } from '@inertiajs/react';
 import { UploadCloud, XIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
@@ -128,32 +128,42 @@ export default function CreateEmployee({ offices, employmentTypes }: Props) {
                     <div className="space-y-4 lg:col-span-4">
                         <h3 className="text-lg font-semibold">Employee Details</h3>
 
-                        {/* Full Name */}
-                        <div className="space-y-2">
-                            <Label htmlFor="name">
-                                Full Name <span className="text-destructive">*</span>
-                            </Label>
-                            <Input
-                                id="name"
-                                name="name"
-                                placeholder="Enter full name"
-                                value={data.name}
-                                onChange={(e) => setData('name', e.target.value)}
-                            />
-                        </div>
-
-                        {/* Office */}
-                        <div className="space-y-2">
-                            <Label htmlFor="office">
-                                Office <span className="text-destructive">*</span>
-                            </Label>
-                            <CustomComboBox
-                                items={officeOptions}
-                                placeholder="Select an office"
-                                value={data.office_id || null}
-                                onSelect={(value) => setData('office_id', value ?? '')}
-                            />
-                        </div>
+                        <FieldGroup>
+                            <Field>
+                                <Label>
+                                    Full Name <span className="text-destructive">*</span>
+                                </Label>
+                                <Input
+                                    id="name"
+                                    name="name"
+                                    placeholder="Enter full name"
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                />
+                            </Field>
+                            <Field>
+                                <Label>
+                                    Office <span className="text-destructive">*</span>
+                                </Label>
+                                <CustomComboBox
+                                    items={officeOptions}
+                                    placeholder="Select an office"
+                                    value={data.office_id || null}
+                                    onSelect={(value) => setData('office_id', value ?? '')}
+                                />
+                            </Field>
+                            <Field>
+                                <Label>
+                                    Employment Type <span className="text-destructive">*</span>
+                                </Label>
+                                <CustomComboBox
+                                    items={employmentTypeOptions}
+                                    placeholder="Select an employment type"
+                                    value={data.office_id || null}
+                                    onSelect={(value) => setData('office_id', value ?? '')}
+                                />
+                            </Field>
+                        </FieldGroup>
                     </div>
                 </div>
             </div>
