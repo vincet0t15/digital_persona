@@ -8,7 +8,7 @@ import AppLogo from './app-logo';
 
 const mainNavItems: NavGroup[] = [
     {
-        title: 'Overview',
+        title: 'Main',
         children: [
             {
                 title: 'Dashboard',
@@ -20,12 +20,6 @@ const mainNavItems: NavGroup[] = [
                 href: '/employees',
                 icon: Users2Icon,
             },
-        ],
-    },
-
-    {
-        title: 'Biometric',
-        children: [
             {
                 title: 'Identify',
                 href: '/employees/identify',
@@ -34,7 +28,7 @@ const mainNavItems: NavGroup[] = [
         ],
     },
     {
-        title: 'Daily Time Record',
+        title: 'Time Clock',
         children: [
             {
                 title: 'Time Logs',
