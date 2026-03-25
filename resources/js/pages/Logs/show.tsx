@@ -1,13 +1,17 @@
 import Heading from '@/components/heading';
+import Pagination from '@/components/paginationData';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Employee } from '@/types/employee';
 import { TimeLog } from '@/types/timeLogs';
-import { Head } from '@inertiajs/react';
-import { Calendar, Clock, LogIn, LogOut } from 'lucide-react';
+import { Head, router } from '@inertiajs/react';
+import { CalendarDays, Clock, Filter, LogIn, LogOut, RotateCcw } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,27 +24,54 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-interface ShowTimeLogsProps {
-    employee: Employee;
+interface PaginatedTimeLogs {
+    data: TimeLog[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    from: number;
+    to: number;
+    path: string;
+    links: { url: string | null; label: string; active: boolean }[];
 }
 
-export default function ShowTimeLogs({ employee }: ShowTimeLogsProps) {
+interface ShowTimeLogsProps {
+    employee: Employee;
+    timeLogs: PaginatedTimeLogs;
+    filters: {
+        year: number;
+        month: number | null;
+    };
+    availableYears: number[];
+    availableMonths: number[];
+}
+
+const MONTHS = [
+    { value: 1, label: 'January' },
+    { value: 2, label: 'February' },
+    { value: 3, label: 'March' },
+    { value: 4, label: 'April' },
+    { value: 5, label: 'May' },
+    { value: 6, label: 'June' },
+    { value: 7, label: 'July' },
+    { value: 8, label: 'August' },
+    { value: 9, label: 'September' },
+    { value: 10, label: 'October' },
+    { value: 11, label: 'November' },
+    { value: 12, label: 'December' },
+];
+
+export default function ShowTimeLogs({ employee, timeLogs, filters, availableYears, availableMonths }: ShowTimeLogsProps) {
+    const [selectedYear, setSelectedYear] = useState(filters.year.toString());
+    const [selectedMonth, setSelectedMonth] = useState(filters.month?.toString() || 'all');
+
     const formatTime = (dateTime: string) => {
         const date = new Date(dateTime);
         return date.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: '2-digit',
             hour12: true,
-        });
-    };
-
-    const formatDate = (dateTime: string) => {
-        const date = new Date(dateTime);
-        return date.toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
         });
     };
 
@@ -53,38 +84,65 @@ export default function ShowTimeLogs({ employee }: ShowTimeLogsProps) {
         });
     };
 
-    const getDateGroup = (dateTime: string) => {
+    const getMonthYear = (dateTime: string) => {
         const date = new Date(dateTime);
         return date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
-            day: 'numeric',
         });
     };
 
-    const groupLogsByDate = (logs: TimeLog[]) => {
+    const getMonthName = (month: number) => {
+        return MONTHS.find((m) => m.value === month)?.label || '';
+    };
+
+    const groupLogsByMonth = (logs: TimeLog[]) => {
         const grouped: Record<string, TimeLog[]> = {};
         logs.forEach((log) => {
-            const dateKey = getDateGroup(log.date_time);
-            if (!grouped[dateKey]) {
-                grouped[dateKey] = [];
+            const monthKey = getMonthYear(log.date_time);
+            if (!grouped[monthKey]) {
+                grouped[monthKey] = [];
             }
-            grouped[dateKey].push(log);
-        });
-        // Sort logs within each date by time (newest first)
-        Object.keys(grouped).forEach((date) => {
-            grouped[date].sort((a, b) => new Date(b.date_time).getTime() - new Date(a.date_time).getTime());
+            grouped[monthKey].push(log);
         });
         return grouped;
     };
 
-    const sortedLogs = [...employee.time_logs].sort((a, b) => new Date(b.date_time).getTime() - new Date(a.date_time).getTime());
-    const groupedLogs = groupLogsByDate(sortedLogs);
-    const sortedDates = Object.keys(groupedLogs).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    const handleFilterChange = (year: string, month: string) => {
+        const params = new URLSearchParams();
+        if (year) params.set('year', year);
+        if (month && month !== 'all') params.set('month', month);
+
+        router.get(route('logs.show', employee.id), Object.fromEntries(params), {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    const handleYearChange = (year: string) => {
+        setSelectedYear(year);
+        setSelectedMonth('all');
+        handleFilterChange(year, 'all');
+    };
+
+    const handleMonthChange = (month: string) => {
+        setSelectedMonth(month);
+        handleFilterChange(selectedYear, month);
+    };
+
+    const handleReset = () => {
+        const currentYear = new Date().getFullYear().toString();
+        setSelectedYear(currentYear);
+        setSelectedMonth('all');
+        handleFilterChange(currentYear, 'all');
+    };
+
+    const groupedLogs = groupLogsByMonth(timeLogs.data);
+    const sortedMonths = Object.keys(groupedLogs).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Time Logs - {employee.name}" />
+            <Head title={`Time Logs - ${employee.name}`} />
             <div className="flex h-full flex-1 flex-col gap-6 rounded-xl p-4">
                 <Heading title="Time Logs" description="View and manage employee attendance records." />
 
@@ -112,74 +170,145 @@ export default function ShowTimeLogs({ employee }: ShowTimeLogsProps) {
                 {/* Time Logs Section */}
                 <Card>
                     <CardHeader className="pb-4">
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                            <Calendar className="h-5 w-5" />
-                            Attendance History
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {sortedDates.length > 0 ? (
-                            <div className="space-y-6">
-                                {sortedDates.map((date) => (
-                                    <div key={date} className="space-y-3">
-                                        {/* Date Header */}
-                                        <div className="sticky top-0 z-10 -mx-4 border-b bg-slate-50/95 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-slate-50/80 dark:bg-slate-900/95">
-                                            <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                                                <Calendar className="h-4 w-4 text-slate-500" />
-                                                {date}
-                                            </h3>
-                                        </div>
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <CardTitle className="flex items-center gap-2 text-lg">
+                                <CalendarDays className="h-5 w-5" />
+                                Attendance History
+                            </CardTitle>
 
-                                        {/* Logs for this date */}
-                                        <div className="space-y-2 pl-6">
-                                            {groupedLogs[date].map((log) => (
-                                                <div
-                                                    key={log.id}
-                                                    className="flex items-center justify-between rounded-lg border bg-white p-3 shadow-sm transition-colors hover:bg-slate-50"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div
-                                                            className={`flex h-9 w-9 items-center justify-center rounded-full ${
-                                                                log.log_type === 'IN' ? 'bg-green-100' : 'bg-orange-100'
+                            {/* Filters */}
+                            <div className="flex flex-wrap items-center gap-2">
+                                <div className="flex items-center gap-1 text-sm text-slate-500">
+                                    <Filter className="h-4 w-4" />
+                                    Filter:
+                                </div>
+
+                                {/* Year Filter */}
+                                <Select value={selectedYear} onValueChange={handleYearChange}>
+                                    <SelectTrigger className="w-[120px]">
+                                        <SelectValue placeholder="Year" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {availableYears.map((year) => (
+                                            <SelectItem key={year} value={year.toString()}>
+                                                {year}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+
+                                {/* Month Filter */}
+                                <Select value={selectedMonth} onValueChange={handleMonthChange}>
+                                    <SelectTrigger className="w-[140px]">
+                                        <SelectValue placeholder="Month" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Months</SelectItem>
+                                        {availableMonths.map((month) => (
+                                            <SelectItem key={month} value={month.toString()}>
+                                                {getMonthName(month)}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+
+                                {/* Reset Button */}
+                                <Button variant="outline" size="sm" onClick={handleReset} className="gap-1">
+                                    <RotateCcw className="h-3 w-3" />
+                                    Reset
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Active Filter Display */}
+                        <div className="mt-2 flex items-center gap-2 text-sm text-slate-600">
+                            <span>Showing records for:</span>
+                            <Badge variant="secondary" className="font-medium">
+                                {selectedYear}
+                                {selectedMonth !== 'all' && ` - ${getMonthName(parseInt(selectedMonth))}`}
+                            </Badge>
+                            <span className="text-slate-400">({timeLogs.total} records found)</span>
+                        </div>
+                    </CardHeader>
+
+                    <CardContent>
+                        {timeLogs.data.length > 0 ? (
+                            <>
+                                <div className="space-y-6">
+                                    {sortedMonths.map((monthYear) => (
+                                        <div key={monthYear} className="space-y-3">
+                                            {/* Month Header */}
+                                            <div className="sticky top-0 z-10 -mx-4 border-b bg-slate-50/95 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-slate-50/80 dark:bg-slate-900/95">
+                                                <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                                                    <CalendarDays className="h-4 w-4 text-slate-500" />
+                                                    {monthYear}
+                                                </h3>
+                                            </div>
+
+                                            {/* Logs for this month */}
+                                            <div className="space-y-2 pl-6">
+                                                {groupedLogs[monthYear].map((log) => (
+                                                    <div
+                                                        key={log.id}
+                                                        className="flex items-center justify-between rounded-lg border bg-white p-3 shadow-sm transition-colors hover:bg-slate-50"
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <div
+                                                                className={`flex h-9 w-9 items-center justify-center rounded-full ${
+                                                                    log.log_type === 'IN' ? 'bg-green-100' : 'bg-orange-100'
+                                                                }`}
+                                                            >
+                                                                {log.log_type === 'IN' ? (
+                                                                    <LogIn className="h-5 w-5 text-green-600" />
+                                                                ) : (
+                                                                    <LogOut className="h-5 w-5 text-orange-600" />
+                                                                )}
+                                                            </div>
+                                                            <div>
+                                                                <p className="flex items-center gap-2 text-sm font-medium text-slate-900">
+                                                                    <Clock className="h-4 w-4 text-slate-400" />
+                                                                    {formatTime(log.date_time)}
+                                                                </p>
+                                                                <p className="text-xs text-slate-500">{formatDateShort(log.date_time)}</p>
+                                                            </div>
+                                                        </div>
+                                                        <Badge
+                                                            variant="outline"
+                                                            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                                                                log.log_type === 'IN'
+                                                                    ? 'border-green-200 bg-green-50 text-green-700'
+                                                                    : 'border-orange-200 bg-orange-50 text-orange-700'
                                                             }`}
                                                         >
-                                                            {log.log_type === 'IN' ? (
-                                                                <LogIn className="h-5 w-5 text-green-600" />
-                                                            ) : (
-                                                                <LogOut className="h-5 w-5 text-orange-600" />
-                                                            )}
-                                                        </div>
-                                                        <div>
-                                                            <p className="flex items-center gap-2 text-sm font-medium text-slate-900">
-                                                                <Clock className="h-4 w-4 text-slate-400" />
-                                                                {formatTime(log.date_time)}
-                                                            </p>
-                                                            <p className="text-xs text-slate-500">{formatDateShort(log.date_time)}</p>
-                                                        </div>
+                                                            Time {log.log_type}
+                                                        </Badge>
                                                     </div>
-                                                    <Badge
-                                                        variant="outline"
-                                                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                                                            log.log_type === 'IN'
-                                                                ? 'border-green-200 bg-green-50 text-green-700'
-                                                                : 'border-orange-200 bg-orange-50 text-orange-700'
-                                                        }`}
-                                                    >
-                                                        Time {log.log_type}
-                                                    </Badge>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
+
+                                {/* Pagination */}
+                                <div className="mt-6 border-t pt-4">
+                                    <Pagination data={timeLogs} />
+                                </div>
+                            </>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-12 text-center">
                                 <div className="rounded-full bg-slate-100 p-4">
                                     <Clock className="h-8 w-8 text-slate-400" />
                                 </div>
                                 <h3 className="mt-4 text-lg font-medium text-slate-900">No time logs found</h3>
-                                <p className="mt-1 text-sm text-slate-500">This employee has no attendance records yet.</p>
+                                <p className="mt-1 text-sm text-slate-500">
+                                    {selectedMonth !== 'all'
+                                        ? `No records found for ${getMonthName(parseInt(selectedMonth))} ${selectedYear}`
+                                        : `No records found for ${selectedYear}`}
+                                </p>
+                                <Button variant="outline" size="sm" onClick={handleReset} className="mt-4 gap-1">
+                                    <RotateCcw className="h-3 w-3" />
+                                    Reset Filters
+                                </Button>
                             </div>
                         )}
                     </CardContent>
