@@ -86,7 +86,7 @@ function EmployeeDetails({ employee, offices, employmentTypes }: Props) {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="mt-12 space-y-6">
             {/* Header */}
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">

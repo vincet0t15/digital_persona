@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { NavGroup } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Clock1, FingerprintIcon, LayoutGrid, Users2Icon } from 'lucide-react';
+import { BookOpen, Clock1, LayoutGrid, Users2Icon } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavGroup[] = [
@@ -26,11 +26,6 @@ const mainNavItems: NavGroup[] = [
     {
         title: 'Biometric',
         children: [
-            {
-                title: 'Register',
-                href: '/employees/create',
-                icon: FingerprintIcon,
-            },
             {
                 title: 'Identify',
                 href: '/employees/identify',
