@@ -92,7 +92,7 @@ export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeP
                                         <TableCell className="text-muted-foreground text-sm">{data.description || '—'}</TableCell>
                                         <TableCell>
                                             <Badge variant={data.status ? 'default' : 'destructive'} className="rounded-sm">
-                                                {data.status === true ? 'Active' : 'Inactive'}
+                                                {data.status ? 'Active' : 'Inactive'}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right">

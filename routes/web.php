@@ -64,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
     // EMPLOYMENT TYPES
     Route::get('/employment-types', [EmploymentTypeController::class, 'index'])->name('employment-types.index');
     Route::post('/employment-types', [EmploymentTypeController::class, 'store'])->name('employment-types.store');
+    Route::put('/employment-types/{employmentType}', [EmploymentTypeController::class, 'update'])->name('employment-types.update');
     Route::delete('/employment-types/{employmentType}', [EmploymentTypeController::class, 'destroy'])->name('employment-types.destroy');
 });
 

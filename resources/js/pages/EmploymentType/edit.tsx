@@ -53,7 +53,12 @@ export function EditEmploymentTypeDialog({ isOpen, onClose, employmentType }: Pr
                         </Field>
                         <Field>
                             <Label>Description</Label>
-                            <Textarea name="description" placeholder="Enter a description..." onChange={handleInputChange} value={data.description} />
+                            <Textarea
+                                name="description"
+                                placeholder="Enter a description..."
+                                onChange={handleInputChange}
+                                value={data.description || ''}
+                            />
                         </Field>
                         <Field>
                             <Label>Status</Label>

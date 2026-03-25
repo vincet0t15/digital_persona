@@ -17,11 +17,14 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->foreignId('office_id')->constrained('offices')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('employment_type_id')->constrained('employment_types')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('image')->nullable();
             $table->softDeletes();
+
             $table->index('office_id');
             $table->index('name');
             $table->index('username');
+            $table->index('employment_type_id');
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });

@@ -45,4 +45,16 @@ class EmploymentTypeController extends Controller
 
         return redirect()->back()->with('success', 'Employment type deleted successfully.');
     }
+
+    public function update(Request $request, EmploymentType $employmentType)
+    {
+        $request->validate([
+            'name' => 'required|max:255|unique:employment_types,name,' . $employmentType->id,
+            'description' => 'nullable|max:255',
+        ]);
+
+        $employmentType->update($request->all());
+
+        return redirect()->back()->with('success', 'Employment type updated successfully.');
+    }
 }
