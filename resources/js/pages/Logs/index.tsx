@@ -181,7 +181,7 @@ export default function TimeLogs({ employees, filters, offices, employmentTypes 
                                                 <div className="flex flex-col">
                                                     <span className="font-bold uppercase">{employee.name}</span>
                                                     <span className="text-muted-foreground text-[0.70rem]">{employee.office?.name}</span>
-                                                    <span className="text-muted-foreground text-[0.70rem]">{employee.username}</span>
+                                                    <span className="text-muted-foreground text-[0.70rem]">{employee.employment_type?.name}</span>
                                                 </div>
                                             </div>
                                         </TableCell>

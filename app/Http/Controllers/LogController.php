@@ -17,6 +17,7 @@ class LogController extends Controller
         $employmentTypes = EmploymentType::all();
 
         $employees = Employee::query()
+            ->with(['office', 'employmentType'])
             ->when($search, fn($query) => $query->where('name', 'like', "%{$search}%"))
             ->when($request->query('office_id'), fn($query) => $query->where('office_id', $request->query('office_id')))
             ->when($request->query('employment_type_id'), fn($query) => $query->where('employment_type_id', $request->query('employment_type_id')))
