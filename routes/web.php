@@ -4,6 +4,7 @@ use App\Http\Controllers\BiometricController;
 use App\Http\Controllers\EmployeeAuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmploymentTypeController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\ManageEmployeeController;
 use App\Http\Controllers\TimeClockController;
 use Illuminate\Support\Facades\Route;
@@ -72,6 +73,9 @@ Route::middleware(['auth'])->group(function () {
     // MANAGE EMPLOYEES
     Route::get('/manage-employees/{employee}', [ManageEmployeeController::class, 'index'])->name('manage-employees.index');
     Route::put('/manage-employees/{employee}', [ManageEmployeeController::class, 'update'])->name('manage-employees.update');
+
+    // LOGS
+    Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 });
 
 require __DIR__ . '/settings.php';

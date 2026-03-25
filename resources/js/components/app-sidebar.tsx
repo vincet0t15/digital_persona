@@ -32,7 +32,7 @@ const mainNavItems: NavGroup[] = [
         children: [
             {
                 title: 'Time Logs',
-                href: '/employees/logs',
+                href: '/logs',
                 icon: Clock1,
             },
         ],
