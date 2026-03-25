@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\EmploymentType;
 use App\Models\Fingeprint;
 use App\Models\Office;
 use Illuminate\Http\Request;
@@ -15,8 +16,11 @@ class EmployeeController extends Controller
     public function create()
     {
         $offices = Office::all();
-        return Inertia::render('Bio/index', [
+        $employmentTypes = EmploymentType::all();
+
+        return Inertia::render('Employee/create', [
             'offices' => $offices,
+            'employmentTypes' => $employmentTypes,
         ]);
     }
 
