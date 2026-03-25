@@ -91,7 +91,7 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                             />
                         </div>
 
-                        <div className="relative w-full sm:w-[250px]">
+                        <div className="relative w-full">
                             <Label htmlFor="search" className="sr-only">
                                 Search
                             </Label>
