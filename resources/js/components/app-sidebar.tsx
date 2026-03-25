@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { NavGroup } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Clock1, LayoutGrid, Users2Icon } from 'lucide-react';
+import { BookOpen, Clock1, LayoutGrid, Timer, Users2Icon } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavGroup[] = [
@@ -44,6 +44,11 @@ const mainNavItems: NavGroup[] = [
                 title: 'Employment Types',
                 href: '/employment-types',
                 icon: Users2Icon,
+            },
+            {
+                title: 'Shift Schedules',
+                href: '/shifts',
+                icon: Timer,
             },
         ],
     },

@@ -4,9 +4,11 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Field, FieldGroup } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { EmploymentTypeForm } from '@/types/employmentType';
+import { Shift } from '@/types/shift';
 import { useForm } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import { ChangeEventHandler, FormEventHandler } from 'react';
@@ -14,12 +16,14 @@ import { toast } from 'sonner';
 interface Props {
     isOpen: boolean;
     onClose: (open: boolean) => void;
+    shifts: Shift[];
 }
-export function CreateEmploymentTypeDialog({ isOpen, onClose }: Props) {
+export function CreateEmploymentTypeDialog({ isOpen, onClose, shifts }: Props) {
     const { data, setData, errors, processing, reset, post } = useForm<EmploymentTypeForm>({
         name: '',
         description: '',
         status: false,
+        shift_id: null,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -41,6 +45,10 @@ export function CreateEmploymentTypeDialog({ isOpen, onClose }: Props) {
         setData({ ...data, status: checked });
     };
 
+    const handleShiftChange = (value: string) => {
+        setData({ ...data, shift_id: value === 'none' ? null : parseInt(value) });
+    };
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <form>
@@ -58,6 +66,23 @@ export function CreateEmploymentTypeDialog({ isOpen, onClose }: Props) {
                         <Field>
                             <Label htmlFor="username-1">Description</Label>
                             <Textarea name="description" placeholder="Enter a description..." onChange={handleInputChange} value={data.description} />
+                        </Field>
+                        <Field>
+                            <Label htmlFor="shift_id">Shift Schedule</Label>
+                            <Select value={data.shift_id?.toString() || 'none'} onValueChange={handleShiftChange}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a shift" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">No Shift Assigned</SelectItem>
+                                    {shifts.map((shift) => (
+                                        <SelectItem key={shift.id} value={shift.id.toString()}>
+                                            {shift.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <InputError message={errors.shift_id} />
                         </Field>
                         <Field>
                             <Label htmlFor="username-1">Status</Label>

@@ -13,5 +13,16 @@ class EmploymentType extends Model
         'name',
         'description',
         'status',
+        'shift_id',
     ];
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
+
+    public function employees()
+    {
+        return $this->hasMany(Employee::class);
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmploymentTypeController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ManageEmployeeController;
+use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\TimeClockController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -69,6 +70,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/employment-types', [EmploymentTypeController::class, 'store'])->name('employment-types.store');
     Route::put('/employment-types/{employmentType}', [EmploymentTypeController::class, 'update'])->name('employment-types.update');
     Route::delete('/employment-types/{employmentType}', [EmploymentTypeController::class, 'destroy'])->name('employment-types.destroy');
+
+    // SHIFTS
+    Route::get('/shifts', [ShiftController::class, 'index'])->name('shifts.index');
+    Route::post('/shifts', [ShiftController::class, 'store'])->name('shifts.store');
+    Route::put('/shifts/{shift}', [ShiftController::class, 'update'])->name('shifts.update');
+    Route::delete('/shifts/{shift}', [ShiftController::class, 'destroy'])->name('shifts.destroy');
 
     // MANAGE EMPLOYEES
     Route::get('/manage-employees/{employee}', [ManageEmployeeController::class, 'index'])->name('manage-employees.index');

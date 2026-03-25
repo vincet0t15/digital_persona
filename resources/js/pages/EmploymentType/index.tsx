@@ -9,6 +9,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { EmploymentType } from '@/types/employmentType';
 import { PaginatedDataResponse } from '@/types/pagination';
+import { Shift } from '@/types/shift';
 import { Head } from '@inertiajs/react';
 import { PlusIcon, Search } from 'lucide-react';
 import { useState } from 'react';
@@ -28,8 +29,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface EmploymentTypeProps {
     employmentTypes: PaginatedDataResponse<EmploymentType>;
+    shifts: Shift[];
 }
-export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeProps) {
+export default function EmploymentTypeIndex({ employmentTypes, shifts }: EmploymentTypeProps) {
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -61,7 +63,7 @@ export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeP
                             <Label htmlFor="search" className="sr-only">
                                 Search
                             </Label>
-                            <Input id="search" placeholder="Search the claim types..." className="w-full pl-8" />
+                            <Input id="search" placeholder="Search employment types..." className="w-full pl-8" />
                             <Search className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />
                         </div>
                     </div>
@@ -74,6 +76,7 @@ export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeP
                             <TableRow>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Description</TableHead>
+                                <TableHead>Shift Schedule</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
@@ -82,7 +85,7 @@ export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeP
                             {employmentTypes.data.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={5} className="text-muted-foreground text-center">
-                                        No claim types found.
+                                        No employment types found.
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -90,6 +93,15 @@ export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeP
                                     <TableRow key={index}>
                                         <TableCell className="text-sm">{data.name}</TableCell>
                                         <TableCell className="text-muted-foreground text-sm">{data.description || '—'}</TableCell>
+                                        <TableCell>
+                                            {data.shift ? (
+                                                <Badge variant="outline" className="rounded-sm">
+                                                    {data.shift.name}
+                                                </Badge>
+                                            ) : (
+                                                <span className="text-muted-foreground">—</span>
+                                            )}
+                                        </TableCell>
                                         <TableCell>
                                             <Badge variant={data.status ? 'default' : 'destructive'} className="rounded-sm">
                                                 {data.status ? 'Active' : 'Inactive'}
@@ -122,13 +134,18 @@ export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeP
                     <Pagination data={employmentTypes} />
                 </div>
 
-                {openCreateDialog && <CreateEmploymentTypeDialog isOpen={openCreateDialog} onClose={setOpenCreateDialog} />}
+                {openCreateDialog && <CreateEmploymentTypeDialog isOpen={openCreateDialog} onClose={setOpenCreateDialog} shifts={shifts} />}
                 {openDeleteDialog && selectedEmploymentType && (
                     <DeleteEmploymentTypeDialog open={openDeleteDialog} onClose={setOpenDeleteDialog} employmentType={selectedEmploymentType} />
                 )}
 
                 {openEditDialog && selectedEmploymentType && (
-                    <EditEmploymentTypeDialog isOpen={openEditDialog} onClose={setOpenEditDialog} employmentType={selectedEmploymentType} />
+                    <EditEmploymentTypeDialog
+                        isOpen={openEditDialog}
+                        onClose={setOpenEditDialog}
+                        employmentType={selectedEmploymentType}
+                        shifts={shifts}
+                    />
                 )}
             </div>
         </AppLayout>

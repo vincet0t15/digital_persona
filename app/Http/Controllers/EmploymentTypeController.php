@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\EmploymentType;
+use App\Models\Shift;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,26 +13,29 @@ class EmploymentTypeController extends Controller
     {
         $search = $request->query('search');
 
-
         $employmentTypes = EmploymentType::query()
+            ->with('shift')
             ->when($search, function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
             ->paginate(10)
             ->withQueryString();
 
+        $shifts = Shift::where('is_active', true)->get();
+
         return Inertia::render('EmploymentType/index', [
             'employmentTypes' => $employmentTypes,
+            'shifts' => $shifts,
             'filters' => ['search' => $search]
         ]);
     }
 
     public function store(Request $request)
     {
-
         $request->validate([
             'name' => 'required|max:255|unique:employment_types',
             'description' => 'nullable|max:255',
+            'shift_id' => 'nullable|exists:shifts,id',
         ]);
 
         EmploymentType::create($request->all());
@@ -51,6 +55,7 @@ class EmploymentTypeController extends Controller
         $request->validate([
             'name' => 'required|max:255|unique:employment_types,name,' . $employmentType->id,
             'description' => 'nullable|max:255',
+            'shift_id' => 'nullable|exists:shifts,id',
         ]);
 
         $employmentType->update($request->all());

@@ -10,7 +10,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Employee } from '@/types/employee';
 import { TimeLog } from '@/types/timeLogs';
 import { Head, router } from '@inertiajs/react';
-import { CalendarDays, Clock, Filter, LogIn, LogOut, RotateCcw } from 'lucide-react';
+import { AlertTriangle, CalendarDays, Clock, Filter, LogIn, LogOut, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -250,7 +250,9 @@ export default function ShowTimeLogs({ employee, timeLogs, filters, availableYea
                                                 {groupedLogs[monthYear].map((log) => (
                                                     <div
                                                         key={log.id}
-                                                        className="flex items-center justify-between rounded-lg border bg-white p-3 shadow-sm transition-colors hover:bg-slate-50"
+                                                        className={`flex items-center justify-between rounded-lg border p-3 shadow-sm transition-colors hover:bg-slate-50 ${
+                                                            log.is_late || log.is_undertime ? 'border-red-200 bg-red-50/50' : 'bg-white'
+                                                        }`}
                                                     >
                                                         <div className="flex items-center gap-3">
                                                             <div
@@ -265,10 +267,22 @@ export default function ShowTimeLogs({ employee, timeLogs, filters, availableYea
                                                                 )}
                                                             </div>
                                                             <div>
-                                                                <p className="flex items-center gap-2 text-sm font-medium text-slate-900">
-                                                                    <Clock className="h-4 w-4 text-slate-400" />
-                                                                    {formatTime(log.date_time)}
-                                                                </p>
+                                                                <div className="flex items-center gap-2">
+                                                                    <p className="flex items-center gap-2 text-sm font-medium text-slate-900">
+                                                                        <Clock className="h-4 w-4 text-slate-400" />
+                                                                        {formatTime(log.date_time)}
+                                                                    </p>
+                                                                    {(log.is_late || log.is_undertime) && (
+                                                                        <Badge
+                                                                            variant="destructive"
+                                                                            className="flex items-center gap-1 rounded-full px-2 py-0.5 text-xs"
+                                                                        >
+                                                                            <AlertTriangle className="h-3 w-3" />
+                                                                            {log.is_late && `${log.late_minutes} min late`}
+                                                                            {log.is_undertime && `${log.undertime_minutes} min undertime`}
+                                                                        </Badge>
+                                                                    )}
+                                                                </div>
                                                                 <p className="text-xs text-slate-500">{formatDateShort(log.date_time)}</p>
                                                             </div>
                                                         </div>
