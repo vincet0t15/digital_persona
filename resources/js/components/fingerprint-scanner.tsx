@@ -257,7 +257,7 @@ export function FingerprintScanner({
             </div>
 
             {/* Sample Counter for Enrollment */}
-            {mode === 'enroll' && requiredSamples > 1 && (
+            {/* {mode === 'enroll' && requiredSamples > 1 && (
                 <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-gray-600">Sample:</span>
                     <div className="flex gap-1">
@@ -278,7 +278,7 @@ export function FingerprintScanner({
                         {collectedSamples >= requiredSamples ? requiredSamples : currentSample + 1} of {requiredSamples}
                     </span>
                 </div>
-            )}
+            )} */}
 
             {/* Instructions */}
             <p className="max-w-xs text-center text-xs text-gray-500">
