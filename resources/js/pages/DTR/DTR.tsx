@@ -46,7 +46,7 @@ export default function Dashboard({ dtr }: DashboardProps) {
     dayjs.extend(customParseFormat);
 
     return (
-        <div className="flex flex-col gap-6 bg-white p-4 print:gap-0 print:p-0">
+        <div className="flex flex-col gap-6 overflow-x-hidden bg-white p-4 print:gap-0 print:p-0">
             {dtr.map((employee, index) => {
                 const totalLate = employee.records.reduce((sum, r) => sum + (r.late_minutes || 0), 0);
                 const totalLateHours = Math.floor(totalLate / 60);
@@ -58,7 +58,7 @@ export default function Dashboard({ dtr }: DashboardProps) {
                         className={`print-container border border-b-2 border-black p-2 print:border-none print:p-0 ${index > 0 ? 'page-break' : ''}`}
                     >
                         <div className="print-scale-dtr">
-                            <div className="grid grid-cols-3 gap-6 pb-6">
+                            <div className="flex gap-4 pb-6 print:gap-2">
                                 {/* Employee Info & DTR Table */}
                                 <div className="w-[430px] font-sans text-sm text-gray-900">
                                     <div>
@@ -113,7 +113,7 @@ export default function Dashboard({ dtr }: DashboardProps) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="overflow-x-auto">
+                                    <div>
                                         <table className="w-full border-collapse text-center text-sm">
                                             <thead>
                                                 <tr className="border-2 border-black">
@@ -164,13 +164,13 @@ export default function Dashboard({ dtr }: DashboardProps) {
                                                 })}
                                             </tbody>
                                         </table>
-                                        <div className="mt-2 font-bold">
-                                            <span className="text-start">TOTAL_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _</span>
-                                            <span className="ml-[100px]">{totalLateHours}</span>
-                                            <span className="ml-[50px]">{totalLateMins}</span>
+                                        <div className="mt-2 flex font-bold">
+                                            <span className="flex-1">TOTAL</span>
+                                            <span className="w-[60px] text-center">{totalLateHours || ''}</span>
+                                            <span className="w-[60px] text-center">{totalLateMins || ''}</span>
                                         </div>
                                         <div className="mt-4">
-                                            <span>CERTIFY</span>
+                                            <span className="font-bold">CERTIFY</span>{' '}
                                             <span className="italic">
                                                 on my honor that the above is a true and correct report of the hours of work performed, record of
                                                 which was made daily at the time of arrival at and departure from office.
@@ -196,7 +196,7 @@ export default function Dashboard({ dtr }: DashboardProps) {
                                 </div>
 
                                 {/* Raw Log Table */}
-                                <div className="w-full max-w-[200px]">
+                                <div className="flex-1">
                                     {/* Table for screen only */}
                                     <div className="w-full max-w-[950px] text-black print:hidden">
                                         <div className="flex flex-col border border-black p-1">
