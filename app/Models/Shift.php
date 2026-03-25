@@ -40,13 +40,32 @@ class Shift extends Model
         return $this->hasMany(Employee::class);
     }
 
+    protected function getBaselineStartTime(\DateTime $time): \DateTime
+    {
+        $shiftStart = \DateTime::createFromFormat('H:i:s', $this->start_time->format('H:i:s'));
+        $checkTime = \DateTime::createFromFormat('H:i:s', $time->format('H:i:s'));
+
+        // If break_end is set (e.g. lunch break ends at 13:00), and the check-in
+        // time is in the afternoon block, treat break_end as the start for lateness.
+        if ($this->break_end) {
+            $breakEnd = \DateTime::createFromFormat('H:i:s', $this->break_end->format('H:i:s'));
+
+            if ($checkTime >= $breakEnd) {
+                return $breakEnd;
+            }
+        }
+
+        // Otherwise use the normal shift start time (e.g. 08:00)
+        return $shiftStart;
+    }
+
     /**
      * Check if a given time is late for this shift.
      */
     public function isLate(\DateTime $time): bool
     {
-        $shiftStart = \DateTime::createFromFormat('H:i:s', $this->start_time->format('H:i:s'));
-        $gracePeriod = clone $shiftStart;
+        $baselineStart = $this->getBaselineStartTime($time);
+        $gracePeriod = clone $baselineStart;
         $gracePeriod->modify("+{$this->grace_minutes} minutes");
 
         $checkTime = \DateTime::createFromFormat('H:i:s', $time->format('H:i:s'));
@@ -59,8 +78,8 @@ class Shift extends Model
      */
     public function calculateLateMinutes(\DateTime $time): int
     {
-        $shiftStart = \DateTime::createFromFormat('H:i:s', $this->start_time->format('H:i:s'));
-        $gracePeriod = clone $shiftStart;
+        $baselineStart = $this->getBaselineStartTime($time);
+        $gracePeriod = clone $baselineStart;
         $gracePeriod->modify("+{$this->grace_minutes} minutes");
 
         $checkTime = \DateTime::createFromFormat('H:i:s', $time->format('H:i:s'));
@@ -69,7 +88,7 @@ class Shift extends Model
             return 0;
         }
 
-        $diff = $checkTime->diff($shiftStart);
+        $diff = $checkTime->diff($baselineStart);
         $minutes = ($diff->h * 60) + $diff->i;
 
         // Subtract grace period
