@@ -1,7 +1,3 @@
-/**
- * Fingerprint Scanner Component
- * Provides UI for fingerprint enrollment and identification
- */
 import { Button } from '@/components/ui/button';
 import { useFingerprint } from '@/hooks/use-fingerprint';
 import { cn } from '@/lib/utils';
@@ -17,7 +13,7 @@ interface FingerprintScannerProps {
     showStatus?: boolean;
     requiredSamples?: number;
     currentSample?: number;
-    collectedSamples?: number; // Total samples already collected
+    collectedSamples?: number;
     autoScan?: boolean;
 }
 
@@ -50,7 +46,6 @@ export function FingerprintScanner({
                 setQuality(result.quality);
                 setMessage(`Fingerprint captured! Quality: ${result.quality}%${result.mode === 'simulated' ? ' (Simulated)' : ''}`);
                 onCapture(result.template, result.quality);
-                // Notify parent that sample is complete for auto-scanning
                 onSampleComplete?.();
             },
             (error) => {
@@ -78,31 +73,25 @@ export function FingerprintScanner({
         setMessage('');
     }, [stopCapture]);
 
-    // Use refs to avoid stale closures and unnecessary re-renders
     const onCaptureRef = useRef(onCapture);
     const onErrorRef = useRef(onError);
     const onSampleCompleteRef = useRef(onSampleComplete);
 
-    // Update refs when props change
     useEffect(() => {
         onCaptureRef.current = onCapture;
         onErrorRef.current = onError;
         onSampleCompleteRef.current = onSampleComplete;
     }, [onCapture, onError, onSampleComplete]);
 
-    // Auto-start scan on mount for identify mode (continuous scanning for time clock)
     useEffect(() => {
         if (autoScan && mode === 'identify' && initialized && (sdkMode === 'simulated' || readerConnected) && scanStatus === 'idle') {
-            // Small delay to allow component to fully mount
             const timer = setTimeout(() => {
                 handleStartScan();
             }, 500);
             return () => clearTimeout(timer);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [autoScan, mode, initialized, sdkMode, readerConnected]);
 
-    // Auto-start scan when currentSample changes (for continuous enrollment)
     useEffect(() => {
         if (
             autoScan &&
@@ -112,9 +101,7 @@ export function FingerprintScanner({
             initialized &&
             (sdkMode === 'simulated' || readerConnected)
         ) {
-            // Small delay to allow user to lift finger
             const timer = setTimeout(() => {
-                // Reset scan status before starting new scan
                 setScanStatus('scanning');
                 setQuality(0);
                 setMessage('');
@@ -147,7 +134,6 @@ export function FingerprintScanner({
             }, 800);
             return () => clearTimeout(timer);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [autoScan, currentSample, requiredSamples, mode, initialized, sdkMode, readerConnected, startCapture]);
 
     const getStatusColor = () => {

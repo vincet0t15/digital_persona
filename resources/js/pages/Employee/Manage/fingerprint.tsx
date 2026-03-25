@@ -1,41 +1,20 @@
-import { CustomComboBox } from '@/components/CustomComboBox';
 import { FingerprintDeviceStatus } from '@/components/device-status-indicator';
-import Heading from '@/components/heading';
+import { FingerprintScanner } from '@/components/fingerprint-scanner';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { EmployeeCreate, FingerprintData } from '@/types/employee';
+import { Employee, FingerprintData } from '@/types/employee';
 import { Office } from '@/types/office';
-import { Head, router, useForm } from '@inertiajs/react';
-import { Fingerprint, UploadCloud, X, XIcon } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { router, useForm } from '@inertiajs/react';
+import { Fingerprint, Trash2, X, XIcon } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
-import { FingerprintScanner } from './fingerprint-scanner';
 
-interface DuplicateCheckResult {
-    duplicate: boolean;
-    employee?: {
-        id: number;
-        name: string;
-    };
-    message?: string;
-}
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
-    {
-        title: 'Create Employee',
-        href: '/employees/create',
-    },
-];
-
-interface RegisterBiometricProps {
+interface FingerprintsPageProps {
+    employee: Employee;
     offices: Office[];
 }
 
@@ -52,131 +31,70 @@ const FINGER_OPTIONS = [
     { value: 'Left Pinky', label: 'Left Pinky' },
 ];
 
-const REQUIRED_SAMPLES = 5; // Number of samples per finger
+const REQUIRED_SAMPLES = 5;
 
-export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
-    const { data, setData, post, processing, reset } = useForm<EmployeeCreate>({
-        name: '',
-        office_id: '',
-        photo: '',
+interface DuplicateWarning {
+    duplicate: boolean;
+    message?: string;
+    employee?: {
+        id: number;
+        name: string;
+    };
+}
+
+export default function ManageFingerprints({ employee }: FingerprintsPageProps) {
+    const { data, setData, post, processing, reset } = useForm({
         fingerprints_json: '',
     });
 
     const [fingerprints, setFingerprints] = useState<FingerprintData[]>([]);
-
-    const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
     const [selectedFinger, setSelectedFinger] = useState<string>('Right Thumb');
     const [currentFingerprint, setCurrentFingerprint] = useState<FingerprintData | null>(null);
-    const [duplicateWarning, setDuplicateWarning] = useState<DuplicateCheckResult | null>(null);
-    const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
     const [pendingSamples, setPendingSamples] = useState<FingerprintData[]>([]);
     const [currentSampleIndex, setCurrentSampleIndex] = useState(0);
-    const photoPreviewUrlRef = useRef<string | null>(null);
+    const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
+    const [duplicateWarning, setDuplicateWarning] = useState<DuplicateWarning | null>(null);
 
-    const officeOptions = offices.map((office) => ({
-        value: String(office.id),
-        label: office.name,
-    }));
-
-    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] ?? null;
-
-        if (photoPreviewUrlRef.current) {
-            URL.revokeObjectURL(photoPreviewUrlRef.current);
-            photoPreviewUrlRef.current = null;
-        }
-
-        if (file) {
-            const url = URL.createObjectURL(file);
-            photoPreviewUrlRef.current = url;
-            setPhotoPreviewUrl(url);
-        } else {
-            setPhotoPreviewUrl(null);
-        }
-
-        setData('photo', file);
-    };
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Dashboard',
+            href: '/dashboard',
+        },
+        {
+            title: 'Employee List',
+            href: '/employees',
+        },
+        {
+            title: `${employee.name} - Fingerprints`,
+            href: route('employees.fingerprints', employee.id),
+        },
+    ];
 
     const handleFingerprintCapture = (template: string, quality: number) => {
-        setDuplicateWarning(null);
-        setIsCheckingDuplicate(true);
+        const sample: FingerprintData = {
+            template,
+            quality,
+            finger_name: selectedFinger,
+        };
 
-        router.post(
-            route('biometric.check-duplicate'),
-            { fingerprint_template: template },
-            {
-                preserveScroll: true,
-                onSuccess: (page: any) => {
-                    const result = page.props.result as DuplicateCheckResult;
+        const newSamples = [...pendingSamples, sample];
+        setPendingSamples(newSamples);
 
-                    if (result?.duplicate) {
-                        setDuplicateWarning(result);
-                        setCurrentFingerprint(null);
-                        // Reset samples on duplicate
-                        setPendingSamples([]);
-                        setCurrentSampleIndex(0);
-                        toast.error(result.message || 'This fingerprint is already registered.');
-                    } else {
-                        const sample: FingerprintData = {
-                            template,
-                            quality,
-                            finger_name: selectedFinger,
-                        };
-
-                        // Add to pending samples
-                        const newSamples = [...pendingSamples, sample];
-                        setPendingSamples(newSamples);
-
-                        if (newSamples.length >= REQUIRED_SAMPLES) {
-                            // All samples collected, create the fingerprint entry
-                            setCurrentFingerprint({
-                                template,
-                                quality,
-                                finger_name: selectedFinger,
-                                samples: newSamples,
-                            });
-                            setPendingSamples([]);
-                            setCurrentSampleIndex(0);
-                            toast.success(`${selectedFinger} fingerprint enrolled successfully! Click "Add Fingerprint" to save.`);
-                        } else {
-                            // More samples needed
-                            setCurrentSampleIndex(newSamples.length);
-                            setCurrentFingerprint(null);
-                            toast.info(`Sample ${newSamples.length} of ${REQUIRED_SAMPLES} captured. Please scan again.`);
-                        }
-                    }
-                },
-                onError: () => {
-                    const sample: FingerprintData = {
-                        template,
-                        quality,
-                        finger_name: selectedFinger,
-                    };
-
-                    const newSamples = [...pendingSamples, sample];
-                    setPendingSamples(newSamples);
-
-                    if (newSamples.length >= REQUIRED_SAMPLES) {
-                        setCurrentFingerprint({
-                            template,
-                            quality,
-                            finger_name: selectedFinger,
-                            samples: newSamples,
-                        });
-                        setPendingSamples([]);
-                        setCurrentSampleIndex(0);
-                    } else {
-                        setCurrentSampleIndex(newSamples.length);
-                        setCurrentFingerprint(null);
-                    }
-                },
-                onFinish: () => {
-                    setIsCheckingDuplicate(false);
-                },
-            },
-        );
-
-        console.log('Fingerprint captured with quality:', quality);
+        if (newSamples.length >= REQUIRED_SAMPLES) {
+            setCurrentFingerprint({
+                template,
+                quality,
+                finger_name: selectedFinger,
+                samples: newSamples,
+            });
+            setPendingSamples([]);
+            setCurrentSampleIndex(0);
+            toast.success(`${selectedFinger} fingerprint captured successfully! Click "Add Fingerprint" to save.`);
+        } else {
+            setCurrentSampleIndex(newSamples.length);
+            setCurrentFingerprint(null);
+            toast.info(`Sample ${newSamples.length} of ${REQUIRED_SAMPLES} captured. Please scan again.`);
+        }
     };
 
     const handleAddFingerprint = () => {
@@ -202,155 +120,117 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
             return;
         }
 
-        post(route('employees.store'), {
+        post(route('employees.fingerprints.store', employee.id), {
             onSuccess: () => {
-                // Reset all local state before redirect
                 setFingerprints([]);
-                setPhotoPreviewUrl(null);
                 setCurrentFingerprint(null);
                 setPendingSamples([]);
                 setCurrentSampleIndex(0);
-                setDuplicateWarning(null);
-                if (photoPreviewUrlRef.current) {
-                    URL.revokeObjectURL(photoPreviewUrlRef.current);
-                    photoPreviewUrlRef.current = null;
-                }
                 reset();
             },
-            onError: (errors) => {
-                console.error('Form errors:', errors);
-                if (errors.message) {
-                    toast.error(errors.message);
-                } else {
-                    toast.error('Failed to register employee. Please check your input and try again.');
-                }
+            onError: () => {
+                toast.error('Failed to save fingerprints. Please try again.');
             },
         });
     };
 
+    const handleDeleteFingerprint = (fingerprintId: number) => {
+        if (confirm('Are you sure you want to delete this fingerprint?')) {
+            router.delete(route('employees.fingerprints.delete', [employee.id, fingerprintId]), {
+                onSuccess: () => {
+                    toast.success('Fingerprint deleted successfully');
+                },
+                onError: () => {
+                    toast.error('Failed to delete fingerprint');
+                },
+            });
+        }
+    };
+
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create Employee" />
+        <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+            <FingerprintDeviceStatus />
 
-            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <Heading title="Register Employee" description="Register a new employee with biometric data" />
-                <FingerprintDeviceStatus />
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Main Content Grid - 3 columns on desktop */}
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                        {/* LEFT COLUMN - Photo (2 columns) */}
-                        <div className="lg:col-span-3">
-                            <div className="sticky top-4 flex flex-col items-center space-y-4">
-                                <input
-                                    id="photo"
-                                    type="file"
-                                    accept="image/jpeg,image/png,image/webp"
-                                    className="hidden"
-                                    onChange={handlePhotoChange}
-                                />
-
-                                <button
-                                    type="button"
-                                    className="bg-background relative flex aspect-square w-full max-w-[200px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed"
-                                    onClick={() => document.getElementById('photo')?.click()}
-                                >
-                                    {photoPreviewUrl ? (
-                                        <img src={photoPreviewUrl} alt="Preview" className="h-full w-full object-cover" />
-                                    ) : (
-                                        <div className="flex flex-col items-center justify-center gap-2 p-4 text-center">
-                                            <div className="bg-muted flex size-12 items-center justify-center rounded-full">
-                                                <UploadCloud className="text-muted-foreground size-5" />
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                {/* Left Column - Existing Fingerprints */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Fingerprint className="h-5 w-5" />
+                            Enrolled Fingerprints
+                        </CardTitle>
+                        <CardDescription>
+                            {employee.fingerprints?.length
+                                ? `${employee.fingerprints.length} fingerprint(s) enrolled`
+                                : 'No fingerprints enrolled yet'}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {employee.fingerprints && employee.fingerprints.length > 0 ? (
+                            <div className="space-y-2">
+                                {employee.fingerprints.map((fp: any) => (
+                                    <div key={fp.id} className="flex items-center justify-between rounded-lg border bg-gray-50 p-3">
+                                        <div className="flex items-center gap-3">
+                                            <Fingerprint className="h-4 w-4 text-gray-500" />
+                                            <div>
+                                                <p className="text-sm font-medium">{fp.finger_name}</p>
+                                                <p className="text-xs text-gray-500">Quality: {fp.fingerprint_quality}%</p>
                                             </div>
-                                            <div className="text-sm font-semibold">Upload Photo</div>
-                                            <div className="text-muted-foreground text-xs">Click to browse</div>
                                         </div>
-                                    )}
-                                </button>
-
-                                <div className="flex flex-wrap justify-center gap-2">
-                                    <Button type="button" variant="outline" size="sm" onClick={() => document.getElementById('photo')?.click()}>
-                                        <UploadCloud className="mr-1 size-4" />
-                                        {photoPreviewUrl ? 'Change' : 'Choose'}
-                                    </Button>
-
-                                    {photoPreviewUrl && (
                                         <Button
-                                            type="button"
-                                            variant="destructive"
-                                            size="sm"
-                                            onClick={() => {
-                                                if (photoPreviewUrlRef.current) {
-                                                    URL.revokeObjectURL(photoPreviewUrlRef.current);
-                                                    photoPreviewUrlRef.current = null;
-                                                }
-                                                setPhotoPreviewUrl(null);
-                                                setData('photo', null);
-                                            }}
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-red-500 hover:text-red-700"
+                                            onClick={() => handleDeleteFingerprint(fp.id)}
                                         >
-                                            <XIcon className="mr-1 size-4" />
-                                            Remove
+                                            <Trash2 className="h-4 w-4" />
                                         </Button>
-                                    )}
-                                </div>
-
-                                <p className="text-muted-foreground text-center text-xs">jpeg, jpg, png, webp (max 2MB)</p>
+                                    </div>
+                                ))}
                             </div>
-                        </div>
+                        ) : (
+                            <div className="rounded-lg border border-dashed p-8 text-center">
+                                <Fingerprint className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+                                <p className="text-sm text-gray-500">No fingerprints enrolled</p>
+                                <p className="text-xs text-gray-400">Use the form on the right to add fingerprints</p>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
 
-                        {/* MIDDLE COLUMN - Employee Details (5 columns) */}
-                        <div className="space-y-4 lg:col-span-4">
-                            <h3 className="text-lg font-semibold">Employee Details</h3>
-
-                            {/* Full Name */}
+                {/* Right Column - Add New Fingerprints */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Fingerprint className="h-5 w-5" />
+                            Add New Fingerprints
+                        </CardTitle>
+                        <CardDescription>Enroll additional fingerprints for this employee</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="name">
-                                    Full Name <span className="text-destructive">*</span>
-                                </Label>
-                                <Input
-                                    id="name"
-                                    name="name"
-                                    placeholder="Enter full name"
-                                    value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                />
+                                <Label htmlFor="finger-select">Select Finger</Label>
+                                <Select value={selectedFinger} onValueChange={setSelectedFinger}>
+                                    <SelectTrigger id="finger-select">
+                                        <SelectValue placeholder="Select a finger" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {FINGER_OPTIONS.map((finger) => (
+                                            <SelectItem key={finger.value} value={finger.value}>
+                                                {finger.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
 
-                            {/* Office */}
-                            <div className="space-y-2">
-                                <Label htmlFor="office">
-                                    Office <span className="text-destructive">*</span>
-                                </Label>
-                                <CustomComboBox
-                                    items={officeOptions}
-                                    placeholder="Select an office"
-                                    value={data.office_id || null}
-                                    onSelect={(value) => setData('office_id', value ?? '')}
-                                />
-                            </div>
-                        </div>
-
-                        {/* RIGHT COLUMN - Biometric (5 columns) */}
-                        <div className="space-y-4 lg:col-span-5">
-                            <h3 className="text-lg font-semibold">Biometric Enrollment</h3>
-
-                            <div className="space-y-2">
-                                <Label>Select Finger</Label>
-                                <CustomComboBox
-                                    items={FINGER_OPTIONS}
-                                    placeholder="Search or select a finger..."
-                                    value={selectedFinger}
-                                    onSelect={(value) => setSelectedFinger(value || 'Right Thumb')}
-                                />
-                            </div>
-
-                            {/* Scanner */}
                             <FingerprintScanner
                                 mode="enroll"
                                 onCapture={handleFingerprintCapture}
                                 showStatus={false}
                                 requiredSamples={REQUIRED_SAMPLES}
                                 currentSample={currentSampleIndex}
-                                collectedSamples={currentFingerprint?.samples?.length || pendingSamples.length}
                                 autoScan={true}
                             />
 
@@ -551,20 +431,30 @@ export default function RegisterBiometric({ offices }: RegisterBiometricProps) {
                                     </div>
                                 </>
                             )}
-                        </div>
-                    </div>
 
-                    {/* Submit Button */}
-                    <div className="flex justify-end gap-4 border-t pt-4">
-                        <Button type="button" variant="outline" onClick={() => window.history.back()}>
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={processing}>
-                            {processing ? 'Registering...' : 'Register Employee'}
-                        </Button>
-                    </div>
-                </form>
+                            <div className="flex gap-2 pt-4">
+                                <Button type="submit" disabled={processing || fingerprints.length === 0} className="flex-1">
+                                    {processing ? 'Saving...' : `Save ${fingerprints.length} Fingerprint(s)`}
+                                </Button>
+                                {fingerprints.length > 0 && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => {
+                                            setFingerprints([]);
+                                            setCurrentFingerprint(null);
+                                            setPendingSamples([]);
+                                            setCurrentSampleIndex(0);
+                                        }}
+                                    >
+                                        Clear
+                                    </Button>
+                                )}
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
             </div>
-        </AppLayout>
+        </div>
     );
 }

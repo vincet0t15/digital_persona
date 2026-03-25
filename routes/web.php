@@ -4,6 +4,7 @@ use App\Http\Controllers\BiometricController;
 use App\Http\Controllers\EmployeeAuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmploymentTypeController;
+use App\Http\Controllers\ManageEmployeeController;
 use App\Http\Controllers\TimeClockController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -45,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
 
+
     // Employee Identification
     Route::get('/employees/identify', function () {
         return Inertia::render('Bio/identify');
@@ -66,6 +68,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/employment-types', [EmploymentTypeController::class, 'store'])->name('employment-types.store');
     Route::put('/employment-types/{employmentType}', [EmploymentTypeController::class, 'update'])->name('employment-types.update');
     Route::delete('/employment-types/{employmentType}', [EmploymentTypeController::class, 'destroy'])->name('employment-types.destroy');
+
+    // MANAGE EMPLOYEES
+    Route::get('/manage-employees/{employee}', [ManageEmployeeController::class, 'index'])->name('manage-employees.index');
+    Route::put('/manage-employees/{employee}', [ManageEmployeeController::class, 'update'])->name('manage-employees.update');
 });
 
 require __DIR__ . '/settings.php';

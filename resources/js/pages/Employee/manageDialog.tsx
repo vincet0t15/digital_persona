@@ -3,8 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import type { Employee } from '@/types/employee';
 import { router } from '@inertiajs/react';
-import { useState } from 'react';
-import { toast } from 'sonner';
 
 interface EmployeeShowProps {
     isOpen: boolean;
@@ -13,29 +11,9 @@ interface EmployeeShowProps {
 }
 
 export function EmployeeManageDialog({ isOpen, onClose, employee }: EmployeeShowProps) {
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-
     const handleManage = () => {
         onClose();
-        router.get(route('manage.employees.index', employee.id));
-    };
-
-    const handleDelete = () => {
-        setIsDeleting(true);
-        router.delete(route('employees.destroy', employee.id), {
-            onSuccess: () => {
-                toast.success('Employee deleted successfully');
-                setShowDeleteDialog(false);
-                onClose();
-            },
-            onError: () => {
-                toast.error('Failed to delete employee');
-            },
-            onFinish: () => {
-                setIsDeleting(false);
-            },
-        });
+        router.get(route('manage-employees.index', employee.id));
     };
 
     return (
@@ -63,11 +41,15 @@ export function EmployeeManageDialog({ isOpen, onClose, employee }: EmployeeShow
                                 <span className="text-muted-foreground">Department</span>
                                 <span className="truncate text-right font-medium uppercase">{employee.office?.code}</span>
                             </div>
+                            <div className="flex items-center justify-between border-b py-2 text-sm">
+                                <span className="text-muted-foreground">Employment Status</span>
+                                <span className="truncate text-right font-medium uppercase">{employee.employment_type.name}</span>
+                            </div>
                         </div>
 
                         {/* Buttons */}
                         <div className="flex gap-2 pt-2">
-                            <Button variant="destructive" className="flex-1" onClick={() => setShowDeleteDialog(true)}>
+                            <Button variant="destructive" className="flex-1">
                                 Delete
                             </Button>
                             <Button variant="default" className="flex-1" onClick={handleManage}>

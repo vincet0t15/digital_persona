@@ -1,3 +1,4 @@
+import { EmploymentType } from "./employmentType";
 import { Office } from "./office";
 
 export interface Employee {
@@ -6,7 +7,9 @@ export interface Employee {
     username: string;
     office_id: number;
     image: string | null;
+    is_active: boolean;
     office: Office;
+    employment_type: EmploymentType;
     fingerprints?: FingerprintData[];
 }
 
@@ -18,12 +21,13 @@ export interface FingerprintData {
 }
 
 export interface EmployeeCreate {
-    [key: string]: string | number | File | null;
+    [key: string]: string | number | boolean | File | null;
     name: string;
     username?: string;
     office_id: string;
     employment_type_id: string;
     password?: string;
     photo: File | string | null;
+    is_active: boolean;
     // fingerprints_json: string;
 }

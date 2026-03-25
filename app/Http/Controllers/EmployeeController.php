@@ -26,6 +26,34 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'office_id' => 'required|integer|exists:offices,id',
+            'photo' => 'nullable|image|max:2048',
+            'employment_type_id' => 'required|integer|exists:employment_types,id',
+        ]);
+
+        $randomCredentials = $this->generateRandomCredentials();
+
+        $imagePath = null;
+        if ($request->hasFile('photo')) {
+            $imagePath = $request->file('photo')->store('employees', 'public');
+        }
+
+        Employee::create([
+            'name' => $request->name,
+            'office_id' => $request->office_id,
+            'employment_type_id' => $request->employment_type_id,
+            'image' => $imagePath,
+            'username' => $randomCredentials,
+            'password' => Hash::make($randomCredentials),
+        ]);
+
+        return redirect()->back()->with('success', 'Employee created successfully.');
+    }
+
+    public function store1(Request $request)
+    {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'office_id' => 'required|integer|exists:offices,id',
@@ -161,6 +189,7 @@ class EmployeeController extends Controller
         $offices = Office::all();
         $employees = Employee::query()
             ->with('office')
+            ->with('employmentType')
             ->with('fingerprints')
             ->when($search, function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
