@@ -40,7 +40,6 @@ interface PageProps {
 }
 
 export default function IdentifyEmployee({ result }: PageProps) {
-    console.log('data:', result);
     const { props } = usePage<PageProps>();
     const [isIdentifying, setIsIdentifying] = useState(false);
     const [error, setError] = useState<string | null>(null);
