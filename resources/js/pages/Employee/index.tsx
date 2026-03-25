@@ -12,8 +12,8 @@ import { Employee } from '@/types/employee';
 import { FilterProps } from '@/types/filter';
 import { Office } from '@/types/office';
 import { PaginatedDataResponse } from '@/types/pagination';
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Fingerprint, PlusIcon, Search, User } from 'lucide-react';
+import { Head, router, useForm } from '@inertiajs/react';
+import { PlusIcon, Search, User } from 'lucide-react';
 import { useState } from 'react';
 import { EmployeeManageDialog } from './manageDialog';
 const breadcrumbs: BreadcrumbItem[] = [
@@ -106,7 +106,6 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                         <TableHeader className="bg-muted/50">
                             <TableRow>
                                 <TableHead className="text-primary font-bold">Name</TableHead>
-                                <TableHead className="text-primary text-right font-bold">Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -136,18 +135,6 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                                                     <span className="text-muted-foreground text-[0.70rem]">{employee.username}</span>
                                                 </div>
                                             </div>
-                                        </TableCell>
-
-                                        <TableCell className="flex items-center justify-end gap-2 text-sm">
-                                            <Link
-                                                href={route('employees.fingerprints', employee.id)}
-                                                className="inline-flex items-center gap-1 text-blue-600 hover:underline"
-                                            >
-                                                <Fingerprint className="h-3.5 w-3.5" />
-                                                Fingerprints ({employee.fingerprints?.length || 0})
-                                            </Link>
-                                            <span className="cursor-pointer text-teal-600 hover:underline">Edit</span>
-                                            <span className="cursor-pointer text-orange-600 hover:underline">Delete</span>
                                         </TableCell>
                                     </TableRow>
                                 ))
