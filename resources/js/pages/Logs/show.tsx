@@ -10,7 +10,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Employee } from '@/types/employee';
 import { TimeLog } from '@/types/timeLogs';
 import { Head, router } from '@inertiajs/react';
-import { AlertTriangle, CalendarDays, Clock, Filter, LogIn, LogOut, RotateCcw } from 'lucide-react';
+import { AlertTriangle, CalendarDays, Clock, FileText, Filter, LogIn, LogOut, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -137,6 +137,16 @@ export default function ShowTimeLogs({ employee, timeLogs, filters, availableYea
         handleFilterChange(currentYear, 'all');
     };
 
+    const handlePrintDTR = () => {
+        const month = selectedMonth !== 'all' ? selectedMonth : (new Date().getMonth() + 1).toString();
+        const params = new URLSearchParams();
+        params.set('year', selectedYear);
+        params.set('month', month);
+        params.set('employee_ids', employee.id.toString());
+
+        window.open(route('dtr.print') + '?' + params.toString(), '_blank');
+    };
+
     const groupedLogs = groupLogsByMonth(timeLogs.data);
     const sortedMonths = Object.keys(groupedLogs).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
@@ -216,6 +226,12 @@ export default function ShowTimeLogs({ employee, timeLogs, filters, availableYea
                                 <Button variant="outline" size="sm" onClick={handleReset} className="gap-1">
                                     <RotateCcw className="h-3 w-3" />
                                     Reset
+                                </Button>
+
+                                {/* Print DTR Button */}
+                                <Button variant="default" size="sm" onClick={handlePrintDTR} className="gap-1">
+                                    <FileText className="h-3 w-3" />
+                                    Print DTR
                                 </Button>
                             </div>
                         </div>

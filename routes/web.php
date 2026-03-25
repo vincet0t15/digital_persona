@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BiometricController;
+use App\Http\Controllers\DtrController;
 use App\Http\Controllers\EmployeeAuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmploymentTypeController;
@@ -84,6 +85,9 @@ Route::middleware(['auth'])->group(function () {
     // LOGS
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
     Route::get('/logs/{employee}', [LogController::class, 'show'])->name('logs.show');
+
+    // DTR PRINT
+    Route::get('/dtr/print', [DtrController::class, 'print'])->name('dtr.print');
 });
 
 // require __DIR__ . '/settings.php';
