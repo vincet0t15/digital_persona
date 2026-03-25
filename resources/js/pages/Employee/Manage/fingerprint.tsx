@@ -5,13 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { type BreadcrumbItem } from '@/types';
 import { Employee, FingerprintData } from '@/types/employee';
 import { Office } from '@/types/office';
 import { router, useForm } from '@inertiajs/react';
 import { Fingerprint, Trash2, X, XIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { DeleteFingerPrintDialog } from './deleteFingerPrintDialog';
 
 interface FingerprintsPageProps {
     employee: Employee;
@@ -54,47 +54,86 @@ export default function ManageFingerprints({ employee }: FingerprintsPageProps) 
     const [currentSampleIndex, setCurrentSampleIndex] = useState(0);
     const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false);
     const [duplicateWarning, setDuplicateWarning] = useState<DuplicateWarning | null>(null);
-
-    const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Dashboard',
-            href: '/dashboard',
-        },
-        {
-            title: 'Employee List',
-            href: '/employees',
-        },
-        {
-            title: `${employee.name} - Fingerprints`,
-            href: route('employees.fingerprints', employee.id),
-        },
-    ];
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedFingerprintId, setSelectedFingerprintId] = useState<number | null>(null);
 
     const handleFingerprintCapture = (template: string, quality: number) => {
-        const sample: FingerprintData = {
-            template,
-            quality,
-            finger_name: selectedFinger,
-        };
+        setDuplicateWarning(null);
+        setIsCheckingDuplicate(true);
 
-        const newSamples = [...pendingSamples, sample];
-        setPendingSamples(newSamples);
+        router.post(
+            route('biometric.check-duplicate'),
+            { fingerprint_template: template },
+            {
+                preserveScroll: true,
+                onSuccess: (page: any) => {
+                    const result = page.props.result as DuplicateWarning;
+                    setIsCheckingDuplicate(false);
 
-        if (newSamples.length >= REQUIRED_SAMPLES) {
-            setCurrentFingerprint({
-                template,
-                quality,
-                finger_name: selectedFinger,
-                samples: newSamples,
-            });
-            setPendingSamples([]);
-            setCurrentSampleIndex(0);
-            toast.success(`${selectedFinger} fingerprint captured successfully! Click "Add Fingerprint" to save.`);
-        } else {
-            setCurrentSampleIndex(newSamples.length);
-            setCurrentFingerprint(null);
-            toast.info(`Sample ${newSamples.length} of ${REQUIRED_SAMPLES} captured. Please scan again.`);
-        }
+                    if (result?.duplicate) {
+                        setDuplicateWarning(result);
+                        setCurrentFingerprint(null);
+                        setPendingSamples([]);
+                        setCurrentSampleIndex(0);
+                        toast.error(result.message || 'This fingerprint is already registered.');
+                        return;
+                    }
+
+                    const sample: FingerprintData = {
+                        template,
+                        quality,
+                        finger_name: selectedFinger,
+                    };
+
+                    const newSamples = [...pendingSamples, sample];
+                    setPendingSamples(newSamples);
+
+                    if (newSamples.length >= REQUIRED_SAMPLES) {
+                        setCurrentFingerprint({
+                            template,
+                            quality,
+                            finger_name: selectedFinger,
+                            samples: newSamples,
+                        });
+                        setPendingSamples([]);
+                        setCurrentSampleIndex(0);
+                        toast.success(`${selectedFinger} fingerprint captured successfully! Click "Add Fingerprint" to save.`);
+                    } else {
+                        setCurrentSampleIndex(newSamples.length);
+                        setCurrentFingerprint(null);
+                        toast.info(`Sample ${newSamples.length} of ${REQUIRED_SAMPLES} captured. Please scan again.`);
+                    }
+                },
+                onError: () => {
+                    setIsCheckingDuplicate(false);
+
+                    const sample: FingerprintData = {
+                        template,
+                        quality,
+                        finger_name: selectedFinger,
+                    };
+
+                    const newSamples = [...pendingSamples, sample];
+                    setPendingSamples(newSamples);
+
+                    if (newSamples.length >= REQUIRED_SAMPLES) {
+                        setCurrentFingerprint({
+                            template,
+                            quality,
+                            finger_name: selectedFinger,
+                            samples: newSamples,
+                        });
+                        setPendingSamples([]);
+                        setCurrentSampleIndex(0);
+                        toast.success(`${selectedFinger} fingerprint captured successfully! Click "Add Fingerprint" to save.`);
+                    } else {
+                        setCurrentSampleIndex(newSamples.length);
+                        setCurrentFingerprint(null);
+                        toast.info(`Sample ${newSamples.length} of ${REQUIRED_SAMPLES} captured. Please scan again.`);
+                    }
+                },
+            },
+        );
     };
 
     const handleAddFingerprint = () => {
@@ -121,7 +160,8 @@ export default function ManageFingerprints({ employee }: FingerprintsPageProps) 
         }
 
         post(route('employees.fingerprints.store', employee.id), {
-            onSuccess: () => {
+            onSuccess: (response: { props: FlashProps }) => {
+                toast.success(response.props.flash?.success);
                 setFingerprints([]);
                 setCurrentFingerprint(null);
                 setPendingSamples([]);
@@ -135,16 +175,8 @@ export default function ManageFingerprints({ employee }: FingerprintsPageProps) 
     };
 
     const handleDeleteFingerprint = (fingerprintId: number) => {
-        if (confirm('Are you sure you want to delete this fingerprint?')) {
-            router.delete(route('employees.fingerprints.delete', [employee.id, fingerprintId]), {
-                onSuccess: () => {
-                    toast.success('Fingerprint deleted successfully');
-                },
-                onError: () => {
-                    toast.error('Failed to delete fingerprint');
-                },
-            });
-        }
+        setSelectedFingerprintId(fingerprintId);
+        setDeleteDialogOpen(true);
     };
 
     return (
@@ -455,6 +487,12 @@ export default function ManageFingerprints({ employee }: FingerprintsPageProps) 
                     </CardContent>
                 </Card>
             </div>
+            <DeleteFingerPrintDialog
+                open={deleteDialogOpen}
+                onClose={() => setDeleteDialogOpen(false)}
+                employee={employee}
+                fingerprintId={selectedFingerprintId ?? 0}
+            />
         </div>
     );
 }

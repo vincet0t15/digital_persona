@@ -9,7 +9,7 @@ import { Employee, EmployeeCreate } from '@/types/employee';
 import { EmploymentType } from '@/types/employmentType';
 import { Office } from '@/types/office';
 import { useForm } from '@inertiajs/react';
-import { UploadCloud, User, XIcon } from 'lucide-react';
+import { UploadCloud, XIcon } from 'lucide-react';
 import { ChangeEvent, FormEventHandler, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -88,20 +88,6 @@ function EmployeeDetails({ employee, offices, employmentTypes }: Props) {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center gap-4 border-b pb-4">
-                <div className="bg-primary flex h-16 w-16 items-center justify-center rounded-full">
-                    {photoPreviewUrl ? (
-                        <img src={photoPreviewUrl} alt={employee.name} className="h-full w-full rounded-full object-cover" />
-                    ) : (
-                        <User className="text-primary-foreground h-8 w-8" />
-                    )}
-                </div>
-                <div>
-                    <h2 className="text-2xl font-bold">{employee.name}</h2>
-                    <p className="text-muted-foreground">@{employee.username}</p>
-                </div>
-            </div>
-
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
                     {/* LEFT COLUMN - Photo Upload */}
@@ -212,7 +198,6 @@ function EmployeeDetails({ employee, offices, employmentTypes }: Props) {
                         </div>
                     </div>
                 </div>
-
                 {/* Footer Actions */}
                 <div className="flex justify-end gap-4 border-t pt-4">
                     <Button type="button" variant="outline" onClick={() => window.history.back()}>

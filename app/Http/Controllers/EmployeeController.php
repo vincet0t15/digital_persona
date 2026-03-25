@@ -237,25 +237,42 @@ class EmployeeController extends Controller
                 ->with('error', 'Invalid fingerprints data. Please add at least one fingerprint.');
         }
 
-
         $enrolledCount = 0;
 
         foreach ($fingerprints as $fingerprintData) {
-            $pngBase64 = $fingerprintData['template'];
             $quality = $fingerprintData['quality'] ?? 0;
             $fingerName = $fingerprintData['finger_name'];
+            $samples = $fingerprintData['samples'] ?? [];
 
-            $fmdTemplate = $this->convertPngToFmd($pngBase64);
+            // Convert all samples to FMD
+            $fmdTemplates = [];
+            foreach ($samples as $sample) {
+                $fmd = $this->convertPngToFmd($sample['template']);
+                if ($fmd !== false) {
+                    $fmdTemplates[] = $fmd;
+                }
+            }
 
-            if ($fmdTemplate !== false) {
-                Fingeprint::create([
+            // Save fingerprint with all samples
+            if (count($fmdTemplates) > 0) {
+                $fingerprint = Fingeprint::create([
                     'employee_id' => $employee->id,
                     'finger_name' => $fingerName,
-                    'fingerprint_template' => $fmdTemplate,
+                    'fingerprint_template' => $fmdTemplates[0],
                     'fingerprint_quality' => $quality,
                     'reader_label' => 'Primary',
                     'enrolled_from_ip' => $request->ip(),
                 ]);
+
+                // Save additional samples (samples 2-5)
+                for ($i = 1; $i < count($fmdTemplates); $i++) {
+                    $fingerprint->samples()->create([
+                        'sample_index' => $i + 1,
+                        'template' => $fmdTemplates[$i],
+                        'quality' => $quality,
+                    ]);
+                }
+
                 $enrolledCount++;
             }
         }
@@ -265,11 +282,9 @@ class EmployeeController extends Controller
                 ->with('error', 'Failed to process fingerprints. Please try scanning again.');
         }
 
-
         cache()->forget('enrolled_fingerprints');
 
-        return redirect()->route('employees.fingerprints', $employee)
-            ->with('success', "{$enrolledCount} fingerprint(s) added successfully.");
+        return redirect()->back()->with('success', "{$enrolledCount} fingerprint(s) added successfully.");
     }
 
 
@@ -286,8 +301,7 @@ class EmployeeController extends Controller
 
         cache()->forget('enrolled_fingerprints');
 
-        return redirect()->route('employees.fingerprints', $employee)
-            ->with('success', 'Fingerprint deleted successfully.');
+        return redirect()->back()->with('success', 'Fingerprint deleted successfully.');
     }
 
 

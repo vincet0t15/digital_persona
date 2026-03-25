@@ -13,7 +13,7 @@ class ManageEmployeeController extends Controller
 {
     public function index(Request $request, Employee $employee)
     {
-        $employee = Employee::with('fingerprints', 'employmentType')
+        $employee = Employee::with('fingerprints', 'employmentType', 'office')
             ->find($employee->id);
         $offices = Office::all();
         $employmentType = EmploymentType::all();

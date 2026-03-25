@@ -28,6 +28,6 @@ export interface EmployeeCreate {
     employment_type_id: string;
     password?: string;
     photo: File | string | null;
-    is_active: boolean;
+    is_active?: boolean;
     // fingerprints_json: string;
 }
