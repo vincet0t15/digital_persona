@@ -1,8 +1,9 @@
 import { FingerprintDeviceStatus } from '@/components/device-status-indicator';
+import { FingerprintScanner } from '@/components/fingerprint-scanner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FingerprintScanner } from '@/pages/Bio/fingerprint-scanner';
+
 import { Head, router } from '@inertiajs/react';
 import { Clock, Fingerprint, LogIn, LogOut } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
