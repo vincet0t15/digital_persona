@@ -63,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
 
     // EMPLOYMENT TYPES
     Route::get('/employment-types', [EmploymentTypeController::class, 'index'])->name('employment-types.index');
+    Route::post('/employment-types', [EmploymentTypeController::class, 'store'])->name('employment-types.store');
 });
 
 require __DIR__ . '/settings.php';

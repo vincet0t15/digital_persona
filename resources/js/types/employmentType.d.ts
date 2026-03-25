@@ -5,8 +5,9 @@ export interface EmploymentType {
     status: boolean;
 }
 
-export interface EmploymentForm {
+export interface EmploymentTypeForm {
     name: string;
     description: string;
     status: boolean;
+    [key: string]: any;
 }

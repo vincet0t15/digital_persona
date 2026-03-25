@@ -25,4 +25,17 @@ class EmploymentTypeController extends Controller
             'filters' => ['search' => $search]
         ]);
     }
+
+    public function store(Request $request)
+    {
+
+        $request->validate([
+            'name' => 'required|max:255|unique:employment_types',
+            'description' => 'nullable|max:255',
+        ]);
+
+        EmploymentType::create($request->all());
+
+        return redirect()->back()->with('success', 'Employment type created successfully.');
+    }
 }

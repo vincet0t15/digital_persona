@@ -1,4 +1,5 @@
 import Heading from '@/components/heading';
+import Pagination from '@/components/paginationData';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,8 @@ import { EmploymentType } from '@/types/employmentType';
 import { PaginatedDataResponse } from '@/types/pagination';
 import { Head } from '@inertiajs/react';
 import { PlusIcon, Search } from 'lucide-react';
+import { useState } from 'react';
+import { CreateEmploymentTypeDialog } from './create';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -25,6 +28,7 @@ interface EmploymentTypeProps {
     employmentTypes: PaginatedDataResponse<EmploymentType>;
 }
 export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeProps) {
+    const [openCreateDialog, setOpenCreateDialog] = useState(false);
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Employment Types" />
@@ -32,7 +36,7 @@ export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeP
                 <Heading title="Employment Types" description="Manage employment types for employees." />
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex justify-end">
-                        <Button>
+                        <Button onClick={() => setOpenCreateDialog(true)}>
                             <PlusIcon className="h-4 w-4" />
                             Employment Type
                         </Button>
@@ -89,6 +93,12 @@ export default function EmploymentTypeIndex({ employmentTypes }: EmploymentTypeP
                         </TableBody>
                     </Table>
                 </div>
+
+                <div>
+                    <Pagination data={employmentTypes} />
+                </div>
+
+                {openCreateDialog && <CreateEmploymentTypeDialog isOpen={openCreateDialog} onClose={setOpenCreateDialog} />}
             </div>
         </AppLayout>
     );
