@@ -36,6 +36,11 @@ export function CreateEmploymentTypeDialog({ isOpen, onClose }: Props) {
     const handleInputChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (e) => {
         setData({ ...data, [e.target.name]: e.target.value });
     };
+
+    const handleToggle = (checked: boolean) => {
+        setData({ ...data, status: checked });
+    };
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <form>
@@ -56,7 +61,7 @@ export function CreateEmploymentTypeDialog({ isOpen, onClose }: Props) {
                         </Field>
                         <Field>
                             <Label htmlFor="username-1">Status</Label>
-                            <Switch id="status" name="status" checked={data.status} onCheckedChange={(value: boolean) => setData('status', value)} />
+                            <Switch id="status" name="status" checked={data.status} onCheckedChange={handleToggle} />
                         </Field>
                     </FieldGroup>
                     <DialogFooter>

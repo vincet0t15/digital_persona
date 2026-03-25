@@ -17,18 +17,18 @@ interface Props {
     employmentType: EmploymentType;
 }
 export function EditEmploymentTypeDialog({ isOpen, onClose, employmentType }: Props) {
-    const { data, setData, errors, processing, reset, post } = useForm<EmploymentTypeForm>({
+    const { data, setData, errors, processing, post } = useForm<EmploymentTypeForm & { _method: string }>({
+        _method: 'put',
         name: employmentType.name,
         description: employmentType.description,
-        status: employmentType.status || false,
+        status: employmentType.status,
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('employment-types.store'), {
-            onSuccess: (response: { props: FlashProps }) => {
-                toast.success(response.props.flash?.success);
-                reset();
+        post(route('employment-types.update', employmentType.id), {
+            onSuccess: () => {
+                toast.success('Employment type updated successfully');
                 onClose(false);
             },
         });
@@ -56,7 +56,7 @@ export function EditEmploymentTypeDialog({ isOpen, onClose, employmentType }: Pr
                             <Textarea name="description" placeholder="Enter a description..." onChange={handleInputChange} value={data.description} />
                         </Field>
                         <Field>
-                            <Label>Status{data.status}</Label>
+                            <Label>Status</Label>
                             <Switch name="status" checked={data.status} onCheckedChange={(value: boolean) => setData('status', value)} />
                         </Field>
                     </FieldGroup>
