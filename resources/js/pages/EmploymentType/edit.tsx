@@ -52,11 +52,11 @@ export function EditEmploymentTypeDialog({ isOpen, onClose, employmentType }: Pr
                             <InputError message={errors.name} />
                         </Field>
                         <Field>
-                            <Label htmlFor="username-1">Description</Label>
+                            <Label>Description</Label>
                             <Textarea name="description" placeholder="Enter a description..." onChange={handleInputChange} value={data.description} />
                         </Field>
                         <Field>
-                            <Label htmlFor="username-1">Status{data.status}</Label>
+                            <Label>Status{data.status}</Label>
                             <Switch name="status" checked={data.status} onCheckedChange={(value: boolean) => setData('status', value)} />
                         </Field>
                     </FieldGroup>
