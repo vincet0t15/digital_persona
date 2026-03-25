@@ -1,4 +1,5 @@
 import { FingerprintDeviceStatus } from '@/components/device-status-indicator';
+import { FingerprintScanner } from '@/components/fingerprint-scanner';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +8,6 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { Fingerprint, Scan, User, UserCheck, XCircle } from 'lucide-react';
 import { useState } from 'react';
-import { FingerprintScanner } from './fingerprint-scanner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
