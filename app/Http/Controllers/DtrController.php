@@ -43,7 +43,7 @@ class DtrController extends Controller
 
         $start = Carbon::createFromDate($year, $month, 1);
         $end = $start->copy()->endOfMonth();
-        $forTheMonthOf = $start->format('F') . ' 13' . $end->format('d, Y');
+        $forTheMonthOf = $start->format('F') . ' 1-' . $end->format('d, Y');
 
         $daysInMonth = collect();
         for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
@@ -177,7 +177,6 @@ class DtrController extends Controller
                     } else {
                         $startTime = Carbon::createFromTime(8, 0, 0);
                     }
-
                     $standardAMIn = $date->copy()->setTime($startTime->hour, $startTime->minute);
 
                     if ($shift && $shift->break_end) {
