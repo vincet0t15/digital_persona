@@ -76,7 +76,7 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                 />
 
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <Button>
+                    <Button onClick={() => router.get(route('employees.create'))} type="button">
                         <PlusIcon className="h-4 w-4" />
                         Add Employee
                     </Button>

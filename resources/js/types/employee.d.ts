@@ -22,6 +22,7 @@ export interface EmployeeCreate {
     name: string;
     username?: string;
     office_id: string;
+    employment_type_id: string;
     password?: string;
     photo: File | string | null;
     // fingerprints_json: string;

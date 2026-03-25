@@ -44,6 +44,7 @@ export default function CreateEmployee({ offices, employmentTypes }: Props) {
     const { data, setData, post, processing, reset } = useForm<EmployeeCreate>({
         name: '',
         office_id: '',
+        employment_type_id: '',
         photo: '',
     });
 
@@ -159,8 +160,8 @@ export default function CreateEmployee({ offices, employmentTypes }: Props) {
                                 <CustomComboBox
                                     items={employmentTypeOptions}
                                     placeholder="Select an employment type"
-                                    value={data.office_id || null}
-                                    onSelect={(value) => setData('office_id', value ?? '')}
+                                    value={data.employment_type_id || null}
+                                    onSelect={(value) => setData('employment_type_id', value ?? '')}
                                 />
                             </Field>
                         </FieldGroup>

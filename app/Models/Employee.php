@@ -18,6 +18,7 @@ class Employee extends Authenticatable
         'username',
         'password',
         'office_id',
+        'employment_type_id',
         'image',
         'is_active',
         'is_admin',
@@ -52,5 +53,10 @@ class Employee extends Authenticatable
     public function getImagePathAttribute($value)
     {
         return $value ? Storage::url($value) : null;
+    }
+
+    public function employmentType()
+    {
+        return $this->belongsTo(EmploymentType::class);
     }
 }

@@ -16,7 +16,7 @@ class EmployeeController extends Controller
     public function create()
     {
         $offices = Office::all();
-        $employmentTypes = EmploymentType::all();
+        $employmentTypes = EmploymentType::where('status', true)->get();
 
         return Inertia::render('Employee/create', [
             'offices' => $offices,
