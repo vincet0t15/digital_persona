@@ -17,10 +17,6 @@ import { Head, router, useForm } from '@inertiajs/react';
 import { PlusIcon, Search, UserIcon } from 'lucide-react';
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
-    {
         title: 'Time Logs',
         href: '/logs',
     },
@@ -104,6 +100,10 @@ export default function TimeLogs({ employees, filters, offices, employmentTypes 
             );
         }
     };
+
+    const handleClickAvatar = (employee: Employee) => {
+        router.get(route('logs.show', { employee: employee.id }));
+    };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Time Logs" />
@@ -166,7 +166,10 @@ export default function TimeLogs({ employees, filters, offices, employmentTypes 
                                     <TableRow key={employee.id} className="hover:bg-muted/30 text-sm">
                                         <TableCell className="cursor-pointer text-sm">
                                             <div className="flex cursor-pointer items-center gap-2">
-                                                <Avatar className="h-12 w-12 border-2 border-slate-200 shadow-sm dark:border-slate-700">
+                                                <Avatar
+                                                    className="h-12 w-12 border-2 border-slate-200 shadow-sm dark:border-slate-700"
+                                                    onClick={() => handleClickAvatar(employee)}
+                                                >
                                                     {employee.image ? (
                                                         <AvatarImage
                                                             src={'storage/' + employee.image}

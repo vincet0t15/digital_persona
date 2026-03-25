@@ -32,4 +32,13 @@ class LogController extends Controller
 
         ]);
     }
+
+    public function show(Employee $employee)
+    {
+        $employee->load(['office', 'employmentType', 'timeLogs']);
+
+        return Inertia::render('Logs/show', [
+            'employee' => $employee
+        ]);
+    }
 }

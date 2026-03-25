@@ -1,5 +1,6 @@
 import { EmploymentType } from "./employmentType";
 import { Office } from "./office";
+import { TimeLog } from "./timeLogs";
 
 export interface Employee {
     id: number;
@@ -11,6 +12,7 @@ export interface Employee {
     office: Office;
     employment_type: EmploymentType;
     fingerprints?: FingerprintData[];
+    time_logs: TimeLog[];
 }
 
 export interface FingerprintData {

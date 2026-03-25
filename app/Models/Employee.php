@@ -59,4 +59,9 @@ class Employee extends Authenticatable
     {
         return $this->belongsTo(EmploymentType::class);
     }
+
+    public function timeLogs()
+    {
+        return $this->hasMany(TimeLog::class);
+    }
 }

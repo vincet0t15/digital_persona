@@ -76,7 +76,8 @@ Route::middleware(['auth'])->group(function () {
 
     // LOGS
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
+    Route::get('/logs/{employee}', [LogController::class, 'show'])->name('logs.show');
 });
 
-require __DIR__ . '/settings.php';
+// require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
