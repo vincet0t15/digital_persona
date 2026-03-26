@@ -32,12 +32,10 @@ Route::middleware('employee.auth')->group(function () {
     Route::post('/employee/change-password', [EmployeeAuthController::class, 'changePassword'])->name('employee.change-password.post');
 });
 
-// Time Clock (Public - for fingerprint clock in/out)
-Route::middleware('guest')->group(function () {
-    Route::get('/time-clock', [TimeClockController::class, 'index'])->name('timeclock.index');
-    Route::post('/time-clock', [TimeClockController::class, 'clock'])->name('timeclock.clock');
-    Route::get('/time-clock/recent-logs', [TimeClockController::class, 'recentLogs'])->name('timeclock.recent');
-});
+// Time Clock (Public - for fingerprint clock in/out - accessible to all)
+Route::get('/time-clock', [TimeClockController::class, 'index'])->name('timeclock.index');
+Route::post('/time-clock', [TimeClockController::class, 'clock'])->name('timeclock.clock');
+Route::get('/time-clock/recent-logs', [TimeClockController::class, 'recentLogs'])->name('timeclock.recent');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {

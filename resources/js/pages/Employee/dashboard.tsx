@@ -55,7 +55,7 @@ export default function EmployeeDashboard() {
                         <div className="flex items-center gap-4">
                             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
                                 {employee.image ? (
-                                    <img src={employee.image} alt={employee.name} className="h-16 w-16 rounded-full object-cover" />
+                                    <img src={`/storage/${employee.image}`} alt={employee.name} className="h-16 w-16 rounded-full object-cover" />
                                 ) : (
                                     <User className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                                 )}

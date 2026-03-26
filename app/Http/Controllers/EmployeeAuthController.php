@@ -18,7 +18,7 @@ class EmployeeAuthController extends Controller
      */
     public function showLogin(): Response
     {
-        return Inertia::render('Employee/login');
+        return Inertia::render('authEmployee/login');
     }
 
     /**
@@ -59,8 +59,12 @@ class EmployeeAuthController extends Controller
      */
     public function dashboard(): Response
     {
+        /** @var Employee $employee */
+        $employee = Auth::guard('employee')->user();
+        $employee->load('office');
+
         return Inertia::render('Employee/dashboard', [
-            'employee' => Auth::guard('employee')->user(),
+            'employee' => $employee,
         ]);
     }
 
@@ -77,7 +81,7 @@ class EmployeeAuthController extends Controller
             return redirect()->route('employee.dashboard');
         }
 
-        return Inertia::render('Employee/change-password', [
+        return Inertia::render('authEmployee/change-password', [
             'employee' => $employee,
         ]);
     }
