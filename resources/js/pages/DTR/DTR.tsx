@@ -60,7 +60,7 @@ export default function Dashboard({ dtr }: DashboardProps) {
                         <div className="print-scale-dtr">
                             <div className="flex gap-4 pb-6 print:gap-2">
                                 {/* Employee Info & DTR Table */}
-                                <div className="w-[430px] font-sans text-sm text-gray-900">
+                                <div className="w-[400px] shrink-0 font-sans text-sm text-gray-900">
                                     <div>
                                         <span className="font-bold">CIVIL SERVICE FORM No. 48</span>
                                     </div>
@@ -196,41 +196,42 @@ export default function Dashboard({ dtr }: DashboardProps) {
                                 </div>
 
                                 {/* Raw Log Table */}
-                                <div className="flex-1">
+                                <div className="w-[140px] shrink-0">
                                     {/* Table for screen only */}
-                                    <div className="w-full max-w-[950px] text-black print:hidden">
-                                        <div className="flex flex-col border border-black p-1">
-                                            <span className="text-xs font-bold">{employee.student_name}</span>
-                                            <span className="text-xs">
+                                    <div className="w-full text-black print:hidden">
+                                        <div className="flex flex-col border border-black p-0.5">
+                                            <span className="text-[9px] font-bold">{employee.student_name}</span>
+                                            <span className="text-[8px]">
                                                 For the month of: <span className="font-bold">{employee.forTheMonthOf}</span>
                                             </span>
-                                            <span className="text-xs">
+                                            <span className="text-[8px]">
                                                 Total in: <span className="font-bold">{employee.totalIn}</span>
                                             </span>
-                                            <span className="text-xs">
+                                            <span className="text-[8px]">
                                                 Total out: <span className="font-bold">{employee.totalOut}</span>
                                             </span>
                                         </div>
-                                        <table className="w-full max-w-[950px] table-fixed border-collapse border border-black text-[8pt]">
+                                        <table className="w-full table-fixed border-collapse border border-black text-[6pt]">
                                             <thead>
                                                 <tr>
-                                                    <th className="w-[65px] border border-black px-1 py-1 text-left">Date</th>
-                                                    <th className="w-[50px] border border-black px-1 py-1 text-center">Time</th>
-                                                    <th className="w-[30px] border border-black px-1 py-1 text-left">Type</th>
+                                                    <th className="w-[50px] border border-black px-0.5 py-0.5 text-left">Date</th>
+                                                    <th className="w-[40px] border border-black px-0.5 py-0.5 text-center">Time</th>
+                                                    <th className="w-[25px] border border-black px-0.5 py-0.5 text-center">Type</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {employee.records
                                                     .flatMap((r) => r.logs || [])
+                                                    .slice(0, 31)
                                                     .map((entry, i) => (
                                                         <tr key={i}>
-                                                            <td className="w-[65px] border border-black px-1 py-[2px]">
-                                                                {dayjs(entry.datetime).format('YYYY-MM-DD')}
+                                                            <td className="border border-black px-0.5 py-[1px]">
+                                                                {dayjs(entry.datetime).format('MM-DD')}
                                                             </td>
-                                                            <td className="w-[50px] border border-black px-1 py-[2px] text-center">
+                                                            <td className="border border-black px-0.5 py-[1px] text-center">
                                                                 {dayjs(entry.datetime).format('HH:mm')}
                                                             </td>
-                                                            <td className="w-[30px] border border-black px-1 py-[2px] text-left uppercase">
+                                                            <td className="border border-black px-0.5 py-[1px] text-center uppercase">
                                                                 {entry.type}
                                                             </td>
                                                         </tr>
@@ -240,41 +241,42 @@ export default function Dashboard({ dtr }: DashboardProps) {
                                     </div>
 
                                     {/* print only */}
-                                    <div className="log-columns mt-2 hidden text-[8pt] print:block" style={{ width: '420px', maxWidth: '420px' }}>
-                                        <div className="w-[250px] max-w-[250px] border border-black p-1">
+                                    <div className="mt-1 hidden print:block" style={{ width: '140px' }}>
+                                        <div className="border border-black p-0.5">
                                             {/* Header Info */}
-                                            <div className="mb-1 flex flex-col border-b border-black pb-1">
-                                                <span className="text-xs font-bold">{employee.student_name}</span>
-                                                <span className="text-xs">
+                                            <div className="mb-0.5 flex flex-col border-b border-black pb-0.5">
+                                                <span className="text-[8px] font-bold">{employee.student_name}</span>
+                                                <span className="text-[7px]">
                                                     For the month of: <span className="font-bold">{employee.forTheMonthOf}</span>
                                                 </span>
-                                                <span className="text-xs">
+                                                <span className="text-[7px]">
                                                     Total in: <span className="font-bold">{employee.totalIn}</span>
                                                 </span>
-                                                <span className="text-xs">
+                                                <span className="text-[7px]">
                                                     Total out: <span className="font-bold">{employee.totalOut}</span>
                                                 </span>
                                             </div>
-                                            <table className="w-full table-fixed border-collapse border border-black" style={{ maxWidth: '420px' }}>
+                                            <table className="w-full table-fixed border-collapse border border-black text-[6pt]">
                                                 <thead>
                                                     <tr>
-                                                        <th className="border border-black text-left">Date</th>
-                                                        <th className="border border-black text-center">Time</th>
-                                                        <th className="border border-black text-right">Type</th>
+                                                        <th className="w-[50px] border border-black px-0.5 py-0.5 text-left">Date</th>
+                                                        <th className="w-[40px] border border-black px-0.5 py-0.5 text-center">Time</th>
+                                                        <th className="w-[25px] border border-black px-0.5 py-0.5 text-center">Type</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {employee.records
                                                         .flatMap((r) => r.logs || [])
+                                                        .slice(0, 31)
                                                         .map((entry, i) => (
-                                                            <tr key={i} className="flex w-full flex-row md:table-row">
-                                                                <td className="max-w-[90px] flex-1 overflow-x-auto border border-black px-1 py-[2px] text-left text-[10px] whitespace-nowrap md:text-xs">
-                                                                    {dayjs(entry.datetime).format('YYYY-MM-DD')}
+                                                            <tr key={i}>
+                                                                <td className="border border-black px-0.5 py-[1px] text-left">
+                                                                    {dayjs(entry.datetime).format('MM-DD')}
                                                                 </td>
-                                                                <td className="flex-1 border border-black px-1 py-[2px] text-center text-[10px] md:text-xs">
+                                                                <td className="border border-black px-0.5 py-[1px] text-center">
                                                                     {dayjs(entry.datetime).format('HH:mm')}
                                                                 </td>
-                                                                <td className="flex-1 border border-black px-1 py-[2px] text-left text-[10px] uppercase md:text-xs">
+                                                                <td className="border border-black px-0.5 py-[1px] text-center uppercase">
                                                                     {entry.type}
                                                                 </td>
                                                             </tr>
