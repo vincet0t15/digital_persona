@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\TimeLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,8 +64,22 @@ class EmployeeAuthController extends Controller
         $employee = Auth::guard('employee')->user();
         $employee->load('office');
 
+        $recentLogs = TimeLog::where('employee_id', $employee->id)
+            ->orderBy('date_time', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($log) {
+                return [
+                    'id' => $log->id,
+                    'log_type' => $log->log_type,
+                    'time' => \Carbon\Carbon::parse($log->date_time)->format('h:i A'),
+                    'date' => \Carbon\Carbon::parse($log->date_time)->format('M d'),
+                ];
+            });
+
         return Inertia::render('Employee/dashboard', [
             'employee' => $employee,
+            'recentLogs' => $recentLogs,
         ]);
     }
 

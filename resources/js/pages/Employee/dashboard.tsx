@@ -17,19 +17,26 @@ interface Employee {
     };
 }
 
+interface LogEntry {
+    id: number;
+    log_type: string;
+    time: string;
+    date: string;
+}
+
 interface PageProps {
     [key: string]: any;
     employee: Employee;
+    recentLogs?: LogEntry[];
 }
 
 const navItems = [
     { title: 'Dashboard', url: '/employee/dashboard', icon: LayoutDashboard },
-    { title: 'Time Clock', url: '/time-clock', icon: Clock },
     { title: 'My DTR', url: '/employee/dtr', icon: FileText },
 ];
 
 export default function EmployeeDashboard() {
-    const { employee } = usePage<PageProps>().props;
+    const { employee, recentLogs = [] } = usePage<PageProps>().props;
     const getInitials = useInitials();
 
     return (
@@ -135,7 +142,7 @@ export default function EmployeeDashboard() {
                         <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{employee.name}</span>
                     </h1>
                     <p className="mt-2 text-slate-600 dark:text-slate-400">
-                        Here's your employee dashboard. You can clock in/out, view your logs, and print your DTR.
+                        Here's your employee dashboard. You can view your logs and print your DTR.
                     </p>
                 </div>
 
@@ -185,19 +192,6 @@ export default function EmployeeDashboard() {
                             <CardDescription>Access your time clock and records</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                            <Link
-                                href={route('timeclock.index')}
-                                className="group flex items-center gap-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-4 transition hover:from-blue-100 hover:to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30"
-                            >
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg shadow-blue-600/20 transition group-hover:scale-110">
-                                    <Clock className="h-6 w-6 text-white" />
-                                </div>
-                                <div className="flex-1">
-                                    <p className="font-semibold text-slate-900 dark:text-white">Time Clock</p>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">Clock in/out using fingerprint</p>
-                                </div>
-                            </Link>
-
                             <button
                                 disabled
                                 className="flex w-full cursor-not-allowed items-center gap-4 rounded-xl bg-slate-50 p-4 opacity-60 dark:bg-slate-700/30"
@@ -246,8 +240,7 @@ export default function EmployeeDashboard() {
                             </div>
                             <div className="mt-6 rounded-xl bg-white/10 p-4 backdrop-blur-sm">
                                 <p className="text-sm text-blue-100">
-                                    You can use the time clock system to record your attendance. Make sure to clock in when you arrive and clock out
-                                    when you leave.
+                                    You can keep track of your attendance and manage your DTR digitally through this portal.
                                 </p>
                             </div>
                         </CardContent>
@@ -264,13 +257,34 @@ export default function EmployeeDashboard() {
                         <CardDescription>Your latest time clock entries</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex flex-col items-center justify-center rounded-xl bg-slate-50 py-12 dark:bg-slate-700/30">
-                            <History className="h-12 w-12 text-slate-300 dark:text-slate-600" />
-                            <p className="mt-4 text-center text-slate-500 dark:text-slate-400">Your recent time logs will appear here.</p>
-                            <p className="mt-2 text-center text-sm text-slate-400 dark:text-slate-500">
-                                Use the Time Clock to record your attendance.
-                            </p>
-                        </div>
+                        {recentLogs && recentLogs.length > 0 ? (
+                            <div className="space-y-4">
+                                {recentLogs.map((log) => (
+                                    <div key={log.id} className="flex items-center justify-between rounded-lg border border-slate-100 p-4 dark:border-slate-800">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`flex h-10 w-10 items-center justify-center rounded-full ${log.log_type === 'IN' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400'}`}>
+                                                <Clock className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-slate-900 dark:text-white">Time {log.log_type}</p>
+                                                <p className="text-sm text-slate-500 dark:text-slate-400">{log.date}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="font-bold text-slate-900 dark:text-white">{log.time}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center rounded-xl bg-slate-50 py-12 dark:bg-slate-700/30">
+                                <History className="h-12 w-12 text-slate-300 dark:text-slate-600" />
+                                <p className="mt-4 text-center text-slate-500 dark:text-slate-400">Your recent time logs will appear here.</p>
+                                <p className="mt-2 text-center text-sm text-slate-400 dark:text-slate-500">
+                                    Please check back later when you have active logs.
+                                </p>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
             </main>
