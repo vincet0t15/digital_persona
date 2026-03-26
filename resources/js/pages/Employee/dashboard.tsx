@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu';
 import { useInitials } from '@/hooks/use-initials';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -70,7 +70,7 @@ export default function EmployeeDashboard() {
                     {/* User Menu */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="flex items-center gap-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800">
+                            <Button variant="ghost" className="flex h-10 items-center gap-2 p-2 px-2 hover:bg-slate-100 dark:hover:bg-slate-800">
                                 <Avatar className="h-8 w-8 border-2 border-slate-200 dark:border-slate-700">
                                     <AvatarImage src={employee.image ? `/storage/${employee.image}` : ''} alt={employee.name} />
                                     <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-500 text-sm font-medium text-white">
@@ -97,32 +97,7 @@ export default function EmployeeDashboard() {
                                     <span className="text-xs text-slate-500">@{employee.username}</span>
                                 </div>
                             </div>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild>
-                                <Link href="/employee/dashboard" className="flex cursor-pointer items-center gap-2">
-                                    <LayoutDashboard className="h-4 w-4" />
-                                    Dashboard
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/time-clock" className="flex cursor-pointer items-center gap-2">
-                                    <Clock className="h-4 w-4" />
-                                    Time Clock
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild disabled>
-                                <span className="flex cursor-not-allowed items-center gap-2 opacity-50">
-                                    <History className="h-4 w-4" />
-                                    My Logs (Soon)
-                                </span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild disabled>
-                                <span className="flex cursor-not-allowed items-center gap-2 opacity-50">
-                                    <FileText className="h-4 w-4" />
-                                    Print DTR (Soon)
-                                </span>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
+
                             <form method="post" action={route('employee.logout')}>
                                 <DropdownMenuItem asChild>
                                     <button type="submit" className="flex w-full cursor-pointer items-center gap-2 text-red-600 focus:text-red-600">
