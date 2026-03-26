@@ -25,8 +25,7 @@ interface PageProps {
 const navItems = [
     { title: 'Dashboard', url: '/employee/dashboard', icon: LayoutDashboard },
     { title: 'Time Clock', url: '/time-clock', icon: Clock },
-    { title: 'My Logs', url: '#', icon: History },
-    { title: 'My DTR', url: '#', icon: FileText },
+    { title: 'My DTR', url: '/employee/dtr', icon: FileText },
 ];
 
 export default function EmployeeDashboard() {
@@ -143,7 +142,7 @@ export default function EmployeeDashboard() {
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {/* Profile Card */}
                     <Card className="overflow-hidden border-0 bg-white shadow-lg shadow-slate-200/50 dark:bg-slate-800 dark:shadow-slate-900/50">
-                        <div className="h-24 bg-gradient-to-r from-blue-600 to-indigo-600" />
+                        <div className="h-24" />
                         <CardContent className="relative -mt-12">
                             <div className="flex flex-col items-center">
                                 <Avatar className="h-24 w-24 border-4 border-white shadow-lg dark:border-slate-800">
@@ -212,18 +211,18 @@ export default function EmployeeDashboard() {
                                 </div>
                             </button>
 
-                            <button
-                                disabled
-                                className="flex w-full cursor-not-allowed items-center gap-4 rounded-xl bg-slate-50 p-4 opacity-60 dark:bg-slate-700/30"
+                            <Link
+                                href={route('employee.dtr')}
+                                className="group flex items-center gap-4 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 p-4 transition hover:from-emerald-100 hover:to-teal-100 dark:from-emerald-900/20 dark:to-teal-900/20 dark:hover:from-emerald-900/30 dark:hover:to-teal-900/30"
                             >
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-300 dark:bg-slate-600">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 shadow-lg shadow-emerald-600/20 transition group-hover:scale-110">
                                     <FileText className="h-6 w-6 text-white" />
                                 </div>
-                                <div className="flex-1 text-left">
-                                    <p className="font-semibold text-slate-900 dark:text-white">Print DTR</p>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">Download your DTR (Soon)</p>
+                                <div className="flex-1">
+                                    <p className="font-semibold text-slate-900 dark:text-white">My DTR</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">View and print your DTR</p>
                                 </div>
-                            </button>
+                            </Link>
                         </CardContent>
                     </Card>
 

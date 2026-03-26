@@ -1,6 +1,6 @@
+import { Head } from '@inertiajs/react';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-
 type LogEntry = {
     datetime: string;
     type: 'in' | 'out';
@@ -47,6 +47,7 @@ export default function Dashboard({ dtr }: DashboardProps) {
 
     return (
         <div className="flex flex-col gap-6 overflow-x-hidden bg-white p-4 print:gap-0 print:p-0">
+            <Head title="DAILY TIME RECORD" />
             {dtr.map((employee, index) => {
                 const totalLate = employee.records.reduce((sum, r) => sum + (r.late_minutes || 0), 0);
                 const totalLateHours = Math.floor(totalLate / 60);
@@ -165,9 +166,9 @@ export default function Dashboard({ dtr }: DashboardProps) {
                                             </tbody>
                                         </table>
                                         <div className="mt-2 flex font-bold">
-                                            <span className="flex-1">TOTAL</span>
-                                            <span className="w-[60px] text-center">{totalLateHours || ''}</span>
-                                            <span className="w-[60px] text-center">{totalLateMins || ''}</span>
+                                            <span className="mr-60 flex-1">TOTAL</span>
+                                            <span className="w-[90px] text-center">{totalLateHours || ''}</span>
+                                            <span className="w-[20px] text-center">{totalLateMins || ''}</span>
                                         </div>
                                         <div className="mt-4">
                                             <span className="font-bold">CERTIFY</span>{' '}
@@ -196,22 +197,22 @@ export default function Dashboard({ dtr }: DashboardProps) {
                                 </div>
 
                                 {/* Raw Log Table */}
-                                <div className="w-[140px] shrink-0">
+                                <div className="ml-10 w-[180px]">
                                     {/* Table for screen only */}
                                     <div className="w-full text-black print:hidden">
                                         <div className="flex flex-col border border-black p-0.5">
-                                            <span className="text-[9px] font-bold">{employee.student_name}</span>
-                                            <span className="text-[8px]">
+                                            <span className="text font-bold">{employee.student_name}</span>
+                                            <span className="text-xs">
                                                 For the month of: <span className="font-bold">{employee.forTheMonthOf}</span>
                                             </span>
-                                            <span className="text-[8px]">
+                                            <span className="">
                                                 Total in: <span className="font-bold">{employee.totalIn}</span>
                                             </span>
-                                            <span className="text-[8px]">
+                                            <span className="">
                                                 Total out: <span className="font-bold">{employee.totalOut}</span>
                                             </span>
                                         </div>
-                                        <table className="w-full table-fixed border-collapse border border-black text-[6pt]">
+                                        <table className="w-full table-fixed border-collapse border border-black text-[9pt]">
                                             <thead>
                                                 <tr>
                                                     <th className="w-[50px] border border-black px-0.5 py-0.5 text-left">Date</th>
@@ -239,20 +240,19 @@ export default function Dashboard({ dtr }: DashboardProps) {
                                             </tbody>
                                         </table>
                                     </div>
-
                                     {/* print only */}
-                                    <div className="mt-1 hidden print:block" style={{ width: '140px' }}>
+                                    <div className="mt-1 hidden print:block" style={{ width: '250px' }}>
                                         <div className="border border-black p-0.5">
                                             {/* Header Info */}
                                             <div className="mb-0.5 flex flex-col border-b border-black pb-0.5">
-                                                <span className="text-[8px] font-bold">{employee.student_name}</span>
-                                                <span className="text-[7px]">
+                                                <span className="text-[12px] font-bold">{employee.student_name}</span>
+                                                <span className="text-[12px]">
                                                     For the month of: <span className="font-bold">{employee.forTheMonthOf}</span>
                                                 </span>
-                                                <span className="text-[7px]">
+                                                <span className="text-[12px]">
                                                     Total in: <span className="font-bold">{employee.totalIn}</span>
                                                 </span>
-                                                <span className="text-[7px]">
+                                                <span className="text-[12px]">
                                                     Total out: <span className="font-bold">{employee.totalOut}</span>
                                                 </span>
                                             </div>
