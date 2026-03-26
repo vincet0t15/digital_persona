@@ -14,7 +14,10 @@ import { FilterProps } from '@/types/filter';
 import { Office } from '@/types/office';
 import { PaginatedDataResponse } from '@/types/pagination';
 import { Head, router, useForm } from '@inertiajs/react';
-import { PlusIcon, Search, UserIcon } from 'lucide-react';
+import { PlusIcon, PrinterIcon, Search, UserIcon } from 'lucide-react';
+import { useState } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Time Logs',
@@ -41,6 +44,34 @@ export default function TimeLogs({ employees, filters, offices, employmentTypes 
         office_id: filters.office_id || '',
         employment_type_id: filters.employment_type_id || '',
     });
+
+    const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
+    
+    const isAllSelected = employees.data.length > 0 && selectedEmployeeIds.length === employees.data.length;
+    
+    const handleSelectAll = () => {
+        if (isAllSelected) {
+            setSelectedEmployeeIds([]);
+        } else {
+            setSelectedEmployeeIds(employees.data.map((employee) => employee.id.toString()));
+        }
+    };
+
+    const handleSelectEmployee = (id: string) => {
+        setSelectedEmployeeIds((prev) =>
+            prev.includes(id) ? prev.filter((empId) => empId !== id) : [...prev, id]
+        );
+    };
+
+    const handlePrintSelected = () => {
+        if (selectedEmployeeIds.length === 0) return;
+        
+        let url = route('dtr.print') + '?';
+        selectedEmployeeIds.forEach((id, idx) => {
+            url += `employee_ids[]=${id}${idx < selectedEmployeeIds.length - 1 ? '&' : ''}`;
+        });
+        window.open(url, '_blank');
+    };
 
     const onOfficeChange = (value: string | null) => {
         const newOfficeId = value || '';
@@ -114,10 +145,21 @@ export default function TimeLogs({ employees, filters, offices, employmentTypes 
                 />
 
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <Button type="button">
-                        <PlusIcon className="h-4 w-4" />
-                        Add Employee
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button type="button">
+                            <PlusIcon className="h-4 w-4 mr-2" />
+                            Add Employee
+                        </Button>
+                        <Button 
+                            variant="outline" 
+                            type="button" 
+                            onClick={handlePrintSelected} 
+                            disabled={selectedEmployeeIds.length === 0}
+                        >
+                            <PrinterIcon className="h-4 w-4 mr-2" />
+                            Print Selected ({selectedEmployeeIds.length})
+                        </Button>
+                    </div>
 
                     <div className="flex w-full items-center gap-2 sm:w-auto">
                         <div className="w-full">
@@ -157,6 +199,13 @@ export default function TimeLogs({ employees, filters, offices, employmentTypes 
                     <Table>
                         <TableHeader className="bg-muted/50">
                             <TableRow>
+                                <TableHead className="w-[50px] text-center">
+                                    <Checkbox
+                                        checked={isAllSelected}
+                                        onCheckedChange={handleSelectAll}
+                                        aria-label="Select all"
+                                    />
+                                </TableHead>
                                 <TableHead className="text-primary font-bold">Name</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -164,6 +213,13 @@ export default function TimeLogs({ employees, filters, offices, employmentTypes 
                             {employees.data.length > 0 ? (
                                 employees.data.map((employee) => (
                                     <TableRow key={employee.id} className="hover:bg-muted/30 text-sm">
+                                        <TableCell className="text-center">
+                                            <Checkbox
+                                                checked={selectedEmployeeIds.includes(employee.id.toString())}
+                                                onCheckedChange={() => handleSelectEmployee(employee.id.toString())}
+                                                aria-label={`Select ${employee.name}`}
+                                            />
+                                        </TableCell>
                                         <TableCell className="cursor-pointer text-sm">
                                             <div className="flex cursor-pointer items-center gap-2">
                                                 <Avatar
@@ -192,7 +248,7 @@ export default function TimeLogs({ employees, filters, offices, employmentTypes 
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="py-3 text-center text-gray-500">
+                                    <TableCell colSpan={2} className="py-3 text-center text-gray-500">
                                         No data available.
                                     </TableCell>
                                 </TableRow>
