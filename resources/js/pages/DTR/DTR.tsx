@@ -56,7 +56,7 @@ export default function Dashboard({ dtr }: DashboardProps) {
                 return (
                     <div
                         key={index}
-                        className={`print-container border border-b-2 border-black p-2 print:border-none print:p-0 ${index > 0 ? 'page-break' : ''}`}
+                        className={`print-container border border-b-2 border-black p-2 print:border-none print:p-0 ${index < dtr.length - 1 ? 'page-break' : ''}`}
                     >
                         <div className="print-scale-dtr">
                             <div className="flex gap-4 pb-6 print:gap-2">
