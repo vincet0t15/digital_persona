@@ -45,6 +45,29 @@ export default function TimeLogs({ employees, filters, offices, employmentTypes 
         employment_type_id: filters.employment_type_id || '',
     });
 
+    const [printYear, setPrintYear] = useState<number>(new Date().getFullYear());
+    const [printMonth, setPrintMonth] = useState<number>(new Date().getMonth() + 1);
+
+    const yearOptions = Array.from({ length: 10 }, (_, i) => {
+        const year = new Date().getFullYear() - i;
+        return { value: year.toString(), label: year.toString() };
+    });
+
+    const monthOptions = [
+        { value: '1', label: 'January' },
+        { value: '2', label: 'February' },
+        { value: '3', label: 'March' },
+        { value: '4', label: 'April' },
+        { value: '5', label: 'May' },
+        { value: '6', label: 'June' },
+        { value: '7', label: 'July' },
+        { value: '8', label: 'August' },
+        { value: '9', label: 'September' },
+        { value: '10', label: 'October' },
+        { value: '11', label: 'November' },
+        { value: '12', label: 'December' },
+    ];
+
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
     
     const isAllSelected = employees.data.length > 0 && selectedEmployeeIds.length === employees.data.length;
@@ -66,9 +89,9 @@ export default function TimeLogs({ employees, filters, offices, employmentTypes 
     const handlePrintSelected = () => {
         if (selectedEmployeeIds.length === 0) return;
         
-        let url = route('dtr.print') + '?';
-        selectedEmployeeIds.forEach((id, idx) => {
-            url += `employee_ids[]=${id}${idx < selectedEmployeeIds.length - 1 ? '&' : ''}`;
+        let url = route('dtr.print') + `?month=${printMonth}&year=${printYear}`;
+        selectedEmployeeIds.forEach((id) => {
+            url += `&employee_ids[]=${id}`;
         });
         window.open(url, '_blank');
     };
@@ -145,11 +168,27 @@ export default function TimeLogs({ employees, filters, offices, employmentTypes 
                 />
 
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         <Button type="button">
                             <PlusIcon className="h-4 w-4 mr-2" />
                             Add Employee
                         </Button>
+                        <div className="w-[140px]">
+                            <CustomComboBox
+                                items={monthOptions}
+                                placeholder="Month"
+                                value={printMonth.toString()}
+                                onSelect={(v) => { if(v) setPrintMonth(parseInt(v)) }}
+                            />
+                        </div>
+                        <div className="w-[100px]">
+                            <CustomComboBox
+                                items={yearOptions}
+                                placeholder="Year"
+                                value={printYear.toString()}
+                                onSelect={(v) => { if(v) setPrintYear(parseInt(v)) }}
+                            />
+                        </div>
                         <Button 
                             variant="outline" 
                             type="button" 
