@@ -93,14 +93,12 @@ export function EmployeeHeader({ employee }: Props) {
                             </div>
                         </div>
 
-                        <form method="post" action={route('employee.logout')}>
-                            <DropdownMenuItem asChild>
-                                <button type="submit" className="flex w-full cursor-pointer items-center gap-2 text-red-600 focus:text-red-600">
-                                    <LogOut className="h-4 w-4" />
-                                    Sign Out
-                                </button>
-                            </DropdownMenuItem>
-                        </form>
+                        <DropdownMenuItem asChild>
+                            <Link href={route('employee.logout')} method="post" as="button" className="flex w-full cursor-pointer items-center gap-2 text-red-600 focus:text-red-600">
+                                <LogOut className="h-4 w-4" />
+                                Sign Out
+                            </Link>
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
