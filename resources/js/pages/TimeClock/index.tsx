@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Head, router } from '@inertiajs/react';
-import { Clock, Fingerprint, LogIn, LogOut } from 'lucide-react';
+import { Clock, Fingerprint, LogIn, LogOut, Shield } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 
@@ -100,7 +100,7 @@ export default function TimeClock({ recent_logs: initialLogs = [] }: TimeClockPr
     }, []);
 
     return (
-        <div className="flex min-h-screen flex-col bg-gradient-to-b from-orange-50 via-orange-100 to-white font-sans text-slate-900 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950">
+        <div className="flex min-h-screen flex-col font-sans text-slate-900 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950">
             <Head title="Time Clock" />
             <Toaster position="top-right" richColors />
 
@@ -144,6 +144,7 @@ export default function TimeClock({ recent_logs: initialLogs = [] }: TimeClockPr
                             className="bg-orange-600 text-white transition hover:bg-orange-700"
                             onClick={() => router.visit(route('login'))}
                         >
+                            <Shield className="h-4 w-4" />
                             Admin
                         </Button>
                     </div>
