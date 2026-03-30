@@ -7,7 +7,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -48,6 +47,7 @@ export default function EmployeeIndex({ offices, employees, filters, shifts }: E
     const { data, setData } = useForm({
         search: filters.search || '',
         office_id: filters.office_id || '',
+        shift_id: filters.shift_id || '',
     });
 
     const officeOptions = offices.map((office) => ({
@@ -131,6 +131,9 @@ export default function EmployeeIndex({ offices, employees, filters, shifts }: E
         });
     };
 
+    const onShiftChange = (value: string | null) => {
+        setSelectedShiftId(value || '');
+    };
     const handleClickAvatar = (employee: Employee) => {
         setSelectedEmployee(employee);
         setOpenManageDialog(true);
@@ -261,22 +264,16 @@ export default function EmployeeIndex({ offices, employees, filters, shifts }: E
                             <DialogDescription>Assign {selectedEmployees.length} selected employee(s) to a shift.</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
+                            <div className="grid-col grid items-center gap-4">
                                 <Label htmlFor="shift" className="text-right">
                                     Shift
                                 </Label>
-                                <Select value={selectedShiftId} onValueChange={setSelectedShiftId}>
-                                    <SelectTrigger className="col-span-3">
-                                        <SelectValue placeholder="Select a shift" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {shiftOptions.map((shift) => (
-                                            <SelectItem key={shift.value} value={shift.value}>
-                                                {shift.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <CustomComboBox
+                                    items={shiftOptions}
+                                    placeholder="All Shifts"
+                                    value={selectedShiftId.toString() || null}
+                                    onSelect={onShiftChange}
+                                />
                             </div>
                         </div>
                         <DialogFooter>
