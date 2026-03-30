@@ -231,7 +231,7 @@ class DtrController extends Controller
                     $totalHoursWorked += $hoursWorked;
                 }
             }
-
+            $shift = $employee->shift;
             // Subtract break time if applicable
             if ($shift && $shift->break_start && $shift->break_end && $totalHoursWorked > 0) {
                 $breakStart = Carbon::parse($shift->break_start->format('H:i:s'));
@@ -281,7 +281,8 @@ class DtrController extends Controller
         $totalIn = $allLogs->where('type', 'in')->count();
         $totalOut = $allLogs->where('type', 'out')->count();
 
-        $shift = $employee->shift;
+
+
         $flexiTime = [
             'time_in' => $shift && $shift->start_time ? $shift->start_time->format('H:i:s') : '08:00:00',
             'time_out' => $shift && $shift->end_time ? $shift->end_time->format('H:i:s') : '17:00:00',
@@ -518,7 +519,7 @@ class DtrController extends Controller
                     $totalHoursWorked += $hoursWorked;
                 }
             }
-
+            $shift = $employee->shift;
             // Subtract break time if applicable
             if ($shift && $shift->break_start && $shift->break_end && $totalHoursWorked > 0) {
                 $breakStart = Carbon::parse($shift->break_start->format('H:i:s'));
@@ -568,7 +569,7 @@ class DtrController extends Controller
         $totalIn = $allLogs->where('type', 'in')->count();
         $totalOut = $allLogs->where('type', 'out')->count();
 
-        $shift = $employee->shift;
+
         $flexiTime = [
             'time_in' => $shift && $shift->start_time ? $shift->start_time->format('H:i:s') : '08:00:00',
             'time_out' => $shift && $shift->end_time ? $shift->end_time->format('H:i:s') : '17:00:00',
