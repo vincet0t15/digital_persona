@@ -36,7 +36,8 @@ function EmployeeDetails({ employee, offices, employmentTypes, shifts }: Props) 
     const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(employee.image ? `/storage/${employee.image}` : null);
     const photoPreviewUrlRef = useRef<string | null>(null);
 
-    const { data, setData, errors, processing, put } = useForm<EmployeeCreate>({
+    const { data, setData, errors, processing, post } = useForm<EmployeeCreate>({
+        _method: 'PUT',
         name: employee.name,
         office_id: String(employee.office_id),
         employment_type_id: String(employee.employment_type?.id || ''),
@@ -84,7 +85,7 @@ function EmployeeDetails({ employee, offices, employmentTypes, shifts }: Props) 
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        put(route('manage-employees.update', employee.id), {
+        post(route('manage-employees.update', employee.id), {
             onSuccess: () => {
                 toast.success('Employee updated successfully');
             },

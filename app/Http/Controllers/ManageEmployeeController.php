@@ -39,10 +39,10 @@ class ManageEmployeeController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            if ($employee->photo) {
-                Storage::disk('public')->delete($employee->photo);
+            if ($employee->image) {
+                Storage::disk('public')->delete($employee->image);
             }
-            $employee->photo = $request->file('photo')->store('employees', 'public');
+            $employee->image = $request->file('photo')->store('employees', 'public');
         }
 
         $employee->update($request->all());
