@@ -38,7 +38,7 @@ class TimeClockController extends Controller
             });
 
         return Inertia::render('TimeClock/index', [
-            'recent_logs' => $recentLogs,
+            'recent_logs' => 1
         ]);
     }
 
@@ -47,6 +47,7 @@ class TimeClockController extends Controller
      */
     public function clock(Request $request)
     {
+
         $request->validate([
             'fingerprint_template' => 'required|string',
         ]);
