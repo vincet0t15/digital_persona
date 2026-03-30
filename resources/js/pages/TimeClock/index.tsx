@@ -1,4 +1,3 @@
-import { FingerprintDeviceStatus } from '@/components/device-status-indicator';
 import { FingerprintScanner } from '@/components/fingerprint-scanner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -186,9 +185,9 @@ export default function TimeClock({ recent_logs: initialLogs = [] }: TimeClockPr
                                 </CardHeader>
                                 <CardContent className="space-y-8 px-8 pt-8">
                                     {/* Status Indicator */}
-                                    <div className="mx-auto max-w-md">
+                                    {/* <div className="mx-auto max-w-md">
                                         <FingerprintDeviceStatus />
-                                    </div>
+                                    </div> */}
 
                                     {/* Time In / Out Toggle */}
                                     <div className="flex justify-center gap-4">
@@ -272,9 +271,9 @@ export default function TimeClock({ recent_logs: initialLogs = [] }: TimeClockPr
                                                         {/* Log Type Badge */}
                                                         <div className="text-right">
                                                             <span
-                                                                className={`inline-flex items-center rounded-md px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase ${
+                                                                className={`inline-flex items-center rounded-md px-2.5 py-1 text-[15px] font-bold tracking-wider uppercase ${
                                                                     log.log_type === 'IN'
-                                                                        ? 'bg-orange-100 text-orange-700'
+                                                                        ? 'bg-teal-100 text-teal-700'
                                                                         : 'bg-amber-100 text-amber-700'
                                                                 }`}
                                                             >
