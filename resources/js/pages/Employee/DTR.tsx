@@ -295,7 +295,7 @@ export default function EmployeeDTR({ dtr, filters, availableYears, availableMon
                                     })}
                                 </tbody>
                                 <tfoot>
-                                    <tr className="bg-slate-100 dark:bg-slate-700">
+                                    <tr className="border-2 border-slate-800 bg-red-900 bg-slate-100 dark:bg-slate-700">
                                         <td
                                             colSpan={6}
                                             className="border-2 border-slate-800 px-2 py-2 pr-4 text-right font-bold text-slate-900 dark:text-white"
@@ -308,9 +308,9 @@ export default function EmployeeDTR({ dtr, filters, availableYears, availableMon
                                         <td className="border-2 border-slate-800 px-2 py-2 text-center font-bold text-slate-900 dark:text-white">
                                             {totalLateMins || ''}
                                         </td>
-                                        <td className="border-2 border-slate-800 px-2 py-2 text-center font-bold text-slate-900 dark:text-white">
+                                        {/* <td className="border-2 border-slate-800 px-2 py-2 text-center font-bold text-slate-900 dark:text-white">
                                             {totalHoursWorked.toFixed(2)}
-                                        </td>
+                                        </td> */}
                                     </tr>
                                 </tfoot>
                             </table>
