@@ -53,7 +53,10 @@ export function CreateShiftDialog({ isOpen, onClose }: Props) {
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Create Shift Schedule</DialogTitle>
-                        <DialogDescription>Define a new work shift schedule for employees.</DialogDescription>
+                        <DialogDescription>
+                            Define a new work shift schedule for employees. For overnight shifts (e.g., 6pm to 6am), set the end time to be earlier
+                            than the start time.
+                        </DialogDescription>
                     </DialogHeader>
                     <FieldGroup>
                         <Field>

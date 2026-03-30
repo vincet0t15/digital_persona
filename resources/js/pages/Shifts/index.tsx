@@ -51,6 +51,10 @@ export default function ShiftIndex({ shifts }: ShiftsProps) {
         return `${displayHour}:${minutes} ${ampm}`;
     };
 
+    const isOvernight = (startTime: string, endTime: string) => {
+        return endTime < startTime;
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Shifts" />
@@ -72,6 +76,7 @@ export default function ShiftIndex({ shifts }: ShiftsProps) {
                                 <TableHead>Shift Name</TableHead>
                                 <TableHead>Start Time</TableHead>
                                 <TableHead>End Time</TableHead>
+                                <TableHead>Work Hours</TableHead>
                                 <TableHead>Break</TableHead>
                                 <TableHead>Grace Period</TableHead>
                                 <TableHead>Status</TableHead>
@@ -82,7 +87,7 @@ export default function ShiftIndex({ shifts }: ShiftsProps) {
                         <TableBody>
                             {shifts.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={8} className="text-muted-foreground text-center">
+                                    <TableCell colSpan={9} className="text-muted-foreground text-center">
                                         No shifts found. Create your first shift schedule.
                                     </TableCell>
                                 </TableRow>
@@ -100,7 +105,41 @@ export default function ShiftIndex({ shifts }: ShiftsProps) {
                                             <div className="flex items-center gap-1">
                                                 <Clock className="h-3 w-3 text-slate-400" />
                                                 {formatTime(shift.end_time)}
+                                                {isOvernight(shift.start_time, shift.end_time) && (
+                                                    <Badge variant="outline" className="ml-2 text-xs">
+                                                        Overnight
+                                                    </Badge>
+                                                )}
                                             </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <span className="font-medium">
+                                                {(() => {
+                                                    // Calculate work hours (this would ideally come from backend)
+                                                    const start = new Date(`2000-01-01T${shift.start_time}`);
+                                                    const end = new Date(`2000-01-01T${shift.end_time}`);
+                                                    if (isOvernight(shift.start_time, shift.end_time)) {
+                                                        end.setDate(end.getDate() + 1);
+                                                    }
+                                                    const diffMs = end.getTime() - start.getTime();
+                                                    const diffHours = diffMs / (1000 * 60 * 60);
+
+                                                    // Subtract break time if present
+                                                    let breakHours = 0;
+                                                    if (shift.break_start && shift.break_end) {
+                                                        const breakStart = new Date(`2000-01-01T${shift.break_start}`);
+                                                        const breakEnd = new Date(`2000-01-01T${shift.break_end}`);
+                                                        if (isOvernight(shift.start_time, shift.end_time) && breakEnd < breakStart) {
+                                                            breakEnd.setDate(breakEnd.getDate() + 1);
+                                                        }
+                                                        const breakDiffMs = breakEnd.getTime() - breakStart.getTime();
+                                                        breakHours = breakDiffMs / (1000 * 60 * 60);
+                                                    }
+
+                                                    return (diffHours - breakHours).toFixed(1);
+                                                })()}
+                                                h
+                                            </span>
                                         </TableCell>
                                         <TableCell>
                                             {shift.break_start && shift.break_end ? (

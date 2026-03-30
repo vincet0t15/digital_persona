@@ -123,12 +123,26 @@ class Shift extends Model
     }
 
     /**
+     * Check if this shift spans overnight (end time is before start time).
+     */
+    public function isOvernight(): bool
+    {
+        return $this->end_time < $this->start_time;
+    }
+
+    /**
      * Get total work hours (excluding break).
      */
     public function getTotalWorkHours(): float
     {
         $start = \DateTime::createFromFormat('H:i:s', $this->start_time->format('H:i:s'));
         $end = \DateTime::createFromFormat('H:i:s', $this->end_time->format('H:i:s'));
+
+        // Handle overnight shifts
+        if ($this->isOvernight()) {
+            // Add 24 hours to end time for overnight shifts
+            $end->modify('+1 day');
+        }
 
         $diff = $start->diff($end);
         $totalMinutes = ($diff->h * 60) + $diff->i;
@@ -137,6 +151,12 @@ class Shift extends Model
         if ($this->break_start && $this->break_end) {
             $breakStart = \DateTime::createFromFormat('H:i:s', $this->break_start->format('H:i:s'));
             $breakEnd = \DateTime::createFromFormat('H:i:s', $this->break_end->format('H:i:s'));
+
+            // Handle overnight breaks (if break spans midnight)
+            if ($this->isOvernight() && $breakEnd < $breakStart) {
+                $breakEnd->modify('+1 day');
+            }
+
             $breakDiff = $breakStart->diff($breakEnd);
             $totalMinutes -= ($breakDiff->h * 60) + $breakDiff->i;
         }
