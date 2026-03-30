@@ -40,9 +40,7 @@ export default function Welcome() {
                     <nav className="fixed top-0 right-0 left-0 z-50 border-b border-slate-200 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/50">
                         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20">
-                                    <Fingerprint className="h-6 w-6 text-white" />
-                                </div>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 shadow-lg shadow-orange-500/20"></div>
                                 <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Bio</span>
                             </div>
 
@@ -64,7 +62,7 @@ export default function Welcome() {
                                 {auth.user ? (
                                     <Link
                                         href={route('dashboard')}
-                                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:scale-105 hover:shadow-blue-500/40"
+                                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-orange-600 to-amber-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-all hover:scale-105 hover:shadow-orange-500/40"
                                     >
                                         <span className="relative z-10 flex items-center gap-2">
                                             Admin Dashboard
@@ -120,7 +118,7 @@ export default function Welcome() {
                                         <>
                                             <Link
                                                 href={route('timeclock.index')}
-                                                className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-base font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                                                className="inline-flex items-center gap-2 rounded-full bg-orange-600 px-6 py-3 text-base font-semibold text-white transition hover:bg-orange-700 dark:bg-orange-400 dark:text-slate-900 dark:hover:bg-orange-300"
                                             >
                                                 <Fingerprint className="h-4 w-4 text-blue-300 dark:text-blue-600" />
                                                 Open Time Clock
@@ -144,8 +142,8 @@ export default function Welcome() {
                                         key={index}
                                         className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-slate-900/70"
                                     >
-                                        <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-500/10">
-                                            <feature.icon className="h-6 w-6 text-blue-600 dark:text-blue-300" />
+                                        <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 dark:bg-orange-500/10">
+                                            <feature.icon className="h-6 w-6 text-orange-600 dark:text-orange-300" />
                                         </div>
                                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">{feature.title}</h3>
                                         <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{feature.description}</p>

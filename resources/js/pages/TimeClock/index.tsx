@@ -88,15 +88,15 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
     };
 
     return (
-        <div className="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-900">
+        <div className="flex min-h-screen flex-col bg-gradient-to-b from-orange-50 via-orange-100 to-white font-sans text-slate-900 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950">
             <Head title="Time Clock" />
             <Toaster position="top-right" richColors />
 
             {/* Header */}
-            <header className="border-b border-slate-200 bg-white">
+            <header className="border-b border-orange-200 bg-orange-50 shadow-sm dark:border-orange-900 dark:bg-slate-950">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 shadow-sm">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-600 shadow-sm">
                             <Clock className="h-6 w-6 text-white" />
                         </div>
                         <div>
@@ -152,7 +152,7 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
                                             type="button"
                                             variant={selectedLogType === 'IN' ? 'default' : 'outline'}
                                             size="lg"
-                                            className={`w-40 gap-3 text-sm font-semibold transition-all ${selectedLogType === 'IN' ? 'bg-blue-600 shadow-md hover:bg-blue-700' : 'border-slate-300 text-slate-600 hover:bg-slate-50'}`}
+                                            className={`w-40 gap-3 text-sm font-semibold transition-all ${selectedLogType === 'IN' ? 'bg-orange-600 text-white shadow-md hover:bg-orange-700' : 'border-slate-300 text-slate-600 hover:bg-orange-50 dark:hover:bg-orange-950'}`}
                                             onClick={() => setSelectedLogType('IN')}
                                             disabled={isProcessing}
                                         >
@@ -163,7 +163,7 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
                                             type="button"
                                             variant={selectedLogType === 'OUT' ? 'default' : 'outline'}
                                             size="lg"
-                                            className={`w-40 gap-3 text-sm font-semibold transition-all ${selectedLogType === 'OUT' ? 'bg-rose-600 text-white shadow-md hover:bg-rose-700' : 'border-slate-300 text-slate-600 hover:bg-slate-50'}`}
+                                            className={`w-40 gap-3 text-sm font-semibold transition-all ${selectedLogType === 'OUT' ? 'bg-orange-500 text-white shadow-md hover:bg-orange-600' : 'border-slate-300 text-slate-600 hover:bg-orange-50 dark:hover:bg-orange-950'}`}
                                             onClick={() => setSelectedLogType('OUT')}
                                             disabled={isProcessing}
                                         >
@@ -184,8 +184,8 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
 
                                         {isProcessing && (
                                             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-md bg-white/80 backdrop-blur-sm">
-                                                <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-                                                <span className="text-sm font-bold tracking-widest text-blue-700">PROCESSING...</span>
+                                                <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-orange-200 border-t-orange-600" />
+                                                <span className="text-sm font-bold tracking-widest text-orange-700">PROCESSING...</span>
                                             </div>
                                         )}
                                     </div>
@@ -211,7 +211,7 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
                                                     {/* Avatar / Image */}
                                                     <Avatar className="h-10 w-10 border border-slate-200 shadow-sm">
                                                         <AvatarImage src={log.employee.image || ''} />
-                                                        <AvatarFallback className="bg-blue-100 font-semibold text-blue-700">
+                                                        <AvatarFallback className="bg-orange-100 font-semibold text-orange-700">
                                                             {getInitials(log.employee.name)}
                                                         </AvatarFallback>
                                                     </Avatar>
@@ -226,7 +226,9 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
                                                     <div className="text-right">
                                                         <span
                                                             className={`inline-flex items-center rounded-md px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase ${
-                                                                log.log_type === 'IN' ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose-700'
+                                                                log.log_type === 'IN'
+                                                                    ? 'bg-orange-100 text-orange-700'
+                                                                    : 'bg-amber-100 text-amber-700'
                                                             }`}
                                                         >
                                                             {log.log_type}
