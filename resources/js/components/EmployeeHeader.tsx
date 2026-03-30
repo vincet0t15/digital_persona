@@ -48,7 +48,7 @@ export function EmployeeHeader({ employee }: Props) {
                                     <NavigationMenuLink asChild>
                                         <Link
                                             href={item.url}
-                                            className={`group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${isActive ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'}`}
+                                            className={`group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${isActive ? 'bg-orange-50 text-orange-600 dark:bg-blue-900/20 dark:text-blue-400' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'}`}
                                         >
                                             <item.icon className="h-4 w-4 transition group-hover:scale-110" />
                                             {item.title}
@@ -73,7 +73,7 @@ export function EmployeeHeader({ employee }: Props) {
                             <div className="hidden text-left sm:block">
                                 <p className="text-sm font-medium text-slate-900 dark:text-white">{employee.name}</p>
                                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                                    {typeof employee.office === 'string' ? employee.office : (employee.office?.name || 'No office')}
+                                    {typeof employee.office === 'string' ? employee.office : employee.office?.name || 'No office'}
                                 </p>
                             </div>
                             <ChevronDown className="h-4 w-4 text-slate-500" />
@@ -94,7 +94,12 @@ export function EmployeeHeader({ employee }: Props) {
                         </div>
 
                         <DropdownMenuItem asChild>
-                            <Link href={route('employee.logout')} method="post" as="button" className="flex w-full cursor-pointer items-center gap-2 text-red-600 focus:text-red-600">
+                            <Link
+                                href={route('employee.logout')}
+                                method="post"
+                                as="button"
+                                className="flex w-full cursor-pointer items-center gap-2 text-red-600 focus:text-red-600"
+                            >
                                 <LogOut className="h-4 w-4" />
                                 Sign Out
                             </Link>

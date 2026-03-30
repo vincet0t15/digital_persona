@@ -129,7 +129,7 @@ export default function EmployeeDTR({ dtr, filters, availableYears, availableMon
                 {/* Page Title */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-                        My <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Daily Time Record</span>
+                        My <span className="bg-clip-text text-orange-500">Daily Time Record</span>
                     </h1>
                     <p className="mt-2 text-slate-600 dark:text-slate-400">View and print your attendance records.</p>
                 </div>
@@ -187,7 +187,7 @@ export default function EmployeeDTR({ dtr, filters, availableYears, availableMon
                                     <RotateCcw className="h-4 w-4" />
                                     Reset
                                 </Button>
-                                <Button variant="default" size="sm" onClick={handlePrint} className="gap-1">
+                                <Button size="sm" onClick={handlePrint} className="gap-1">
                                     <Printer className="h-4 w-4" />
                                     Print DTR
                                 </Button>
@@ -196,7 +196,7 @@ export default function EmployeeDTR({ dtr, filters, availableYears, availableMon
 
                         <div className="mt-4 flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
                             <span>Showing:</span>
-                            <span className="rounded-md bg-blue-50 px-2 py-1 font-medium text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+                            <span className="rounded-md bg-orange-50 px-2 py-1 font-medium text-orange-600 dark:bg-orange-900/20 dark:text-orange-400">
                                 {getMonthName(parseInt(selectedMonth))} {selectedYear}
                             </span>
                             {employee.shift && (
