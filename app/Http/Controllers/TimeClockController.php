@@ -14,37 +14,14 @@ use function Laravel\Prompts\error;
 
 class TimeClockController extends Controller
 {
-    /**
-     * Show the time clock page for fingerprint login/logout
-     */
+
     public function index()
     {
-        $recentLogs = TimeLog::with('employee')
-            ->orderBy('date_time', 'desc')
-            ->limit(5)
-            ->get()
-            ->map(function ($log) {
-                return [
-                    'id' => $log->id,
-                    'employee' => [
-                        'id' => $log->employee->id,
-                        'name' => $log->employee->name,
-                        'image' => $log->employee->image ? asset('storage/' . $log->employee->image) : null,
-                    ],
-                    'log_type' => $log->log_type,
-                    'time' => Carbon::parse($log->date_time)->format('h:i A'),
-                    'date' => Carbon::parse($log->date_time)->format('M d'),
-                ];
-            });
 
-        return Inertia::render('TimeClock/index', [
-            'recent_logs' => 1
-        ]);
+        return Inertia::render('TimeClock/index');
     }
 
-    /**
-     * Process time in/out via fingerprint identification
-     */
+
     public function clock(Request $request)
     {
 
@@ -149,16 +126,6 @@ class TimeClockController extends Controller
             ->with('error', 'No matching fingerprint found. Please register your fingerprint or try again.');
     }
 
-
-    public function recentLogs()
-    {
-        $logs = TimeLog::with('employee')
-            ->orderBy('date_time', 'desc')
-            ->limit(20)
-            ->get();
-
-        return response()->json($logs);
-    }
 
     private function convertPngToFmd(string $pngBase64): string|false
     {
