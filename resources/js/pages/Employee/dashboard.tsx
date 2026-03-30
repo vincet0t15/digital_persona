@@ -1,12 +1,9 @@
+import { EmployeeHeader } from '@/components/EmployeeHeader';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu';
 import { useInitials } from '@/hooks/use-initials';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Building2, ChevronDown, Clock, FileText, Fingerprint, History, LayoutDashboard, LogOut, User } from 'lucide-react';
-import { EmployeeHeader } from '@/components/EmployeeHeader';
+import { Building2, Clock, FileText, Fingerprint, History, User } from 'lucide-react';
 
 interface Employee {
     id: number;
@@ -31,7 +28,6 @@ interface PageProps {
     recentLogs?: LogEntry[];
 }
 
-
 export default function EmployeeDashboard() {
     const { employee, recentLogs = [] } = usePage<PageProps>().props;
     const getInitials = useInitials();
@@ -48,7 +44,7 @@ export default function EmployeeDashboard() {
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
                         Welcome back,{' '}
-                        <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{employee.name}</span>
+                        <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">{employee.name}</span>
                     </h1>
                     <p className="mt-2 text-slate-600 dark:text-slate-400">
                         Here's your employee dashboard. You can view your logs and print your DTR.
@@ -63,7 +59,7 @@ export default function EmployeeDashboard() {
                             <div className="flex flex-col items-center">
                                 <Avatar className="h-24 w-24 border-4 border-white shadow-lg dark:border-slate-800">
                                     <AvatarImage src={employee.image ? `/storage/${employee.image}` : ''} alt={employee.name} />
-                                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-500 text-2xl font-bold text-white">
+                                    <AvatarFallback className="bg-gradient-to-br from-orange-500 to-amber-500 text-2xl font-bold text-white">
                                         {getInitials(employee.name)}
                                     </AvatarFallback>
                                 </Avatar>
@@ -95,7 +91,7 @@ export default function EmployeeDashboard() {
                     <Card className="border-0 bg-white shadow-lg shadow-slate-200/50 dark:bg-slate-800 dark:shadow-slate-900/50">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Clock className="h-5 w-5 text-blue-600" />
+                                <Clock className="h-5 w-5 text-orange-600" />
                                 Quick Actions
                             </CardTitle>
                             <CardDescription>Access your time clock and records</CardDescription>
@@ -130,7 +126,7 @@ export default function EmployeeDashboard() {
                     </Card>
 
                     {/* Status Card */}
-                    <Card className="border-0 bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-600/20">
+                    <Card className="border-0 bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-lg shadow-orange-500/20">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-white">
                                 <Fingerprint className="h-5 w-5" />
@@ -144,11 +140,11 @@ export default function EmployeeDashboard() {
                                 </div>
                                 <div>
                                     <p className="text-2xl font-bold">Active</p>
-                                    <p className="text-blue-100">Your account is in good standing</p>
+                                    <p className="text-orange-100">Your account is in good standing</p>
                                 </div>
                             </div>
                             <div className="mt-6 rounded-xl bg-white/10 p-4 backdrop-blur-sm">
-                                <p className="text-sm text-blue-100">
+                                <p className="text-sm text-orange-100">
                                     You can keep track of your attendance and manage your DTR digitally through this portal.
                                 </p>
                             </div>
@@ -160,7 +156,7 @@ export default function EmployeeDashboard() {
                 <Card className="mt-8 border-0 bg-white shadow-lg shadow-slate-200/50 dark:bg-slate-800 dark:shadow-slate-900/50">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <History className="h-5 w-5 text-slate-600" />
+                            <History className="h-5 w-5 text-orange-600" />
                             Recent Activity
                         </CardTitle>
                         <CardDescription>Your latest time clock entries</CardDescription>
@@ -169,9 +165,14 @@ export default function EmployeeDashboard() {
                         {recentLogs && recentLogs.length > 0 ? (
                             <div className="space-y-4">
                                 {recentLogs.map((log) => (
-                                    <div key={log.id} className="flex items-center justify-between rounded-lg border border-slate-100 p-4 dark:border-slate-800">
+                                    <div
+                                        key={log.id}
+                                        className="flex items-center justify-between rounded-lg border border-slate-100 p-4 dark:border-slate-800"
+                                    >
                                         <div className="flex items-center gap-4">
-                                            <div className={`flex h-10 w-10 items-center justify-center rounded-full ${log.log_type === 'IN' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400'}`}>
+                                            <div
+                                                className={`flex h-10 w-10 items-center justify-center rounded-full ${log.log_type === 'IN' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400'}`}
+                                            >
                                                 <Clock className="h-5 w-5" />
                                             </div>
                                             <div>
