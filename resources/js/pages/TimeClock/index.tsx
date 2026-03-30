@@ -124,6 +124,24 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
                 </div>
             </header>
 
+            {/* Status Notification */}
+            {clock_result && (
+                <div className="border-b border-orange-200 bg-orange-50 px-4 py-3 dark:border-orange-900 dark:bg-slate-950">
+                    <div className="mx-auto flex max-w-7xl items-center justify-center">
+                        <div
+                            className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${
+                                clock_result.log_type === 'IN'
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                    : 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                            }`}
+                        >
+                            <div className={`h-2 w-2 rounded-full ${clock_result.log_type === 'IN' ? 'bg-green-500' : 'bg-amber-500'}`} />
+                            You are currently clocked {clock_result.log_type.toLowerCase()} as {clock_result.employee.name} at {clock_result.time}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Main Content */}
             <main className="flex-1 p-4 sm:p-6 lg:p-8">
                 <div className="mx-auto max-w-7xl">
@@ -139,6 +157,23 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
                                     <CardDescription className="mt-2 text-base">
                                         Select Time In or Time Out, then place your finger on the scanner
                                     </CardDescription>
+                                    <div className="mt-6 flex justify-center">
+                                        <div
+                                            className={`inline-flex items-center gap-3 rounded-sm px-6 py-4 text-lg font-bold shadow-lg transition-all ${
+                                                selectedLogType === 'IN'
+                                                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-green-500/25'
+                                                    : 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-orange-500/25'
+                                            }`}
+                                        >
+                                            <div
+                                                className={`h-3 w-3 rounded-full bg-white/90 ${
+                                                    selectedLogType === 'IN' ? 'animate-pulse' : 'animate-pulse'
+                                                }`}
+                                            />
+                                            <span className="tracking-wide">{selectedLogType === 'IN' ? 'CLOCKING IN' : 'CLOCKING OUT'}</span>
+                                            {selectedLogType === 'IN' ? <LogIn className="h-5 w-5" /> : <LogOut className="h-5 w-5" />}
+                                        </div>
+                                    </div>
                                 </CardHeader>
                                 <CardContent className="space-y-8 px-8 pt-8">
                                     {/* Status Indicator */}
