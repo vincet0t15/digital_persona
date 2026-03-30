@@ -37,6 +37,7 @@ interface TimeClockProps {
 }
 
 export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockProps) {
+    console.log(recent_logs);
     const [isProcessing, setIsProcessing] = useState(false);
     const [scanKey, setScanKey] = useState(0);
     const [selectedLogType, setSelectedLogType] = useState<'IN' | 'OUT'>('IN');
