@@ -97,19 +97,6 @@ export default function EmployeeDashboard() {
                             <CardDescription>Access your time clock and records</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                            <button
-                                disabled
-                                className="flex w-full cursor-not-allowed items-center gap-4 rounded-xl bg-slate-50 p-4 opacity-60 dark:bg-slate-700/30"
-                            >
-                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-300 dark:bg-slate-600">
-                                    <History className="h-6 w-6 text-white" />
-                                </div>
-                                <div className="flex-1 text-left">
-                                    <p className="font-semibold text-slate-900 dark:text-white">My Logs</p>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">View your time logs (Soon)</p>
-                                </div>
-                            </button>
-
                             <Link
                                 href={route('employee.dtr')}
                                 className="group flex items-center gap-4 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 p-4 transition hover:from-emerald-100 hover:to-teal-100 dark:from-emerald-900/20 dark:to-teal-900/20 dark:hover:from-emerald-900/30 dark:hover:to-teal-900/30"
@@ -126,27 +113,25 @@ export default function EmployeeDashboard() {
                     </Card>
 
                     {/* Status Card */}
-                    <Card className="border-0 bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-lg shadow-orange-500/20">
+                    <Card className="border-0 bg-white shadow-lg">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-white">
+                            <CardTitle className="flex items-center gap-2">
                                 <Fingerprint className="h-5 w-5" />
                                 Account Status
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="flex items-center gap-4">
-                                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
-                                    <User className="h-8 w-8 text-white" />
+                                <div className="flex h-16 w-16 items-center justify-center rounded-2xl backdrop-blur-sm">
+                                    <User className="h-8 w-8" />
                                 </div>
                                 <div>
                                     <p className="text-2xl font-bold">Active</p>
-                                    <p className="text-orange-100">Your account is in good standing</p>
+                                    <p className="">Your account is in good standing</p>
                                 </div>
                             </div>
                             <div className="mt-6 rounded-xl bg-white/10 p-4 backdrop-blur-sm">
-                                <p className="text-sm text-orange-100">
-                                    You can keep track of your attendance and manage your DTR digitally through this portal.
-                                </p>
+                                <p className="text-sm">You can keep track of your attendance and manage your DTR digitally through this portal.</p>
                             </div>
                         </CardContent>
                     </Card>
