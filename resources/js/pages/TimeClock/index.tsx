@@ -121,6 +121,24 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
                             })}
                         </p>
                     </div>
+                    {/* Login Links */}
+                    <div className="flex items-center gap-2">
+                        {/* Employee Login */}
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                            onClick={() => router.visit(route('employee.login'))}
+                        >
+                            <Fingerprint className="mr-2 h-4 w-4" />
+                            Employee Login
+                        </Button>
+
+                        {/* Admin Login */}
+                        <Button size="sm" className="bg-orange-600 text-white hover:bg-orange-700" onClick={() => router.visit(route('login'))}>
+                            Admin Login
+                        </Button>
+                    </div>
                 </div>
             </header>
 
@@ -187,7 +205,7 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
                                             type="button"
                                             variant={selectedLogType === 'IN' ? 'default' : 'outline'}
                                             size="lg"
-                                            className={`w-40 gap-3 text-sm font-semibold transition-all ${selectedLogType === 'IN' ? 'bg-orange-600 text-white shadow-md hover:bg-orange-700' : 'border-slate-300 text-slate-600 hover:bg-orange-50 dark:hover:bg-orange-950'}`}
+                                            className={`w-40 gap-3 text-sm font-semibold transition-all ${selectedLogType === 'IN' ? 'bg-teal-700 text-white shadow-md hover:bg-orange-700' : 'border-slate-300 text-slate-600 hover:bg-orange-50 dark:hover:bg-orange-950'}`}
                                             onClick={() => setSelectedLogType('IN')}
                                             disabled={isProcessing}
                                         >

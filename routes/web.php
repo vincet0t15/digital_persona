@@ -9,10 +9,14 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\ManageEmployeeController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\TimeClockController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
     return Inertia::render('welcome');
 })->name('home');
 
