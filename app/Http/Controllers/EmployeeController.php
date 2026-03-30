@@ -191,6 +191,7 @@ class EmployeeController extends Controller
             ->with('office')
             ->with('employmentType')
             ->with('fingerprints')
+            ->with('shift')
             ->when($search, function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%')
                     ->orWhere('username', 'like', '%' . $search . '%');
@@ -201,6 +202,8 @@ class EmployeeController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        $shifts = \App\Models\Shift::where('is_active', true)->get();
+
         return Inertia::render('Employee/index', [
             'employees' => $employees,
             'filters' => [
@@ -208,6 +211,7 @@ class EmployeeController extends Controller
                 'office_id' => $request->query('office_id') ?? null,
             ],
             'offices' => $offices,
+            'shifts' => $shifts,
         ]);
     }
 

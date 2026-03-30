@@ -49,4 +49,27 @@ class ManageEmployeeController extends Controller
 
         return redirect()->back()->with('success', 'Employee updated successfully');
     }
+
+    public function bulkAssignShift(Request $request)
+    {
+        $request->validate([
+            'employee_ids' => 'required|array|min:1',
+            'employee_ids.*' => 'required|integer|exists:employees,id',
+            'shift_id' => 'required|integer|exists:shifts,id',
+        ]);
+
+        $employeeIds = $request->input('employee_ids');
+        $shiftId = $request->input('shift_id');
+
+        // Update all selected employees with the new shift
+        Employee::whereIn('id', $employeeIds)->update(['shift_id' => $shiftId]);
+
+        $updatedCount = count($employeeIds);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Successfully assigned {$updatedCount} employee(s) to the selected shift",
+            'updated_count' => $updatedCount,
+        ]);
+    }
 }

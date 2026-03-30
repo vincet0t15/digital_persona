@@ -83,6 +83,7 @@ Route::middleware(['auth'])->group(function () {
     // MANAGE EMPLOYEES
     Route::get('/manage-employees/{employee}', [ManageEmployeeController::class, 'index'])->name('manage-employees.index');
     Route::put('/manage-employees/{employee}', [ManageEmployeeController::class, 'update'])->name('manage-employees.update');
+    Route::post('/employees/bulk-assign-shift', [ManageEmployeeController::class, 'bulkAssignShift'])->name('employees.bulk-assign-shift');
 
     // LOGS
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');

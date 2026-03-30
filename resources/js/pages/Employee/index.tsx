@@ -3,8 +3,11 @@ import Heading from '@/components/heading';
 import Pagination from '@/components/paginationData';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -12,9 +15,11 @@ import { Employee } from '@/types/employee';
 import { FilterProps } from '@/types/filter';
 import { Office } from '@/types/office';
 import { PaginatedDataResponse } from '@/types/pagination';
+import { Shift } from '@/types/shift';
 import { Head, router, useForm } from '@inertiajs/react';
-import { PlusIcon, Search, User } from 'lucide-react';
+import { PlusIcon, Search, User, Users } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { EmployeeManageDialog } from './manageDialog';
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -30,10 +35,16 @@ interface EmployeeIndexProps {
     offices: Office[];
     employees: PaginatedDataResponse<Employee>;
     filters: FilterProps;
+    shifts: Shift[];
 }
-export default function EmployeeIndex({ offices, employees, filters }: EmployeeIndexProps) {
+export default function EmployeeIndex({ offices, employees, filters, shifts }: EmployeeIndexProps) {
     const [openManageDialog, setOpenManageDialog] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+    const [selectedEmployees, setSelectedEmployees] = useState<number[]>([]);
+    const [openBulkAssignDialog, setOpenBulkAssignDialog] = useState(false);
+    const [selectedShiftId, setSelectedShiftId] = useState<string>('');
+    const [isBulkAssigning, setIsBulkAssigning] = useState(false);
+
     const { data, setData } = useForm({
         search: filters.search || '',
         office_id: filters.office_id || '',
@@ -43,6 +54,64 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
         value: office.id.toString(),
         label: office.name,
     }));
+
+    const shiftOptions = shifts.map((shift) => ({
+        value: shift.id.toString(),
+        label: shift.name,
+    }));
+
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedEmployees(employees.data.map((emp) => emp.id));
+        } else {
+            setSelectedEmployees([]);
+        }
+    };
+
+    const handleSelectEmployee = (employeeId: number, checked: boolean) => {
+        if (checked) {
+            setSelectedEmployees((prev) => [...prev, employeeId]);
+        } else {
+            setSelectedEmployees((prev) => prev.filter((id) => id !== employeeId));
+        }
+    };
+
+    const handleBulkAssign = async () => {
+        if (!selectedShiftId || selectedEmployees.length === 0) {
+            toast.error('Please select a shift and at least one employee');
+            return;
+        }
+
+        setIsBulkAssigning(true);
+
+        try {
+            const response = await fetch(route('employees.bulk-assign-shift'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                },
+                body: JSON.stringify({
+                    employee_ids: selectedEmployees,
+                    shift_id: selectedShiftId,
+                }),
+            });
+
+            if (response.ok) {
+                toast.success(`Successfully assigned ${selectedEmployees.length} employee(s) to the selected shift`);
+                setSelectedEmployees([]);
+                setOpenBulkAssignDialog(false);
+                setSelectedShiftId('');
+                router.reload();
+            } else {
+                toast.error('Failed to assign shifts to employees');
+            }
+        } catch (error) {
+            toast.error('An error occurred while assigning shifts');
+        } finally {
+            setIsBulkAssigning(false);
+        }
+    };
 
     const onOfficeChange = (value: string | null) => {
         const newOfficeId = value || '';
@@ -76,10 +145,19 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                 />
 
                 <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <Button onClick={() => router.get(route('employees.create'))} type="button">
-                        <PlusIcon className="h-4 w-4" />
-                        Add Employee
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button onClick={() => router.get(route('employees.create'))} type="button">
+                            <PlusIcon className="h-4 w-4" />
+                            Add Employee
+                        </Button>
+
+                        {selectedEmployees.length > 0 && (
+                            <Button onClick={() => setOpenBulkAssignDialog(true)} type="button" variant="outline" className="gap-2">
+                                <Users className="h-4 w-4" />
+                                Bulk Assign Shift ({selectedEmployees.length})
+                            </Button>
+                        )}
+                    </div>
 
                     <div className="flex w-full items-center gap-2 sm:w-auto">
                         <div className="w-full">
@@ -105,13 +183,26 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                     <Table>
                         <TableHeader className="bg-muted/50">
                             <TableRow>
+                                <TableHead className="w-12">
+                                    <Checkbox
+                                        checked={selectedEmployees.length === employees.data.length && employees.data.length > 0}
+                                        onCheckedChange={handleSelectAll}
+                                    />
+                                </TableHead>
                                 <TableHead className="text-primary font-bold">Name</TableHead>
+                                <TableHead className="text-primary font-bold">Current Shift</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {employees.data.length > 0 ? (
                                 employees.data.map((employee) => (
                                     <TableRow key={employee.id} className="hover:bg-muted/30 text-sm">
+                                        <TableCell>
+                                            <Checkbox
+                                                checked={selectedEmployees.includes(employee.id)}
+                                                onCheckedChange={(checked) => handleSelectEmployee(employee.id, checked as boolean)}
+                                            />
+                                        </TableCell>
                                         <TableCell className="cursor-pointer text-sm">
                                             <div className="flex cursor-pointer items-center gap-2">
                                                 <Avatar
@@ -136,11 +227,18 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                                                 </div>
                                             </div>
                                         </TableCell>
+                                        <TableCell className="text-sm">
+                                            {employee.shift ? (
+                                                <span className="text-muted-foreground">{employee.shift.name}</span>
+                                            ) : (
+                                                <span className="text-muted-foreground italic">No shift assigned</span>
+                                            )}
+                                        </TableCell>
                                     </TableRow>
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="py-3 text-center text-gray-500">
+                                    <TableCell colSpan={3} className="py-3 text-center text-gray-500">
                                         No data available.
                                     </TableCell>
                                 </TableRow>
@@ -155,6 +253,42 @@ export default function EmployeeIndex({ offices, employees, filters }: EmployeeI
                 {openManageDialog && selectedEmployee && (
                     <EmployeeManageDialog isOpen={openManageDialog} onClose={() => setOpenManageDialog(false)} employee={selectedEmployee} />
                 )}
+
+                <Dialog open={openBulkAssignDialog} onOpenChange={setOpenBulkAssignDialog}>
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <DialogTitle>Bulk Assign Shift</DialogTitle>
+                            <DialogDescription>Assign {selectedEmployees.length} selected employee(s) to a shift.</DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="shift" className="text-right">
+                                    Shift
+                                </Label>
+                                <Select value={selectedShiftId} onValueChange={setSelectedShiftId}>
+                                    <SelectTrigger className="col-span-3">
+                                        <SelectValue placeholder="Select a shift" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {shiftOptions.map((shift) => (
+                                            <SelectItem key={shift.value} value={shift.value}>
+                                                {shift.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setOpenBulkAssignDialog(false)} disabled={isBulkAssigning}>
+                                Cancel
+                            </Button>
+                            <Button type="button" onClick={handleBulkAssign} disabled={isBulkAssigning || !selectedShiftId}>
+                                {isBulkAssigning ? 'Assigning...' : 'Assign Shift'}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </AppLayout>
     );
