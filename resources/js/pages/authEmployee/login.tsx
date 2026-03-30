@@ -1,5 +1,5 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { Fingerprint, LoaderCircle } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
 import InputError from '@/components/input-error';
@@ -39,13 +39,6 @@ export default function EmployeeLogin() {
     return (
         <AuthLayout title="Employee Portal" description="Sign in to access your digital workspace">
             <Head title="Employee Login" />
-
-            <div className="mb-6 flex justify-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 shadow-lg shadow-orange-500/20">
-                    <Fingerprint className="h-6 w-6 text-white" />
-                </div>
-            </div>
-
             {error && (
                 <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
                     {error}
