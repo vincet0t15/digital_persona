@@ -95,8 +95,9 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
             {/* Header */}
             <header className="border-b border-orange-200 bg-orange-50 shadow-sm dark:border-orange-900 dark:bg-slate-950">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+                    {/* Left: Icon + Title */}
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-600 shadow-sm">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-600 shadow-md">
                             <Clock className="h-6 w-6 text-white" />
                         </div>
                         <div>
@@ -104,39 +105,35 @@ export default function TimeClock({ clock_result, recent_logs = [] }: TimeClockP
                             <p className="text-sm font-medium text-slate-500">Biometric Attendance System</p>
                         </div>
                     </div>
-                    <div className="hidden text-right sm:block">
+
+                    {/* Center: Current Time/Date */}
+                    <div className="hidden flex-col items-center sm:flex">
                         <p className="text-2xl font-bold tracking-tight text-slate-900 tabular-nums">
-                            {currentTime.toLocaleTimeString('en-US', {
-                                hour: 'numeric',
-                                minute: '2-digit',
-                                hour12: true,
-                            })}
+                            {currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
                         </p>
-                        <p className="text-sm font-medium text-slate-500">
-                            {currentTime.toLocaleDateString('en-US', {
-                                weekday: 'long',
-                                month: 'long',
-                                day: 'numeric',
-                                year: 'numeric',
-                            })}
+                        <p className="text-center text-sm font-medium text-slate-500">
+                            {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
                         </p>
                     </div>
-                    {/* Login Links */}
-                    <div className="flex items-center gap-2">
-                        {/* Employee Login */}
+
+                    {/* Right: Login Buttons */}
+                    <div className="flex items-center gap-3">
                         <Button
                             variant="outline"
                             size="sm"
-                            className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                            className="flex items-center gap-1 border-orange-300 text-orange-600 transition hover:bg-orange-50"
                             onClick={() => router.visit(route('employee.login'))}
                         >
-                            <Fingerprint className="mr-2 h-4 w-4" />
-                            Employee Login
+                            <Fingerprint className="h-4 w-4" />
+                            Employee
                         </Button>
 
-                        {/* Admin Login */}
-                        <Button size="sm" className="bg-orange-600 text-white hover:bg-orange-700" onClick={() => router.visit(route('login'))}>
-                            Admin Login
+                        <Button
+                            size="sm"
+                            className="bg-orange-600 text-white transition hover:bg-orange-700"
+                            onClick={() => router.visit(route('login'))}
+                        >
+                            Admin
                         </Button>
                     </div>
                 </div>
