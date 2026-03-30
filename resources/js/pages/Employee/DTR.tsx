@@ -1,13 +1,12 @@
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { EmployeeHeader } from '@/components/EmployeeHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useInitials } from '@/hooks/use-initials';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import dayjs from 'dayjs';
-import { Clock, FileText, Fingerprint, LayoutDashboard, Printer, RotateCcw } from 'lucide-react';
+import { Clock, FileText, Printer, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
-import { EmployeeHeader } from '@/components/EmployeeHeader';
 
 type DTRRecord = {
     date: string;
@@ -16,6 +15,7 @@ type DTRRecord = {
     pm_in: string;
     pm_out: string;
     late_minutes: number;
+    total_hours: number;
 };
 
 type DTRData = {
@@ -76,6 +76,7 @@ export default function EmployeeDTR({ dtr, filters, availableYears, availableMon
     const totalLate = dtr.records.reduce((sum, r) => sum + (r.late_minutes || 0), 0);
     const totalLateHours = Math.floor(totalLate / 60);
     const totalLateMins = totalLate % 60;
+    const totalHoursWorked = dtr.records.reduce((sum, r) => sum + (r.total_hours || 0), 0);
 
     const handleFilterChange = (year: string, month: string) => {
         router.get(
@@ -240,6 +241,9 @@ export default function EmployeeDTR({ dtr, filters, availableYears, availableMon
                                         <th colSpan={2} className="border-2 border-slate-800 px-2 py-1 text-center font-bold">
                                             UNDERTIME
                                         </th>
+                                        <th rowSpan={2} className="border-2 border-slate-800 px-2 py-2 text-center font-bold">
+                                            TOTAL HOURS
+                                        </th>
                                     </tr>
                                     <tr className="border-2 border-slate-800 bg-slate-100 dark:bg-slate-700">
                                         <th className="border-2 border-slate-800 px-2 py-1 text-center text-xs">Arrival</th>
@@ -283,13 +287,19 @@ export default function EmployeeDTR({ dtr, filters, availableYears, availableMon
                                                 <td className="border-2 border-slate-300 px-2 py-1 text-center dark:border-slate-600">
                                                     {dayLate > 0 ? lateMins : ''}
                                                 </td>
+                                                <td className="border-2 border-slate-300 px-2 py-1 text-center dark:border-slate-600">
+                                                    {record?.total_hours ? record.total_hours.toFixed(2) : ''}
+                                                </td>
                                             </tr>
                                         );
                                     })}
                                 </tbody>
                                 <tfoot>
                                     <tr className="bg-slate-100 dark:bg-slate-700">
-                                        <td colSpan={5} className="border-2 border-slate-800 px-2 py-2 pr-4 text-right font-bold text-slate-900 dark:text-white">
+                                        <td
+                                            colSpan={6}
+                                            className="border-2 border-slate-800 px-2 py-2 pr-4 text-right font-bold text-slate-900 dark:text-white"
+                                        >
                                             TOTAL
                                         </td>
                                         <td className="border-2 border-slate-800 px-2 py-2 text-center font-bold text-slate-900 dark:text-white">
@@ -297,6 +307,9 @@ export default function EmployeeDTR({ dtr, filters, availableYears, availableMon
                                         </td>
                                         <td className="border-2 border-slate-800 px-2 py-2 text-center font-bold text-slate-900 dark:text-white">
                                             {totalLateMins || ''}
+                                        </td>
+                                        <td className="border-2 border-slate-800 px-2 py-2 text-center font-bold text-slate-900 dark:text-white">
+                                            {totalHoursWorked.toFixed(2)}
                                         </td>
                                     </tr>
                                 </tfoot>

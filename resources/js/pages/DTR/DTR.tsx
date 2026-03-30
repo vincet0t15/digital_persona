@@ -13,6 +13,7 @@ type DTRLog = {
     pm_in?: string;
     pm_out?: string;
     late_minutes?: number;
+    total_hours?: number;
     logs?: LogEntry[];
     hasUnmatched?: boolean;
 };

@@ -221,6 +221,42 @@ class DtrController extends Controller
                 }
             }
 
+            // Calculate total hours worked for the day
+            $totalHoursWorked = 0;
+            foreach ($pairs as $pair) {
+                if ($pair['in'] && $pair['out']) {
+                    $inTime = Carbon::parse($pair['in']->date_time);
+                    $outTime = Carbon::parse($pair['out']->date_time);
+                    $hoursWorked = $inTime->diffInMinutes($outTime) / 60;
+                    $totalHoursWorked += $hoursWorked;
+                }
+            }
+
+            // Subtract break time if applicable
+            if ($shift && $shift->break_start && $shift->break_end && $totalHoursWorked > 0) {
+                $breakStart = Carbon::parse($shift->break_start->format('H:i:s'));
+                $breakEnd = Carbon::parse($shift->break_end->format('H:i:s'));
+                $breakMinutes = $breakStart->diffInMinutes($breakEnd);
+                $breakHours = $breakMinutes / 60;
+
+                // Only subtract break if the employee actually worked during break time
+                $hasBreakLog = false;
+                foreach ($pairs as $pair) {
+                    if ($pair['in'] && $pair['out']) {
+                        $inTime = Carbon::parse($pair['in']->date_time);
+                        $outTime = Carbon::parse($pair['out']->date_time);
+                        if ($inTime->lte($breakEnd) && $outTime->gte($breakStart)) {
+                            $hasBreakLog = true;
+                            break;
+                        }
+                    }
+                }
+
+                if ($hasBreakLog) {
+                    $totalHoursWorked = max(0, $totalHoursWorked - $breakHours);
+                }
+            }
+
             $logs = $dayLogs->map(function ($log) {
                 return [
                     'datetime' => $log->date_time,
@@ -235,6 +271,7 @@ class DtrController extends Controller
                 'pm_in' => $pmIn ? $pmIn->format('g:i') : '',
                 'pm_out' => $pmOut ? $pmOut->format('g:i') : '',
                 'late_minutes' => (int) round($lateMinutes),
+                'total_hours' => round($totalHoursWorked, 2),
                 'logs' => $logs,
             ];
 
@@ -471,6 +508,42 @@ class DtrController extends Controller
                 }
             }
 
+            // Calculate total hours worked for the day
+            $totalHoursWorked = 0;
+            foreach ($pairs as $pair) {
+                if ($pair['in'] && $pair['out']) {
+                    $inTime = Carbon::parse($pair['in']->date_time);
+                    $outTime = Carbon::parse($pair['out']->date_time);
+                    $hoursWorked = $inTime->diffInMinutes($outTime) / 60;
+                    $totalHoursWorked += $hoursWorked;
+                }
+            }
+
+            // Subtract break time if applicable
+            if ($shift && $shift->break_start && $shift->break_end && $totalHoursWorked > 0) {
+                $breakStart = Carbon::parse($shift->break_start->format('H:i:s'));
+                $breakEnd = Carbon::parse($shift->break_end->format('H:i:s'));
+                $breakMinutes = $breakStart->diffInMinutes($breakEnd);
+                $breakHours = $breakMinutes / 60;
+
+                // Only subtract break if the employee actually worked during break time
+                $hasBreakLog = false;
+                foreach ($pairs as $pair) {
+                    if ($pair['in'] && $pair['out']) {
+                        $inTime = Carbon::parse($pair['in']->date_time);
+                        $outTime = Carbon::parse($pair['out']->date_time);
+                        if ($inTime->lte($breakEnd) && $outTime->gte($breakStart)) {
+                            $hasBreakLog = true;
+                            break;
+                        }
+                    }
+                }
+
+                if ($hasBreakLog) {
+                    $totalHoursWorked = max(0, $totalHoursWorked - $breakHours);
+                }
+            }
+
             $logs = $dayLogs->map(function ($log) {
                 return [
                     'datetime' => $log->date_time,
@@ -485,6 +558,7 @@ class DtrController extends Controller
                 'pm_in' => $pmIn ? $pmIn->format('g:i') : '',
                 'pm_out' => $pmOut ? $pmOut->format('g:i') : '',
                 'late_minutes' => (int) round($lateMinutes),
+                'total_hours' => round($totalHoursWorked, 2),
                 'logs' => $logs,
             ];
 
