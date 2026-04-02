@@ -1,5 +1,5 @@
-import { LucideIcon } from 'lucide-react';
 import type { InertiaLinkProps } from '@inertiajs/react';
+import { LucideIcon } from 'lucide-react';
 export interface Auth {
     user: User;
 }
@@ -20,7 +20,6 @@ export type NavGroup = {
     title: string;
     children: NavItem[];
 };
-
 
 export interface SharedData {
     name: string;
